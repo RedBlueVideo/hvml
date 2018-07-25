@@ -1,0 +1,23 @@
+{
+  "name": "hvml",
+  "version": "0.0.0",
+  "description": "HVML Parser for JavaScript",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/RedBlueVideo/hvml.git"
+  },
+  "keywords": [
+    "hvml",
+    "hypervideo"
+  ],
+  "author": "Hugh Guiney",
+  "license": "LGPL-3.0-or-later",
+  "bugs": {
+    "url": "https://github.com/RedBlueVideo/hvml/issues"
+  },
+  "homepage": "https://github.com/RedBlueVideo/hvml#readme"
+}
