@@ -13,6 +13,7 @@
     "quote-props": [ "error", "always" ],
     "class-methods-use-this": "off",
     "no-underscore-dangle": [ "error", { "allowAfterThis": true, "allowAfterSuper": true } ],
-    "no-plusplus": "off"
+    "no-plusplus": "off",
+    "no-lonely-if": "off"
   }
 }

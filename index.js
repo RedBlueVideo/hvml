@@ -42,25 +42,57 @@ class HVML {
     } );
   }
 
-  _jsonifyAttribute( attribute, path = [] ) {
+  _jsonifyAttribute( attribute, attributePath = [] ) {
     const namespace = attribute.namespace();
-    let property = attribute.value();
+    let property = attribute.name();
 
     if ( namespace ) {
       property = `${namespace.prefix()}:${property}`;
     }
 
-    // console.log( this.json, path, property );
-    set( this.json, path, property );
+    // console.log( attributePath, attribute.name() );
+
+    switch ( property ) {
+      case 'endtime':
+        property = 'endTime';
+        break;
+
+      case 'endx':
+        property = 'endX';
+        break;
+
+      case 'endy':
+        property = 'endY';
+        break;
+
+      case 'starttime':
+        property = 'startTime';
+        break;
+
+      case 'startx':
+        property = 'startX';
+        break;
+
+      case 'starty':
+        property = 'startY';
+        break;
+
+      default:
+    }
+
+    attributePath.push( property );
+    // }
+    set( this.json, attributePath, attribute.value() );
+    attributePath.pop();
   }
 
-  _jsonifyChild( child, path = [], domNode = false ) {
+  _jsonifyChild( child, path = [], domNode = false, childIndex ) {
     const type = child.type();
-    let subpath;
+    const attributes = child.attrs();
+    // let path;
     let name;
     let namespace;
     let prefix;
-    let attributes;
     let text;
     let grandchildren;
 
@@ -71,71 +103,91 @@ class HVML {
       case 'element':
         name = child.name();
         namespace = child.namespace();
-        attributes = child.attrs();
         grandchildren = child.childNodes();
+        // path = path;
+
+        if ( namespace ) {
+          prefix = ( namespace.prefix() || this.prefixes[namespace.href()] );
+
+          switch ( prefix ) {
+            case 'hvml':
+              path.push( name );
+              break;
+
+            default:
+              path.push( `${prefix}:${name}` );
+          }
+        } else {
+          path.push( name );
+        }
+
+        if ( Number.isInteger( childIndex ) ) {
+          path.push( childIndex );
+        }
 
         if ( attributes.length ) {
           attributes.forEach( ( attribute ) => {
-            this._jsonifyAttribute( attribute, subpath );
+            this._jsonifyAttribute( attribute, path );
           } );
         }
 
         if ( grandchildren.length ) {
-          subpath = path;
-
-          if ( namespace ) {
-            prefix = this.prefixes[namespace.href()];
-
-            switch ( prefix ) {
-              case 'hvml':
-                subpath.push( name );
-                break;
-
-              default:
-                subpath.push( `${prefix}:${name}` );
-            }
-          } else {
-            subpath.push( name );
-          }
-
           if ( grandchildren.length > 1 ) {
-            // console.log( 'prefix', prefix );
             if ( prefix === 'html' ) {
               let i = -1;
-              // subpath.pop();
-              subpath.push( 'childNodes' );
-              subpath.push( null );
+              path.push( 'childNodes' );
+              path.push( null );
               grandchildren.forEach( ( grandchild ) => {
-                // console.log( 'i', i );
-                subpath.pop();
-                subpath.push( ++i );
-                const wasBlank = this._jsonifyChild( grandchild, subpath, true );
+                path.pop();
+                path.push( ++i );
+                const wasBlank = this._jsonifyChild( grandchild, path, true );
                 if ( wasBlank ) {
                   --i;
                 }
               } );
-              subpath.pop();
-              subpath.pop();
+              path.pop();
+              path.pop();
+              path.pop();
             } else {
+              let i = -1;
+              let wasBlank;
               grandchildren.forEach( ( grandchild ) => {
-                this._jsonifyChild( grandchild, subpath );
+                // path.pop();
+                ++i;
+                if ( grandchild.name() === 'animate' ) {
+                  wasBlank = this._jsonifyChild( grandchild, path, false, i );
+                  path.pop();
+                  path.pop();
+                } else {
+                  wasBlank = this._jsonifyChild( grandchild, path );
+                }
+                if ( wasBlank ) {
+                  --i;
+                }
               } );
-              subpath.pop();
+              path.pop();
+              // path.pop();
+              // path.pop();
             }
           } else {
             grandchildren.forEach( ( grandchild ) => {
-              this._jsonifyChild( grandchild, subpath );
+              // path.pop();
+              // path.push( ++i );
+              this._jsonifyChild( grandchild, path );
+              // if ( wasBlank ) {
+              //   --i;
+              // }
             } );
-            subpath.pop();
+            path.pop();
+            // path.pop();
           }
         }
-        break;
+        break; // element
 
       case 'text':
         text = child.text();
         if ( text.trim() !== '' ) {
           const dupePath = Object.assign( [], path );
-          // console.log( path, text );
 
           if ( domNode ) {
             set( this.json, path, {
@@ -160,7 +212,20 @@ class HVML {
 
               set( this.json, dupePath, obj );
             } else {
-              set( this.json, dupePath, text );
+              const attrs = child.parent().attrs();
+
+              if ( attrs.length ) {
+                const value = [];
+                const keyValue = {};
+                attrs.forEach( ( attr ) => {
+                  keyValue[attr.name()] = attr.value();
+                } );
+                value.push( keyValue );
+                value.push( text );
+                set( this.json, dupePath, value );
+              } else {
+                set( this.json, dupePath, text );
+              }
             }
           }
         } else {
@@ -169,6 +234,7 @@ class HVML {
         break;
 
       case 'attribute':
+        // set( this.json, path, child.value() );
         break;
 
       case 'dtd':
@@ -209,7 +275,6 @@ class HVML {
         }
       }
     } );
-    // console.log(  );
     return this.json;
   }
 }

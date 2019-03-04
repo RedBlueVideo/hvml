@@ -15,6 +15,7 @@ const JSON_LD = {
   "episode": "23",
   "recorded": "2016-09-17",
   "description": {
+    "type": "xhtml",
     "html:div": {
       "childNodes": [
         {
@@ -46,7 +47,9 @@ const JSON_LD = {
   },
   "presentation": {
     "choice": {
+      "xml:id": "full-stream",
       "name": {
+        "type": "xhtml",
         "html:div": {
           "childNodes": [
             {
