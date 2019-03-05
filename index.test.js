@@ -1,8 +1,6 @@
 // const mock = require( 'mock-fs' );
 const HVML = require( './index.js' );
 
-// const spy = jest.spyOn( global.console, 'error' );
-
 // test( 'opens files successfully', () => {} );
 
 const JSON_LD = {
@@ -99,34 +97,44 @@ const JSON_LD = {
   },
 };
 
-// beforeEach( () => {
-//   const hvml = new HVML( './hvml.min.xml' );
-// } );
-// afterEach( mock.restore );
+describe( 'HVML Library', () => {
+  it( 'instantiates', () => {
+    const hvml = new HVML( './hvml.xml' );
+    // const promise = hvml.ready.catch( () => {} );
+    // expect.assertions( 1 );
+    return expect( hvml.ready ).resolves.toEqual( expect.anything() );
+  } );
 
-// describe( '', () => {} )
+  // it( 'fails for nonexistent files', () => {
+  //   const hvml = new HVML( './hvml.gone' );
+  // } );
 
-it( 'instantiates', () => {
-  const hvml = new HVML( './hvml.xml' );
-  // const promise = hvml.ready.catch( () => {} );
-  // expect.assertions( 1 );
-  return expect( hvml.ready ).resolves.toEqual( expect.anything() );
-} );
+  it( 'parses XML into JSON-LD', () => {
+    const hvml = new HVML( './hvml.xml' );
+    // expect.assertions( 1 );
+    return hvml.ready
+      .then( () => {
+        // const json = hvml.toJson();
+        expect( hvml.toJson() ).toStrictEqual( JSON_LD );
+        // console.log( json );
+      } )
+      .catch( ( error ) => {
+        throw new Error( error.toString() );
+      } );
+  } );
 
-// it( 'fails for nonexistent files', () => {
-//   const hvml = new HVML( './hvml.gone' );
-// } );
+  it( 'validates HVML', () => {
+    const hvml = new HVML( './hvml.xml' );
+    // const badHvml = new HVML( './hvml.bad.xml' )
+    // expect.assertions( 2 );
 
-it( 'parses XML into JSON-LD', () => {
-  const hvml = new HVML( './hvml.xml' );
-  // expect.assertions( 1 );
-  return hvml.ready
-    .then( () => {
-      // const json = hvml.toJson();
-      expect( hvml.toJson() ).toStrictEqual( JSON_LD );
-      // console.log( json );
-    } )
-    .catch( ( error ) => {
-      throw new Error( error.toString() );
+    hvml.ready.then( () => {
+      // expect( hvml.isValid() ).toBe( true );
+      console.log( hvml.isValid() );
     } );
+
+    // badHvml.ready.then( () => {
+    //   expect( hvml.isValid() ).toBe( false );
+    // } );
+  } );
 } );

@@ -4,7 +4,9 @@
   "description": "HVML Parser for JavaScript",
   "main": "index.js",
   "scripts": {
-    "test": "jest --watch",
+    "test": "jest --watch -t 'HVML Library'",
+    "test-xsd": "jest --watch -t 'HVML Schema Definition'",
+    "test-all": "jest --watch",
     "coverage": "jest --coverage"
   },
   "repository": {

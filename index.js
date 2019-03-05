@@ -28,7 +28,7 @@ class HVML {
       return accumulator;
     }, {} );
 
-    this.ready = ( new Promise( ( resolve, reject ) => {
+    const fileReady = ( new Promise( ( resolve, reject ) => {
       fs.readFile( path, encoding, ( error, data ) => {
         if ( error ) {
           // throw new Error( error );
@@ -36,10 +36,26 @@ class HVML {
         }
         resolve( data );
       } );
-    } ) ).then( ( data ) => {
-      this.xml = xml.parseXmlString( data );
+    } ) );
+
+    const schemaReady = ( new Promise( ( resolve, reject ) => {
+      fs.readFile( path, encoding, ( error, data ) => {
+        if ( error ) {
+          reject( error );
+        }
+        resolve( data );
+      } );
+    } ) );
+
+    this.ready = Promise.all( [fileReady, schemaReady] ).then( ( data ) => {
+      this.xml = xml.parseXmlString( data[0] );
+      this.xsd = xml.parseXmlString( data[1] );
       return this.xml;
     } );
+  }
+
+  isValid() {
+    return this.xml.validate( this.xsd );
   }
 
   _jsonifyAttribute( attribute, attributePath = [] ) {
