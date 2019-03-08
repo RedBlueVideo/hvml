@@ -1,5 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
-<hvml xmlns="https://hypervideo.tech/hvml#" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:css="https://www.w3.org/TR/CSS/" xml:lang="en-US" hidden="hidden">
+<hvml
+  xmlns="https://hypervideo.tech/hvml#"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns:xlink="http://www.w3.org/1999/xlink"
+  xmlns:css="https://www.w3.org/TR/CSS/"
+  xmlns:html="http://www.w3.org/1999/xhtml"
+  xsi:schemaLocation="https://raw.githubusercontent.com/RedBlueVideo/hvml/wip/hvml.xsd"
+  xml:lang="en-US"
+  hidden="hidden"
+>
   <video type="personal" xml:id="ep-23">
     <title>Overnight Dance Party at the Museum of Fine Arts Boston</title>
     <episode>23</episode>

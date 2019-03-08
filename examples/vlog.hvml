@@ -1,0 +1,748 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<hvml xmlns="http://vocab.nospoon.tv/ovml#" xmlns:html="http://www.w3.org/1999/xhtml" xmlns:oembed="http://oembed.com/" xmlns:xlink="http://www.w3.org/1999/xlink" xml:lang="en-US">
+  <group xml:id="hughs-vlog" type="series">
+    <title>Hugh’s Vlog</title>
+    <description type="xhtml">
+      <div xmlns="http://www.w3.org/1999/xhtml">
+        <p>Hi, I’m Hugh. I started this video blog to document what it’s like to build a company, day by day, from the very beginning. I want to take this typically very private process and open it up to everyone. Imagine if you were able to watch Steve Jobs and Wozniak grow Apple from a garage project into the largest tech company in the world? I may not reach that level of success; I may fail spectacularly, but at least there will be a record of the attempt.</p>
+        <p>For me, it’s self-improvement by way of radical transparency, and the public accountability that comes with that. For you: you get to my virtual co-founders. I’ll be listening to your feedback in the comments and chat room every step of the way. I also endeavor to make the series equal parts informative and entertaining—so whether you’re a fellow founder looking to compare notes, or just an Average Joe/Josephine killing time on your lunch break, there’s something in it for you.</p>
+        <p>Join me as I attempt to achieve financial independence, put a dent in the universe, and squeeze the most I can out of life along the way.</p>
+      </div>
+    </description>
+    <tagline>The daily life of a startup founder, programmer, and filmmaker.</tagline>
+    <producer>
+      <entity>
+        <name>
+          <family-name>Guiney</family-name>
+          <given-name>Hugh</given-name>
+        </name>
+        <uri>https://hugh.today</uri>
+        <email>hello@hugh.today</email>
+      </entity>
+    </producer>
+    <copyright>
+      <text>© 2016–2018 Hugh Guiney</text>
+    </copyright>
+    <!-- <group xml:id="season-x" type="series"></group> -->
+    <group xml:id="season-01" type="series">
+      <title>Season 1</title>
+      <video type="personal" xml:id="ep-0" xml:lang="en">
+        <title>Introduction</title>
+        <episode>0</episode>
+        <runtime>PT9M51S</runtime>
+        <recorded>2016-05-18</recorded>
+        <published>2016-05-18T16:15:38.000Z</published>
+        <description type="xhtml">
+          <div xmlns="http://www.w3.org/1999/xhtml">
+            <p>Embarking on a daily vlog series to chronicle the makings of my startup. Here’s the first installment! #HughsStartupVlog</p>
+          </div>
+        </description>
+        <showing scope="release" type="internet" admission="public" datetime="2016-05-18">
+          <venue type="site" datetime="16:15:38.000Z">
+            <entity site="https://www.youtube.com/">YouTube</entity>
+            <uri>https://www.youtube.com/watch?v=o5MaYhQZONY</uri>
+            <title>Hugh's Startup Vlog Episode #0 - Introduction</title>
+            <description type="xhtml">
+              <div xmlns="http://www.w3.org/1999/xhtml">
+                <p>Embarking on a daily vlog series to chronicle the makings of my startup. Here’s the first installment! #HughsStartupVlog</p>
+              </div>
+            </description>
+          </venue>
+        </showing>
+        <showing scope="release" type="internet" admission="private" datetime="2018-08-06">
+          <venue type="site" datetime="17:44:46">
+            <entity site="https://vimeo.com/">Vimeo</entity>
+            <uri>https://vimeo.com/hughguiney/2016-05-18</uri>
+            <uri>https://vimeo.com/283559036/3f9f45d174</uri>
+            <title>Hugh"s Startup Vlog Episode #0 - Introduction</title>
+          </venue>
+        </showing>
+        <presentation>
+          <poster xml:id="ep-0-poster-webp-720p-vimeo" width="1280" height="720" xlink:href="https://i.vimeocdn.com/video/717859251.webp"/>
+          <frametype abbr="p">progressive</frametype>
+          <par x="1" y="1"/>
+          <fps rate="30000" scale="1001"/>
+          <file xml:id="ep-0-mp4-720p-vimeo" label="ep-0" xlink:href="https://player.vimeo.com/external/283559036.hd.mp4?s=2373803c17ac8e85e6278be495f48ba522f57f9a&amp;profile_id=174" length="193596055">
+            <width>1280</width>
+            <height>720</height>
+            <container>
+              <name>MPEG-4 Part 14</name>
+              <nickname>MP4</nickname>
+              <mime>video/mp4</mime>
+            </container>
+            <codec type="video">
+              <name>H.264/MPEG-4 Part 10 AVC</name>
+              <nickname>H.264</nickname>
+            </codec>
+            <codec type="audio">
+              <name>AAC-LC</name>
+              <mime>aac</mime>
+            </codec>
+          </file>
+        </presentation>
+      </video>
+      <video type="personal" xml:id="ep-1" xml:lang="en">
+        <title>A Late Start; Why Open Source?</title>
+        <episode>1</episode>
+        <runtime>PT4M21S</runtime>
+        <recorded>2016-05-19</recorded>
+        <published>2016-05-19T21:46:46.000Z</published>
+        <showing scope="release" type="internet" admission="public" datetime="2016-05-19">
+          <venue type="site" datetime="21:46:46.000Z">
+            <entity site="https://www.youtube.com/">YouTube</entity>
+            <uri>https://www.youtube.com/watch?v=CDO06cwR4EI</uri>
+            <title>Hugh’s Startup Vlog Episode #1 - A Late Start; Why Open Source?</title>
+            <description type="xhtml">
+              <div xmlns="http://www.w3.org/1999/xhtml">
+                <p>#HughsStartupVlog</p>
+              </div>
+            </description>
+          </venue>
+        </showing>
+        <showing scope="release" type="internet" admission="private" datetime="2018-08-06">
+          <venue type="site" datetime="20:35:43">
+            <entity site="https://vimeo.com/">Vimeo</entity>
+            <uri>https://vimeo.com/hughguiney/2016-05-19</uri>
+            <uri>https://vimeo.com/283582303/4f22b821a7</uri>
+            <title>Hugh’s Startup Vlog Episode #1 - A Late Start; Why Open Source?</title>
+          </venue>
+        </showing>
+        <presentation>
+          <poster xml:id="ep-1-poster-webp-720p-vimeo" width="1280" height="720" xlink:href="https://i.vimeocdn.com/video/717882555.webp"/>
+          <frametype abbr="p">progressive</frametype>
+          <par x="1" y="1"/>
+          <fps rate="30000" scale="1001"/>
+          <file xml:id="ep-1-mp4-720p-vimeo" label="ep-1" xlink:href="https://player.vimeo.com/external/283582303.hd.mp4?s=8c65bdcb790e370fddf1acc812a2fa58f23c3af9&amp;profile_id=174" length="84430722">
+            <width>1280</width>
+            <height>720</height>
+            <container>
+              <mime>video/mp4</mime>
+            </container>
+          </file>
+        </presentation>
+      </video>
+      <video type="personal" xml:id="ep-2">
+        <title>Fun vs. Productivity</title>
+        <episode>2</episode>
+        <runtime>PT7M52S</runtime>
+        <recorded>2016-05-20</recorded>
+        <published>2016-05-21T02:56:14.000Z</published>
+        <showing scope="release" type="internet" admission="public" datetime="2016-05-21">
+          <venue type="site" datetime="02:56:14.000Z">
+            <entity site="https://www.youtube.com/">YouTube</entity>
+            <uri>https://www.youtube.com/watch?v=VbjBqL3wa2Q</uri>
+            <title>Hugh’s Startup Vlog Episode #2 - Fun vs. Productivity</title>
+            <description type="xhtml">
+              <div xmlns="http://www.w3.org/1999/xhtml">
+                <p>#HughsStartupVlog</p>
+              </div>
+            </description>
+          </venue>
+        </showing>
+        <showing scope="release" type="internet" admission="private" datetime="2018-08-06">
+          <venue type="site" datetime="21:08:30">
+            <entity site="https://vimeo.com/">Vimeo</entity>
+            <uri>https://vimeo.com/hughguiney/2016-05-20</uri>
+            <uri>https://vimeo.com/283586692/ab9cb027ec</uri>
+            <title>Hugh’s Startup Vlog Episode #2 - Fun vs. Productivity</title>
+          </venue>
+        </showing>
+        <presentation>
+          <poster xml:id="ep-2-poster-webp-720p-vimeo" width="1280" height="720" xlink:href="https://i.vimeocdn.com/video/717890063.webp"/>
+          <frametype abbr="p">progressive</frametype>
+          <par x="1" y="1"/>
+          <fps rate="30000" scale="1001"/>
+          <file xml:id="ep-2-mp4-720p-vimeo" label="ep-2" xlink:href="https://player.vimeo.com/external/283586692.hd.mp4?s=6f8cf1d7c67838b8c8b1806488d760bc0471cdb2&amp;profile_id=174" length="155494589">
+            <width>1280</width>
+            <height>720</height>
+            <container>
+              <mime>video/mp4</mime>
+            </container>
+          </file>
+        </presentation>
+      </video>
+      <video type="personal" xml:id="ep-3">
+        <title>Early Rise; Web Development Stalled</title>
+        <episode>3</episode>
+        <runtime>PT3M22S</runtime>
+        <recorded>2016-05-21</recorded>
+        <published>2016-05-21T15:25:46.000Z</published>
+        <showing scope="release" type="internet" admission="public" datetime="2016-05-21">
+          <venue type="site" datetime="15:25:46.000Z">
+            <entity site="https://www.youtube.com/">YouTube</entity>
+            <uri>https://www.youtube.com/watch?v=UbiGRA10K2c</uri>
+            <title>Hugh’s Startup Vlog Episode #3 - Early Rise; Web Development Stalled</title>
+            <description type="xhtml">
+              <div xmlns="http://www.w3.org/1999/xhtml">
+                <p>#HughsStartupVlog</p>
+              </div>
+            </description>
+          </venue>
+        </showing>
+        <showing scope="release" type="internet" admission="private" datetime="2018-08-06">
+          <venue type="site" datetime="22:46:05">
+            <entity site="https://vimeo.com/">Vimeo</entity>
+            <uri>https://vimeo.com/hughguiney/2016-05-21</uri>
+            <uri>https://vimeo.com/283597797/724c4d0822</uri>
+            <title>Hugh’s Startup Vlog Episode #3 - Early Rise; Web Development Stalled</title>
+          </venue>
+        </showing>
+        <presentation>
+          <poster xml:id="ep-3-poster-webp-720p-vimeo" width="1280" height="720" xlink:href="https://i.vimeocdn.com/video/717906503.webp"/>
+          <frametype abbr="p">progressive</frametype>
+          <par x="1" y="1"/>
+          <fps rate="30000" scale="1001"/>
+          <file xml:id="ep-3-mp4-720p-vimeo" label="ep-3" xlink:href="https://player.vimeo.com/external/283597797.hd.mp4?s=66dc555b78a4e0b36d14dcacc533694117f1260a&amp;profile_id=174" length="66357354">
+            <width>1280</width>
+            <height>720</height>
+            <container>
+              <mime>video/mp4</mime>
+            </container>
+          </file>
+        </presentation>
+      </video>
+      <video type="personal" xml:id="ep-4">
+        <title>First Week In Review</title>
+        <episode>4</episode>
+        <runtime>PT6M11S</runtime>
+        <recorded>2016-05-23</recorded>
+        <published>2016-05-23T21:23:22.000Z</published>
+        <showing scope="release" type="internet" admission="public" datetime="2016-05-23">
+          <venue type="site" datetime="21:23:22.000Z">
+            <entity site="https://www.youtube.com/">YouTube</entity>
+            <uri>https://www.youtube.com/watch?v=dQIa1b4fefA</uri>
+            <title>Hugh’s Startup Vlog Episode #4 - First Week In Review</title>
+            <description type="xhtml">
+              <div xmlns="http://www.w3.org/1999/xhtml">
+                <p>#HughsStartupVlog</p>
+              </div>
+            </description>
+          </venue>
+        </showing>
+        <showing scope="release" type="internet" admission="private" datetime="2018-08-07">
+          <venue type="site" datetime="00:44:35">
+            <entity site="https://vimeo.com/">Vimeo</entity>
+            <uri>https://vimeo.com/hughguiney/2016-05-23</uri>
+            <uri>https://vimeo.com/283609122/8db4c9016b</uri>
+            <title>Hugh’s Startup Vlog Episode #4 - First Week In Review</title>
+          </venue>
+        </showing>
+        <presentation>
+          <poster xml:id="ep-4-poster-webp-720p-vimeo" width="1280" height="720" xlink:href="https://i.vimeocdn.com/video/717920060.webp"/>
+          <frametype abbr="p">progressive</frametype>
+          <par x="1" y="1"/>
+          <fps rate="30000" scale="1001"/>
+          <file xml:id="ep-4-mp4-720p-vimeo" label="ep-4" xlink:href="https://player.vimeo.com/external/283609122.hd.mp4?s=8ac446cc5958250d6aadc418d56831007653b013&amp;profile_id=174" length="120625532">
+            <width>1280</width>
+            <height>720</height>
+            <container>
+              <mime>video/mp4</mime>
+            </container>
+          </file>
+        </presentation>
+      </video>
+      <video type="personal" xml:id="ep-5">
+        <title>A Healthier Lifestyle; Which Product to Develop?</title>
+        <episode>5</episode>
+        <runtime>PT6M56S</runtime>
+        <recorded>2016-05-24</recorded>
+        <published>2016-05-24T18:20:22.000Z</published>
+        <showing scope="release" type="internet" admission="public" datetime="2016-05-24">
+          <venue type="site" datetime="18:20:22.000Z">
+            <entity site="https://www.youtube.com/">YouTube</entity>
+            <uri>https://www.youtube.com/watch?v=Bxe-wOgGXK8</uri>
+            <title>Hugh’s Startup Vlog Episode #5 - A Healthier Lifestyle; Which Product to Develop?</title>
+            <description type="xhtml">
+              <div xmlns="http://www.w3.org/1999/xhtml">
+                <p>#HughsStartupVlog</p>
+              </div>
+            </description>
+          </venue>
+        </showing>
+      </video>
+      <video type="personal" xml:id="ep-6">
+        <title>I Hate Computers</title>
+        <episode>6</episode>
+        <runtime>PT3M44S</runtime>
+        <recorded>2016-05-25</recorded>
+        <published>2016-05-25T21:07:41.000Z</published>
+        <showing scope="release" type="internet" admission="public" datetime="2016-05-25">
+          <venue type="site" datetime="21:07:41.000Z">
+            <entity site="https://www.youtube.com/">YouTube</entity>
+            <uri>https://www.youtube.com/watch?v=B13tGGudm2M</uri>
+            <title>Hugh’s Startup Vlog Episode #6: “I Hate Computers”</title>
+            <description type="xhtml">
+              <div xmlns="http://www.w3.org/1999/xhtml">
+                <p>#HughsStartupVlog</p>
+              </div>
+            </description>
+          </venue>
+        </showing>
+      </video>
+      <video type="personal" xml:id="ep-7">
+        <title>No More Website Woes; A Shorter Path to Profitability</title>
+        <episode>7</episode>
+        <runtime>PT5M</runtime>
+        <recorded>2016-05-28</recorded>
+        <published>2016-05-28T19:33:50.000Z</published>
+        <showing scope="release" type="internet" admission="public" datetime="2016-05-28">
+          <venue type="site" datetime="19:33:50.000Z">
+            <entity site="https://www.youtube.com/">YouTube</entity>
+            <uri>https://www.youtube.com/watch?v=KQeEx646t64</uri>
+            <title>Hugh’s Startup Vlog Episode #7: “No More Website Woes; A Shorter Path to Profitability”</title>
+            <description type="xhtml">
+              <div xmlns="http://www.w3.org/1999/xhtml">
+                <p>#HughsStartupVlog</p>
+              </div>
+            </description>
+          </venue>
+        </showing>
+      </video>
+      <video type="personal" xml:id="ep-8">
+        <title>Landing Page; Soylent First Impressions</title>
+        <episode>8</episode>
+        <runtime>PT7M6S</runtime>
+        <recorded>2016-06-02</recorded>
+        <published>2016-06-02T21:08:53.000Z</published>
+        <showing scope="release" type="internet" admission="public" datetime="2016-06-02">
+          <venue type="site" datetime="21:08:53.000Z">
+            <entity site="https://www.youtube.com/">YouTube</entity>
+            <uri>https://www.youtube.com/watch?v=mACCd-7Qbd0</uri>
+            <title>Hugh’s Startup Vlog Episode #8: “Landing Page; Soylent First Impressions”</title>
+            <description type="xhtml">
+              <div xmlns="http://www.w3.org/1999/xhtml">
+                <p>#HughsStartupVlog</p>
+              </div>
+            </description>
+          </venue>
+        </showing>
+      </video>
+    </group>
+    <group xml:id="season-02" type="series">
+      <title>Season 2</title>
+      <video type="personal" xml:id="ep-9" xml:lang="en">
+        <title>A New Approach to Vlogging; Dad Powers</title>
+        <episode>9</episode>
+        <runtime>PT12M56S</runtime>
+        <recorded>2016-07-17</recorded>
+        <published>2016-07-20T08:40:39.000Z</published>
+        <description type="xhtml">
+          <div xmlns="http://www.w3.org/1999/xhtml">
+            <p>“A New Approach to Vlogging; Dad Powers”</p>
+            <p>Season 2 kicks off with thoughts about the vlog itself, some pre-rehearsal loitering, and an update on my planned HTML video course.</p>
+            <p>Shout-outs: Jeremy Eaton, the cast of Midnight Avenue (namely Cade Harstedt &amp; Matt Walczak), and Bryan Marshall!</p>
+          </div>
+        </description>
+        <showing scope="release" type="internet" admission="public" datetime="2016-07-20">
+          <venue type="site" datetime="08:40:39.000Z">
+            <entity site="https://www.youtube.com/">YouTube</entity>
+            <uri>https://www.youtube.com/watch?v=y_NFFW4tPdk</uri>
+            <title>“A New Approach to Vlogging; Dad Powers” - Hugh’s [Startup] Vlog</title>
+            <description type="xhtml">
+              <div xmlns="http://www.w3.org/1999/xhtml">
+                <p>“A New Approach to Vlogging; Dad Powers”</p>
+                <p>Season 2 kicks off with thoughts about the vlog itself, some pre-rehearsal loitering, and an update on my planned HTML video course.</p>
+                <p>Shout-outs: Jeremy Eaton, the cast of Midnight Avenue (namely Cade Harstedt &amp; Matt Walczak), and Bryan Marshall!</p>
+                <p>Music:<br/>“Sunday Market” by akaUNO<br/>Download: <a href="http://freemusicarchive.org/music/akaUno/Bad_Panda_85/Sunday_Market">http://freemusicarchive.org/music/akaUno/Bad_Panda_85/Sunday_Market</a>
+                  <br/>License: <a href="https://creativecommons.org/licenses/by-nc-sa/3.0/">https://creativecommons.org/licenses/by-nc-sa/3.0/</a>
+                </p>
+                <p>Episode: S02E01 (#9)<br/>Recorded: 2016-07-17 (Sun)</p>
+              </div>
+            </description>
+          </venue>
+        </showing>
+      </video>
+      <video type="personal" xml:id="ep-10">
+        <title>Frozen Energy Drink; Editing</title>
+        <episode>10</episode>
+        <runtime>PT4M35S</runtime>
+        <recorded>2016-07-18</recorded>
+        <published>2016-07-22T22:28:59.000Z</published>
+        <description type="xhtml">
+          <div xmlns="http://www.w3.org/1999/xhtml">
+            <p>Spoiler alert: Not much happens in this episode, but I committed to a daily vlog, so them’s the breaks!</p>
+          </div>
+        </description>
+        <showing scope="release" type="internet" admission="public" datetime="2016-07-22">
+          <venue type="site" datetime="22:28:59.000Z">
+            <entity site="https://www.youtube.com/">YouTube</entity>
+            <uri>https://www.youtube.com/watch?v=9CugQEiet3o</uri>
+            <title>“Frozen Energy Drink; Editing” - Hugh’s [Startup] Vlog</title>
+            <description type="xhtml">
+              <div xmlns="http://www.w3.org/1999/xhtml">
+                <p>Spoiler alert: Not much happens in this episode, but I committed to a daily vlog, so them’s the breaks!</p>
+                <p>Music:<br/>“How Exciting” by Revolution Void (via Free Music Archive: <a href="http://freemusicarchive.org/music/Revolution_Void/The_Politics_of_Desire/revolution_void_-_07_-_how_exciting">http://freemusicarchive.org/music/Revolution_Void/The_Politics_of_Desire/revolution_void_-_07_-_how_exciting</a>)<br/>License: CC BY 3.0 (<a href="https://creativecommons.org/licenses/by/3.0/">https://creativecommons.org/licenses/by/3.0/</a>)</p>
+                <p>Episode: S02E02 (#10)<br/>Recorded: 2016-07-18 (Mon)</p>
+              </div>
+            </description>
+          </venue>
+        </showing>
+      </video>
+      <video type="personal" xml:id="ep-11" xml:lang="en">
+        <title>Runway Woes; Advice from A Former Founder</title>
+        <episode>11</episode>
+        <runtime>PT6M35S</runtime>
+        <recorded>2016-07-19</recorded>
+        <published>2016-08-14T01:50:54.000Z</published>
+        <description type="xhtml">
+          <div xmlns="http://www.w3.org/1999/xhtml">
+            <p>Get a temp job, or build a product? That is the question.</p>
+            <p>Thank you Jeffrey Glusman for the advice and for letting me record our call!<br/>Jeff’s Website: <a href="https://medium.com/@theglus">https://medium.com/@theglus</a>
+              <br/>Jeff on Twitter: @theglus (<a href="https://twitter.com/theglus">https://twitter.com/theglus</a>)</p>
+          </div>
+        </description>
+        <showing scope="release" type="internet" admission="public" datetime="2016-08-14">
+          <venue type="site" datetime="01:50:54.000Z">
+            <entity site="https://www.youtube.com/">YouTube</entity>
+            <uri>https://www.youtube.com/watch?v=44CV0W3hvHE</uri>
+            <title>“Runway Woes; Advice from A Former Founder” - Hugh’s [Startup] Vlog</title>
+            <description type="xhtml">
+              <div xmlns="http://www.w3.org/1999/xhtml">
+                <p>Get a temp job, or build a product? That is the question.</p>
+                <p>Thank you Jeffrey Glusman for the advice and for letting me record our call!<br/>Jeff’s Website: <a href="https://medium.com/@theglus">https://medium.com/@theglus</a>
+                  <br/>Jeff on Twitter: @theglus (<a href="https://twitter.com/theglus">https://twitter.com/theglus</a>)</p>
+                <p>Music:<br/>“Cleaner” by Seclorance (<a href="http://freemusicarchive.org/music/Seclorance/Exile/Seclorance_-_Exile_-_02_Cleaner">http://freemusicarchive.org/music/Seclorance/Exile/Seclorance_-_Exile_-_02_Cleaner</a>)<br/>License: CC BY 4.0 (<a href="https://creativecommons.org/licenses/by/4.0/">https://creativecommons.org/licenses/by/4.0/</a>)</p>
+                <p>Episode: S02 E03 (#11)<br/>Recorded: 2016-07-19 (Tue)</p>
+                <p>Follow me on Twitter: @LordPancreas (<a href="https://twitter.com/LordPancreas">https://twitter.com/LordPancreas</a>)</p>
+              </div>
+            </description>
+          </venue>
+        </showing>
+      </video>
+      <video type="personal" xml:id="ep-12">
+        <title>New Video Equipment; Improv Killed My Workday</title>
+        <episode>12</episode>
+        <runtime>PT13M50S</runtime>
+        <recorded>2016-07-20</recorded>
+        <published>2016-08-16T13:23:59.000Z</published>
+        <description type="xhtml">
+          <div xmlns="http://www.w3.org/1999/xhtml">
+            <p>A day in the life of an ImprovBoston Harold Night performer and audience member.</p>
+          </div>
+        </description>
+        <showing scope="release" type="internet" admission="public" datetime="2016-08-16">
+          <venue type="site" datetime="13:23:59.000Z">
+            <entity site="https://www.youtube.com/">YouTube</entity>
+            <uri>https://www.youtube.com/watch?v=bvyxRHhae9g</uri>
+            <title>“New Video Equipment; Improv Killed My Workday” - Hugh’s [Startup] Vlog</title>
+            <description type="xhtml">
+              <div xmlns="http://www.w3.org/1999/xhtml">
+                <p>A day in the life of an ImprovBoston Harold Night performer and audience member.</p>
+                <p>Music:<br/>“Boomerang” by Black Ant (<a href="http://freemusicarchive.org/music/Black_Ant/Free_Beats_Sel_3/Boomerang">http://freemusicarchive.org/music/Black_Ant/Free_Beats_Sel_3/Boomerang</a>)<br/>License: CC BY 3.0 (<a href="https://creativecommons.org/licenses/by/3.0/">https://creativecommons.org/licenses/by/3.0/</a>)<br/>Episode: S02 E04 (#12)<br/>Recorded: 2016-07-20 (Wed)</p>
+                <p>Follow me on Twitter: @LordPancreas (<a href="https://twitter.com/LordPancreas">https://twitter.com/LordPancreas</a>)</p>
+              </div>
+            </description>
+          </venue>
+        </showing>
+      </video>
+      <video type="personal" xml:id="ep-13" xml:lang="en">
+        <title>Foiled by Trivia; The Grape Gatsby</title>
+        <episode>13</episode>
+        <runtime>PT12M5S</runtime>
+        <recorded>2016-07-21</recorded>
+        <published>2016-08-27T01:30:51.000Z</published>
+        <description type="xhtml">
+          <div xmlns="http://www.w3.org/1999/xhtml">
+            <p>A behind-the-scenes look at a bit for “The Kerfuffle”, a blind variety show.</p>
+          </div>
+        </description>
+        <showing scope="release" type="internet" admission="public" datetime="2016-08-27">
+          <venue type="site" datetime="01:30:51.000Z">
+            <entity site="https://www.youtube.com/">YouTube</entity>
+            <uri>https://www.youtube.com/watch?v=NLgZq4pCvaM</uri>
+            <title>“Foiled by Trivia; The Grape Gatsby” - Hugh’s [Startup] Vlog</title>
+            <description type="xhtml">
+              <div xmlns="http://www.w3.org/1999/xhtml">
+                <p>A behind-the-scenes look at a bit for “The Kerfuffle”, a blind variety show.</p>
+                <p>Music:<br/>“Michael Vendette” by Black Ant (<a href="http://freemusicarchive.org/music/Black_Ant/Free_Beats_Sel_3/Michael_Vendette">http://freemusicarchive.org/music/Black_Ant/Free_Beats_Sel_3/Michael_Vendette</a>)<br/>License: CC BY 3.0 (<a href="https://creativecommons.org/licenses/by/3.0/">https://creativecommons.org/licenses/by/3.0/</a>)<br/>Episode: S02 E05 (#13)<br/>Recorded: 2016-07-21 (Thu)</p>
+                <p>Follow me on Twitter: @LordPancreas (<a href="https://twitter.com/LordPancreas">https://twitter.com/LordPancreas</a>)</p>
+              </div>
+            </description>
+          </venue>
+        </showing>
+      </video>
+      <video type="personal" xml:id="ep-14" xml:lang="en">
+        <title>I met Daymond John!</title>
+        <episode>14</episode>
+        <runtime>PT8M51S</runtime>
+        <recorded>2016-09-07</recorded>
+        <published>2016-09-08T10:00:08.000Z</published>
+        <showing scope="release" type="internet" admission="public" datetime="2016-09-08">
+          <venue type="site" datetime="10:00:08.000Z">
+            <entity site="https://www.youtube.com/">YouTube</entity>
+            <uri>https://www.youtube.com/watch?v=yPJDqvrptQ0</uri>
+            <title>I met Daymond John! - Hugh’s [Startup] Vlog</title>
+            <description type="xhtml">
+              <div xmlns="http://www.w3.org/1999/xhtml">
+                <p>Episode: S02 E06 (#14)<br/>Recorded: 2016-08-07 (Sun)<br/>Narration recorded: 2016-09-07 (Wed)</p>
+                <p>Watch on Facebook: <a href="https://www.facebook.com/HughsStartupVlog/videos/1838113459756418/">https://www.facebook.com/HughsStartupVlog/videos/1838113459756418/</a>
+                </p>
+                <p>Follow me on Twitter: <a href="https://twitter.com/LordPancreas">https://twitter.com/LordPancreas</a>
+                </p>
+                <p>#ThePowerOfBroke #PowerOfBroke #SharkTank #FUBU #entrepreneurship</p>
+              </div>
+            </description>
+          </venue>
+        </showing>
+      </video>
+      <video type="personal" xml:id="ep-15" xml:lang="en">
+        <title>Last Day of Summer ’16</title>
+        <episode>15</episode>
+        <runtime>PT12M13S</runtime>
+        <recorded>2016-08-27</recorded>
+        <published>2016-09-10T04:28:03.000Z</published>
+        <showing scope="release" type="internet" admission="public" datetime="2016-09-10">
+          <venue type="site" datetime="04:28:03.000Z">
+            <entity site="https://www.youtube.com/">YouTube</entity>
+            <uri>https://www.youtube.com/watch?v=YvP_2qi5XuA</uri>
+            <title>Last Day of Summer ’16 | Hugh’s Vlog</title>
+            <description type="xhtml">
+              <div xmlns="http://www.w3.org/1999/xhtml">
+                <p>Episode: S02 E07 (#15)<br/>Recorded: 2016-08-27 (Sat)</p>
+                <p>Watch on Facebook: <a href="https://www.facebook.com/HughsVlog/videos/1838996109668153/">https://www.facebook.com/HughsVlog/videos/1838996109668153/</a>
+                </p>
+                <p>Music<br/>“Summer Heat” by Vantage (<a href="https://soundcloud.com/business-casual/summer-heat">https://soundcloud.com/business-casual/summer-heat</a>)<br/>Label: business casual (<a href="http://businesscasual.biz/">http://businesscasual.biz/</a>)<br/>License: CC BY-SA 3.0 (<a href="https://creativecommons.org/licenses/by-sa/3.0/">https://creativecommons.org/licenses/by-sa/3.0/</a>)</p>
+                <p>Follow me on Twitter: <a href="https://twitter.com/LordPancreas">https://twitter.com/LordPancreas</a>
+                </p>
+              </div>
+            </description>
+          </venue>
+        </showing>
+      </video>
+    </group>
+    <group xml:id="season-03" type="series">
+      <title>Season 3</title>
+      <video type="personal" xml:id="ep-16" xml:lang="en">
+        <title>I Took A Blood Oath to Vlog Every Day</title>
+        <episode>16</episode>
+        <runtime>PT17M39S</runtime>
+        <recorded>2016-09-07</recorded>
+        <published>2016-09-20T20:44:26.000Z</published>
+        <description type="xhtml">
+          <div xmlns="http://www.w3.org/1999/xhtml">
+            <p>More on #PublicTrustBOS: <a href="http://www.nowandthere.org/publictrust/">http://www.nowandthere.org/publictrust/</a>
+            </p>
+          </div>
+        </description>
+        <showing scope="release" type="internet" admission="public" datetime="2016-09-20">
+          <venue type="site" datetime="20:44:26.000Z">
+            <entity site="https://www.youtube.com/">YouTube</entity>
+            <uri>https://www.youtube.com/watch?v=C5KhnMCl7Nc</uri>
+            <title>I Took A Blood Oath to Vlog Every Day | Hugh’s Vlog | #startup #PublicTrustBOS</title>
+            <description type="xhtml">
+              <div xmlns="http://www.w3.org/1999/xhtml">
+                <p>Episode: S03 E01 (#16)<br/>Recorded: 2016-09-07 (Wed)</p>
+                <p>More on #PublicTrustBOS: <a href="http://www.nowandthere.org/publictrust/">http://www.nowandthere.org/publictrust/</a>
+                </p>
+                <p>Watch on Facebook: <a href="https://www.facebook.com/HughsVlog/videos/1843991955835235/">https://www.facebook.com/HughsVlog/videos/1843991955835235/</a>
+                </p>
+                <p>Music<br/>Theme by Kenny Gray<br/>
+                  <a href="http://kenny-gray.com">http://kenny-gray.com</a>
+                  <br/>Extended version: <a href="https://soundcloud.com/ianaware/vlog-theme-vaporwaved">https://soundcloud.com/ianaware/vlog-theme-vaporwaved</a>
+                  <br/>License: © 2016 Hugh Guiney</p>
+                <p>“Divider” by Chris Zabriskie (via Free Music Archive: <a href="http://freemusicarchive.org/music/Chris_Zabriskie/Divider/06_-_Divider">http://freemusicarchive.org/music/Chris_Zabriskie/Divider/06_-_Divider</a>)<br/>License: CC BY 3.0 (<a href="https://creativecommons.org/licenses/by/3.0/">https://creativecommons.org/licenses/by/3.0/</a>)</p>
+                <p>Images<br/>Bloody handshake photo (<a href="https://www.flickr.com/photos/seanmundy/12692486093/in/dateposted/">https://www.flickr.com/photos/seanmundy/12692486093/in/dateposted/</a>) by Sean Mundy<br/>
+                  <a href="http://seanmundyphotography.com">http://seanmundyphotography.com</a>
+                  <br/>License: © 2014 Sean Mundy. Used with permission</p>
+                <p>Follow me on Twitter: <a href="https://twitter.com/LordPancreas">https://twitter.com/LordPancreas</a>
+                </p>
+              </div>
+            </description>
+          </venue>
+        </showing>
+      </video>
+      <video type="personal" xml:id="ep-17" xml:lang="en">
+        <title>4 Reasons Daily Vlogging Is Hard</title>
+        <episode>17</episode>
+        <runtime>PT18M46S</runtime>
+        <recorded>2016-09-08</recorded>
+        <published>2016-09-27T18:32:14.000Z</published>
+        <showing scope="release" type="internet" admission="public" datetime="2016-09-27">
+          <venue type="site" datetime="18:32:14.000Z">
+            <entity site="https://www.youtube.com/">YouTube</entity>
+            <uri>https://www.youtube.com/watch?v=llq1gzpuX8E</uri>
+            <title>4 Reasons Daily Vlogging Is Hard | Hugh’s Vlog</title>
+            <description type="xhtml">
+              <div xmlns="http://www.w3.org/1999/xhtml">
+                <p>Watch on Facebook: <a href="https://www.facebook.com/HughsVlog/videos/1847446522156445/">https://www.facebook.com/HughsVlog/videos/1847446522156445/</a>
+                </p>
+                <p>Follow me on Twitter: <a href="https://twitter.com/LordPancreas">https://twitter.com/LordPancreas</a>
+                </p>
+                <p>Music<br/>Theme by Kenny Gray<br/>
+                  <a href="http://kenny-gray.com">http://kenny-gray.com</a>
+                  <br/>Extended version: <a href="https://soundcloud.com/ianaware/vlog-theme-vaporwaved">https://soundcloud.com/ianaware/vlog-theme-vaporwaved</a>
+                  <br/>License: © 2016 Hugh Guiney. All rights reserved.</p>
+                <p>“Electronic Chill and Chilltrap Mix” by Blue RBM (via SoundCloud: <a href="https://soundcloud.com/blue-rbm/electronic-chill-and-chilltrap-mix-blue-rbm">https://soundcloud.com/blue-rbm/electronic-chill-and-chilltrap-mix-blue-rbm</a>)<br/>License: CC BY 3.0 (<a href="https://creativecommons.org/licenses/by/3.0/">https://creativecommons.org/licenses/by/3.0/</a>)</p>
+                <p>Episode: S03 E02 (#17)<br/>Recorded: 2016-09-08 (Thu)</p>
+              </div>
+            </description>
+          </venue>
+        </showing>
+      </video>
+      <video type="personal" xml:id="ep-18" xml:lang="en">
+        <title>Hacking My Body to Edit Longer</title>
+        <episode>18</episode>
+        <runtime>PT8M4S</runtime>
+        <recorded>2016-09-09</recorded>
+        <published>2016-09-29T12:00:05.000Z</published>
+        <showing scope="release" type="internet" admission="public" datetime="2016-09-29">
+          <venue type="site" datetime="12:00:05.000Z">
+            <entity site="https://www.youtube.com/">YouTube</entity>
+            <uri>https://www.youtube.com/watch?v=W003sdBaBzw</uri>
+            <title>Hacking My Body to Edit Longer | Hugh’s Vlog</title>
+            <description type="xhtml">
+              <div xmlns="http://www.w3.org/1999/xhtml">
+                <p>Watch on Facebook: <a href="https://www.facebook.com/HughsVlog/videos/1848030872098010/">https://www.facebook.com/HughsVlog/videos/1848030872098010/</a>
+                </p>
+                <p>Follow me on Twitter: <a href="https://twitter.com/LordPancreas">https://twitter.com/LordPancreas</a>
+                </p>
+                <p>Music<br/>Theme by Kenny Gray<br/>
+                  <a href="http://kenny-gray.com">http://kenny-gray.com</a>
+                  <br/>Extended version: <a href="https://soundcloud.com/ianaware/vlog-theme-vaporwaved">https://soundcloud.com/ianaware/vlog-theme-vaporwaved</a>
+                  <br/>License: © 2016 Hugh Guiney. All rights reserved.</p>
+                <p>“Good Morning” by LAKEY INSPIRED<br/>(via SoundCloud: <a href="https://soundcloud.com/lakeyinspired/good-morning">https://soundcloud.com/lakeyinspired/good-morning</a>)<br/>License: CC BY 3.0 (<a href="https://creativecommons.org/licenses/by/3.0/">https://creativecommons.org/licenses/by/3.0/</a>)</p>
+                <p>“Frail Body Truncating” by Björn Canopus Hilsfangr B<br/>(via SoundCloud: <a href="https://soundcloud.com/humanadjin/frail-body-truncating">https://soundcloud.com/humanadjin/frail-body-truncating</a>)<br/>License: CC BY 3.0 (<a href="https://creativecommons.org/licenses/by/3.0/">https://creativecommons.org/licenses/by/3.0/</a>)</p>
+                <p>Episode: S03 E03 (#18)<br/>Recorded: 2016-09-09 (Fri)</p>
+              </div>
+            </description>
+          </venue>
+        </showing>
+      </video>
+      <video type="personal" xml:id="ep-19" xml:lang="en">
+        <title>Coffiest First Impressions</title>
+        <episode>19</episode>
+        <runtime>PT5M23S</runtime>
+        <recorded>2016-09-11</recorded>
+        <published>2016-09-30T05:25:10.000Z</published>
+        <showing scope="release" type="internet" admission="public" datetime="2016-09-30">
+          <venue type="site" datetime="05:25:10.000Z">
+            <entity site="https://www.youtube.com/">YouTube</entity>
+            <uri>https://www.youtube.com/watch?v=c2BnwM00k4s</uri>
+            <title>Coffiest First Impressions | Hugh’s Vlog | #CambridgeCarnival</title>
+            <description type="xhtml">
+              <div xmlns="http://www.w3.org/1999/xhtml">
+                <p>Watch on Facebook: <a href="https://www.facebook.com/HughsVlog/videos/1848647745369656/">https://www.facebook.com/HughsVlog/videos/1848647745369656/</a>
+                </p>
+                <p>Follow me on Twitter: <a href="https://twitter.com/LordPancreas">https://twitter.com/LordPancreas</a>
+                </p>
+                <p>Music<br/>Theme by Kenny Gray<br/>
+                  <a href="http://kenny-gray.com">http://kenny-gray.com</a>
+                  <br/>Extended version: <a href="https://soundcloud.com/ianaware/vlog-theme-vaporwaved">https://soundcloud.com/ianaware/vlog-theme-vaporwaved</a>
+                  <br/>License: © 2016 Hugh Guiney. All rights reserved.</p>
+                <p>Episode: S03 E04 (#19)<br/>Recorded: 2016-09-11 (Sun)</p>
+              </div>
+            </description>
+          </venue>
+        </showing>
+      </video>
+      <video type="personal" xml:id="ep-20" xml:lang="en">
+        <title>New Jersey–bound. I Wish It Were Under Better Circumstances.</title>
+        <episode>20</episode>
+        <runtime>PT20M8S</runtime>
+        <recorded>2016-09-13</recorded>
+        <published>2016-10-07T18:21:42.000Z</published>
+        <description type="xhtml">
+          <div xmlns="http://www.w3.org/1999/xhtml">
+            <p>Please consider donating to support breast cancer research: <a href="https://www.bcrfcure.org/">https://www.bcrfcure.org/</a>
+            </p>
+          </div>
+        </description>
+        <showing scope="release" type="internet" admission="public" datetime="2016-10-07">
+          <venue type="site" datetime="18:21:42.000Z">
+            <entity site="https://www.youtube.com/">YouTube</entity>
+            <uri>https://www.youtube.com/watch?v=R0MayvBrToU</uri>
+            <title>New Jersey–bound. I Wish It Were Under Better Circumstances. | Hugh’s Vlog</title>
+            <description type="xhtml">
+              <div xmlns="http://www.w3.org/1999/xhtml">
+                <p>Please consider donating to support breast cancer research: <a href="https://www.bcrfcure.org/">https://www.bcrfcure.org/</a>
+                </p>
+                <p>Watch on Facebook: <a href="https://www.facebook.com/HughsVlog/videos/1852142395020191/">https://www.facebook.com/HughsVlog/videos/1852142395020191/</a>
+                </p>
+                <p>Follow Me<br/>Twitter: <a href="https://twitter.com/LordPancreas">https://twitter.com/LordPancreas</a>
+                  <br/>Instagram: <a href="https://www.instagram.com/lordpancreas/">https://www.instagram.com/lordpancreas/</a>
+                </p>
+                <p>Music<br/>“Interlude No. 8 (Dive Into Pain)” by Kenny Gray<br/>(via SoundCloud: <a href="https://soundcloud.com/ianaware/diveintopain">https://soundcloud.com/ianaware/diveintopain</a>)<br/>kenny-gray.com<br/>© 2016 Kenny Gray. Used with permission.</p>
+                <p>“los rieles” by heidellberg<br/>(via SoundCloud: <a href="https://soundcloud.com/heidellberg/los-rieles">https://soundcloud.com/heidellberg/los-rieles</a>)<br/>License: CC BY 3.0 (<a href="http://creativecommons.org/licenses/by/3.0/">http://creativecommons.org/licenses/by/3.0/</a>)</p>
+                <p>“Lonely Souls (Sad Theme)” by Rameses B<br/>(via SoundCloud: <a href="https://soundcloud.com/ramesesb/lonely-souls-sad-theme">https://soundcloud.com/ramesesb/lonely-souls-sad-theme</a>)<br/>License: CC BY 3.0 (<a href="http://creativecommons.org/licenses/by/3.0/">http://creativecommons.org/licenses/by/3.0/</a>)</p>
+                <p>Referenced Works<br/>Clip from “Star Wars: Episode IV - A New Hope” by George Lucas<br/>© 1977 Lucasfilm, Twentieth Century Fox.<br/>© 2012 The Walt Disney Company.</p>
+                <p>Episode: S03 E05 (#20)<br/>Recorded: 2016-09-13 (Tue)</p>
+              </div>
+            </description>
+          </venue>
+        </showing>
+      </video>
+      <video type="personal" xml:id="ep-21" xml:lang="en">
+        <title>My First Paid Photography Gig! + Improv with Midnight Avenue</title>
+        <episode>21</episode>
+        <runtime>PT11M49S</runtime>
+        <recorded>2016-09-14</recorded>
+        <published>2017-03-06T09:24:52.000Z</published>
+        <description type="xhtml">
+          <div xmlns="http://www.w3.org/1999/xhtml">
+            <p>Please consider donating to support Parkinson’s research: <a href="http://www.parkinson.org/">http://www.parkinson.org/</a>
+            </p>
+          </div>
+        </description>
+        <showing scope="release" type="internet" admission="public" datetime="2017-03-06">
+          <venue type="site" datetime="09:24:52.000Z">
+            <entity site="https://www.youtube.com/">YouTube</entity>
+            <uri>https://www.youtube.com/watch?v=aEmmNJHzjTw</uri>
+            <title>My First Paid Photography Gig! + Improv with Midnight Avenue | Hugh’s Vlog</title>
+            <description type="xhtml">
+              <div xmlns="http://www.w3.org/1999/xhtml">
+                <p>Please consider donating to support Parkinson’s research: <a href="http://www.parkinson.org/">http://www.parkinson.org/</a>
+                </p>
+                <p>Watch on Facebook: <a href="https://www.facebook.com/HughsVlog/videos/1928756370692126/">https://www.facebook.com/HughsVlog/videos/1928756370692126/</a>
+                </p>
+                <p>Follow Me<br/>Twitter: <a href="https://twitter.com/LordPancreas">https://twitter.com/LordPancreas</a>
+                  <br/>Instagram: <a href="https://www.instagram.com/lordpancreas/">https://www.instagram.com/lordpancreas/</a>
+                  <br/>Snapchat: <a href="https://www.snapchat.com/add/hguiney">https://www.snapchat.com/add/hguiney</a>
+                </p>
+                <p>Music<br/>Theme by Kenny Gray<br/>
+                  <a href="http://kenny-gray.com">http://kenny-gray.com</a>
+                  <br/>Extended version: <a href="https://soundcloud.com/ianaware/vlog-theme-vaporwaved">https://soundcloud.com/ianaware/vlog-theme-vaporwaved</a>
+                  <br/>License: © 2016 Hugh Guiney. All rights reserved.</p>
+                <p>“Busy” by TEAM GOLD<br/>(via SoundCloud: <a href="https://soundcloud.com/team_gold/busy">https://soundcloud.com/team_gold/busy</a>)<br/>License: CC BY-SA 3.0 (<a href="https://creativecommons.org/licenses/by-sa/3.0/">https://creativecommons.org/licenses/by-sa/3.0/</a>)</p>
+                <p>20th Century Fox Fanfare<br/>by Alfred Newman<br/>Conducted by John Williams<br/>(via Wikipedia: <a href="https://en.wikipedia.org/wiki/File:20th_Century_FOX_fanfare.ogg">https://en.wikipedia.org/wiki/File:20th_Century_FOX_fanfare.ogg</a>)<br/>License: © 1980 21st Century Fox.</p>
+                <p>Referenced Works<br/>Clip from “The Wolf of Wall Street” by Martin Scorsese<br/>© 2013 Red Granite Pictures, Appian Way Productions, Sikelia Productions, EMJAG Productions, and/or Paramount Pictures.</p>
+                <p>Episode: S03 E06 (#21)<br/>Recorded: 2016-09-14 (Wed)</p>
+              </div>
+            </description>
+          </venue>
+        </showing>
+      </video>
+      <video type="personal" xml:id="ep-22" xml:lang="en">
+        <title>Buying Soda &amp; Breaking My Blood Oath</title>
+        <episode>22</episode>
+        <runtime>PT3M57S</runtime>
+        <recorded>2016-09-15</recorded>
+        <published>2017-03-08T00:51:51.000Z</published>
+        <description type="xhtml">
+          <div xmlns="http://www.w3.org/1999/xhtml">
+            <p>Hopefully my soul survives lol</p>
+          </div>
+        </description>
+        <showing scope="release" type="internet" admission="public" datetime="2017-03-08">
+          <venue type="site" datetime="00:51:51.000Z">
+            <entity site="https://www.youtube.com/">YouTube</entity>
+            <uri>https://www.youtube.com/watch?v=X-JXFh4A5AE</uri>
+            <title>Buying Soda &amp; Breaking My Blood Oath | Hugh’s Vlog</title>
+            <description type="xhtml">
+              <div xmlns="http://www.w3.org/1999/xhtml">
+                <p>Hopefully my soul survives lol</p>
+                <p>Watch on Facebook: <a href="https://www.facebook.com/HughsVlog/videos/1929571750610588/">https://www.facebook.com/HughsVlog/videos/1929571750610588/</a>
+                </p>
+                <p>Follow Me<br/>Twitter: <a href="https://twitter.com/LordPancreas">https://twitter.com/LordPancreas</a>
+                  <br/>Instagram: <a href="https://www.instagram.com/lordpancreas/">https://www.instagram.com/lordpancreas/</a>
+                  <br/>Snapchat: <a href="https://www.snapchat.com/add/hguiney">https://www.snapchat.com/add/hguiney</a>
+                  <br/>Website: <a href="http://hugh.today">http://hugh.today</a>
+                </p>
+                <p>Episode: S03 E07 (#22)<br/>Recorded: 2016-09-15 (Thu)</p>
+              </div>
+            </description>
+          </venue>
+        </showing>
+      </video>
+    </group>
+  </group>
+</hvml>

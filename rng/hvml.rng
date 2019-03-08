@@ -1,0 +1,641 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<grammar
+  xmlns="http://relaxng.org/ns/structure/1.0"
+  xmlns:xml="http://www.w3.org/XML/1998/namespace"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns:xhtml="http://www.w3.org/1999/xhtml"
+  xmlns:xlink="http://www.w3.org/1999/xlink"
+  xmlns:css="https://www.w3.org/TR/CSS/"
+  ns="https://hypervideo.tech/hvml#"
+  datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes"
+>
+  <!-- <include href="atom.rng" /> -->
+  <define name="anyXHTML">
+    <element>
+      <nsName ns="http://www.w3.org/1999/xhtml" />
+      <zeroOrMore>
+        <choice>
+          <attribute>
+            <anyName />
+          </attribute>
+          <text />
+          <ref name="anyXHTML" />
+        </choice>
+      </zeroOrMore>
+    </element>
+  </define>
+
+  <define name="anyCSS">
+    <zeroOrMore>
+      <attribute>
+        <nsName ns="https://www.w3.org/TR/CSS/" />
+        <text />
+      </attribute>
+    </zeroOrMore>
+  </define>
+
+  <define name="xhtmlDiv">
+    <element name="xhtml:div">
+      <zeroOrMore>
+        <choice>
+          <attribute>
+            <anyName />
+          </attribute>
+          <text />
+          <ref name="anyXHTML" />
+        </choice>
+      </zeroOrMore>
+    </element>
+  </define>
+
+  <define name="atomPlainTextConstruct">
+    <!-- <ref name="atomCommonAttributes" /> -->
+    <ref name="hvmlGlobalAttributes" />
+    <optional>
+      <attribute name="type">
+        <choice>
+          <value>text</value>
+          <value>html</value>
+        </choice>
+      </attribute>
+    </optional>
+    <text />
+  </define>
+
+  <define name="atomXHTMLTextConstruct">
+    <!-- <ref name="atomCommonAttributes" /> -->
+    <ref name="hvmlGlobalAttributes" />
+    <attribute name="type">
+      <value>xhtml</value>
+    </attribute>
+    <ref name="xhtmlDiv" />
+  </define>
+
+  <define name="atomTextConstruct">
+    <choice>
+      <ref name="atomPlainTextConstruct" />
+      <ref name="atomXHTMLTextConstruct" />
+    </choice>
+  </define>
+
+  <define name="xmlSpace">
+    <attribute name="xml:space">
+      <choice>
+        <value>default</value>
+        <value>preserve</value>
+      </choice>
+    </attribute>
+  </define>
+
+  <define name="xmlLang">
+    <attribute name="xml:lang">
+      <data type="language" />
+    </attribute>
+  </define>
+
+  <define name="xmlBase">
+    <attribute name="xml:base">
+      <data type="anyURI" />
+    </attribute>
+  </define>
+
+  <define name="xmlId">
+    <attribute name="xml:id">
+      <data type="ID" />
+    </attribute>
+  </define>
+
+  <define name="xmlGlobalAttributes">
+    <optional>
+      <ref name="xmlLang" />
+    </optional>
+    <optional>
+      <ref name="xmlSpace" />
+    </optional>
+    <optional>
+      <ref name="xmlBase" />
+    </optional>
+    <optional>
+      <ref name="xmlId" />
+    </optional>
+  </define>
+
+  <define name="hvmlGlobalAttributes">
+    <ref name="xmlGlobalAttributes" />
+  </define>
+
+  <!-- http://www.microhowto.info/howto/match_arbitrary_content_using_relax_ng.html -->
+  <define name="anyContent">
+    <interleave>
+      <zeroOrMore>
+        <ref name="anyElement" />
+      </zeroOrMore>
+      <text />
+    </interleave>
+  </define>
+
+  <define name="anyElement">
+    <element>
+      <anyName />
+      <zeroOrMore>
+        <ref name="anyAttribute" />
+      </zeroOrMore>
+      <zeroOrMore>
+        <ref name="anyContent" />
+      </zeroOrMore>
+    </element>
+  </define>
+
+  <define name="anyAttribute">
+    <attribute>
+      <anyName />
+    </attribute>
+  </define>
+
+  <define name="title">
+    <element name="title">
+      <text />
+    </element>
+  </define>
+
+  <define name="episode">
+    <element name="episode">
+      <data type="integer" />
+    </element>
+  </define>
+
+  <define name="recorded">
+    <element name="recorded">
+      <data type="date" />
+    </element>
+  </define>
+
+  <define name="description">
+    <element name="description">
+      <ref name="atomTextConstruct"/>
+    </element><!--/description-->
+  </define>
+
+  <define name="entity">
+    <element name="entity">
+      <attribute name="site" />
+      <text />
+    </element>
+  </define>
+
+  <define name="uri">
+    <element name="uri">
+      <data type="anyURI" />
+    </element>
+  </define>
+
+  <define name="venue">
+    <element name="venue">
+      <optional>
+        <attribute name="type">
+          <choice>
+            <value>site</value>
+            <value>theater</value>
+          </choice>
+        </attribute>
+      </optional>
+      <ref name="entity" />
+      <optional>
+        <ref name="uri" />
+      </optional>
+      <optional>
+        <ref name="title" />
+      </optional>
+    </element><!--/venue-->
+  </define>
+
+  <!--
+    scope="screening"
+    type="theatrical"
+    admission="private"
+    datetime="2011-09-16"
+    locale="en-US"
+  -->
+  <define name="showing">
+    <element name="showing">
+      <ref name="venue" />
+      <optional>
+        <attribute name="scope">
+          <choice>
+            <value>release</value>
+            <value>screening</value>
+          </choice>
+        </attribute>
+      </optional>
+      <optional>
+        <attribute name="type">
+          <choice>
+            <value>internet</value>
+            <value>theatrical</value>
+          </choice>
+        </attribute>
+      </optional>
+      <optional>
+        <attribute name="admission">
+          <choice>
+            <value>public</value>
+            <value>private</value>
+          </choice>
+        </attribute>
+      </optional>
+      <optional>
+        <attribute name="datetime">
+          <choice>
+            <data type="dateTime" />
+            <data type="date" />
+            <data type="time" />
+          </choice>
+        </attribute>
+      </optional>
+      <optional>
+        <attribute name="locale">
+          <data type="language" />
+        </attribute>
+      </optional>
+    </element><!--/showing-->
+  </define>
+
+  <define name="name">
+    <element name="name">
+      <ref name="atomTextConstruct" />
+    </element>
+  </define>
+
+  <define name="simpleName">
+    <element name="name">
+      <text />
+    </element>
+  </define>
+
+  <define name="nonNegativeDecimal">
+    <data type="decimal">
+      <param name="minInclusive">0</param>
+    </data>
+  </define>
+
+  <define name="percentage">
+    <data type="token">
+      <param name="pattern">([-+])?(\d*)\.?(\d*)%</param>
+    </data>
+  </define>
+
+  <define name="nonNegativePercentage">
+    <data type="token">
+      <param name="pattern">([+])?(\d*)\.?(\d*)%</param>
+    </data>
+  </define>
+
+  <define name="animate">
+    <element name="animate">
+      <choice>
+        <attribute name="startTime">
+          <ref name="nonNegativeDecimal" />
+        </attribute>
+        <attribute name="starttime">
+          <ref name="nonNegativeDecimal" />
+        </attribute>
+      </choice>
+      <choice>
+        <attribute name="endTime">
+          <ref name="nonNegativeDecimal" />
+        </attribute>
+        <attribute name="endtime">
+          <ref name="nonNegativeDecimal" />
+        </attribute>
+      </choice>
+      <choice>
+        <attribute name="startX">
+          <ref name="percentage" />
+        </attribute>
+        <attribute name="startx">
+          <ref name="percentage" />
+        </attribute>
+      </choice>
+      <choice>
+        <attribute name="startY">
+          <ref name="percentage" />
+        </attribute>
+        <attribute name="starty">
+          <ref name="percentage" />
+        </attribute>
+      </choice>
+      <choice>
+        <attribute name="endX">
+          <ref name="percentage" />
+        </attribute>
+        <attribute name="endx">
+          <ref name="percentage" />
+        </attribute>
+      </choice>
+      <choice>
+        <attribute name="endY">
+          <ref name="percentage" />
+        </attribute>
+        <attribute name="endy">
+          <ref name="percentage" />
+        </attribute>
+      </choice>
+      <empty />
+    </element>
+  </define>
+
+  <!-- https://www.w3.org/TR/xlink11/#actuate-att -->
+  <define name="xlinkActuate">
+    <attribute name="xlink:actuate">
+      <choice>
+        <value>onLoad</value>
+        <value>onRequest</value>
+        <value>other</value>
+        <value>none</value>
+      </choice>
+    </attribute>
+    <ref name="xlinkHref" />
+  </define>
+
+  <!-- https://www.w3.org/TR/xlink11/#show-att -->
+  <define name="xlinkShow">
+    <attribute name="xlink:show">
+      <choice>
+        <value>new</value>
+        <value>replace</value>
+        <value>embed</value>
+        <value>other</value>
+        <value>none</value>
+      </choice>
+    </attribute>
+  </define>
+
+  <!--
+    <goto
+      on="duration"
+      xlink:actuate="onRequest"
+      xlink:href="https://www.facebook.com/hugh.guiney/videos/10100195051457860/"
+      width="70%"
+      height="13%"
+      css:font-size="calc(384 / 150 * 1vw)"
+      css:font-family="'Noto Sans CJK JP', 'Noto Sans CJK', 'Noto Sans', sans-serif"
+      css:white-space="nowrap"
+      css:overflow="hidden"
+    -->
+  <define name="goto">
+    <element name="goto">
+      <attribute name="on">
+        <choice>
+          <value>durationStart</value><!-- t=0 -->
+          <value>duration</value>
+          <value>durationEnd</value>
+        </choice>
+      </attribute>
+      <optional>
+        <ref name="xlinkActuate" />
+      </optional>
+      <optional>
+        <ref name="dimensionAttributes--percentage" />
+      </optional>
+      <optional>
+        <ref name="anyCSS" />
+      </optional>
+      <zeroOrMore>
+        <ref name="animate" />
+      </zeroOrMore>
+    </element>
+  </define>
+
+  <define name="choice">
+    <element name="choice">
+      <ref name="hvmlGlobalAttributes" />
+      <ref name="name" />
+      <ref name="goto" />
+    </element><!--/choice-->
+  </define>
+
+  <define name="xlinkHref">
+    <attribute name="xlink:href">
+      <data type="anyURI" />
+      <!-- @todo: #xpointer() -->
+    </attribute>
+  </define>
+
+  <define name="dimensionAttributes">
+    <group>
+      <attribute name="width">
+        <data type="positiveInteger" />
+      </attribute>
+      <attribute name="height">
+        <data type="positiveInteger" />
+      </attribute>
+    </group>
+  </define>
+
+  <define name="dimensionAttributes--percentage">
+    <group>
+      <attribute name="width">
+        <ref name="nonNegativePercentage" />
+      </attribute>
+      <attribute name="height">
+        <ref name="nonNegativePercentage" />
+      </attribute>
+    </group>
+  </define>
+
+  <define name="dimensionElements">
+    <group>
+      <element name="width">
+        <data type="positiveInteger" />
+      </element>
+      <element name="height">
+        <data type="positiveInteger" />
+      </element>
+    </group>
+  </define>
+
+  <define name="poster">
+    <element name="poster">
+      <ref name="hvmlGlobalAttributes" />
+      <optional>
+        <ref name="dimensionAttributes" />
+      </optional>
+      <ref name="xlinkHref" />
+    </element>
+  </define>
+
+  <define name="frametype">
+    <element name="frametype">
+      <attribute name="abbr" />
+      <text />
+    </element>
+  </define>
+
+  <define name="par">
+    <element name="par">
+      <attribute name="x">
+        <data type="integer" />
+      </attribute>
+      <attribute name="y">
+        <data type="integer" />
+      </attribute>
+    </element>
+  </define>
+
+  <define name="fps">
+    <element name="fps">
+      <attribute name="rate">
+        <data type="integer" />
+      </attribute>
+      <attribute name="scale">
+        <data type="integer" />
+      </attribute>
+    </element>
+  </define>
+
+  <define name="mime">
+    <element name="mime">
+      <text />
+    </element>
+  </define>
+
+  <define name="bitrate">
+    <element name="bitrate">
+      <attribute name="type">
+        <choice>
+          <value>cbr</value>
+          <value>vbr</value>
+          <value>abr</value>
+        </choice>
+      </attribute>
+      <data type="nonNegativeInteger" />
+    </element>
+  </define>
+
+  <define name="bitdepth">
+    <element name="bitdepth">
+      <text /><!-- @todo -->
+    </element>
+  </define>
+
+  <define name="codec">
+    <element name="codec">
+      <attribute name="type">
+        <choice>
+          <value>video</value>
+          <value>audio</value>
+        </choice>
+      </attribute>
+      <optional>
+        <ref name="simpleName" />
+      </optional>
+      <ref name="mime" />
+      <optional>
+        <ref name="bitrate" />
+      </optional>
+      <optional>
+        <ref name="bitdepth" />
+      </optional>
+    </element>
+  </define>
+
+  <define name="container">
+    <element name="container">
+      <interleave>
+        <ref name="simpleName" />
+        <ref name="mime" />
+        <ref name="codec" />
+      </interleave>
+    </element>
+  </define>
+
+  <define name="file">
+    <element name="file">
+      <ref name="hvmlGlobalAttributes" />
+      <optional>
+        <attribute name="label" />
+      </optional>
+      <ref name="xlinkHref" />
+      <optional>
+        <ref name="dimensionElements" />
+      </optional>
+      <optional>
+        <ref name="container" />
+      </optional>
+    </element>
+  </define>
+
+  <define name="presentation">
+    <element name="presentation">
+      <interleave>
+        <optional>
+          <ref name="poster" />
+        </optional>
+        <optional>
+          <ref name="frametype" />
+        </optional>
+        <optional>
+          <ref name="par" />
+        </optional>
+        <optional>
+          <ref name="fps" />
+        </optional>
+        <zeroOrMore>
+          <ref name="file" />
+        </zeroOrMore>
+        <zeroOrMore>
+          <ref name="choice" />
+        </zeroOrMore>
+      </interleave>
+    </element><!--/presentation-->
+  </define>
+
+  <define name="video">
+    <element name="video">
+      <ref name="hvmlGlobalAttributes" />
+      <optional>
+        <attribute name="type">
+          <list>
+            <oneOrMore>
+              <choice>
+                <!-- <value>short</value> -->
+                <value>narrative</value>
+                <value>ad</value>
+                <value>personal</value>
+                <value>historical</value>
+              </choice>
+            </oneOrMore>
+          </list>
+        </attribute>
+      </optional>
+      <interleave>
+        <ref name="title" />
+        <ref name="episode" />
+        <ref name="recorded" />
+        <ref name="description" />
+        <ref name="showing" />
+        <ref name="presentation" />
+      </interleave>
+    </element><!--/video-->
+  </define>
+
+  <start>
+    <element name="hvml">
+      <zeroOrMore>
+        <ref name="video" />
+      </zeroOrMore>
+      <optional>
+        <ref name="xmlLang" />
+      </optional>
+      <optional>
+        <attribute name="xsi:schemaLocation" />
+      </optional>
+      <optional>
+        <attribute name="hidden" />
+      </optional>
+      <optional>
+        <attribute name="xhtml:hidden" />
+      </optional>
+    </element>
+  </start>
+</grammar>
