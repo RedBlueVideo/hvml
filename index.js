@@ -90,7 +90,7 @@ class HVML {
                 "message": expectingGot[0],
                 "file": expectingGot[1],
                 "line": expectingGot[2],
-                "type": expectingGot[3].replace( 'Relax-NG ', '' ),
+                "type": expectingGot[3].replace( 'Relax-NG ', '' ).replace( ' error', '' ),
                 "error": expectingGot[4],
                 "expecting": expectingGot[5],
                 "got": expectingGot[6],

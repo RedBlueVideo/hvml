@@ -156,7 +156,7 @@ describe( 'HVML Library', () => {
           "got": "ovml",
           "line": "3",
           "message": `${badHvmlPath}:3: element ovml: Relax-NG validity error : Expecting element hvml, got ovml`, // eslint-disable-line
-          "type": "validity error",
+          "type": "validity",
         }] );
         done();
       } );
