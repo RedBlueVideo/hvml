@@ -1,0 +1,9 @@
+coverage/
+examples/
+rng/atom.rng
+.eslintrc.json
+*.test.js
+yarn.lock
+*.log
+.gitattributes
+.gitmodules
