@@ -1,9 +1,9 @@
 const fs = require( 'fs' );
 const xml = require( 'libxmljs' );
 const set = require( 'lodash.set' );
+const { exec } = require( 'child_process' );
 
 // https://rclayton.silvrback.com/custom-errors-in-node-js
-
 class HVML {
   constructor( path, encoding = 'utf8' ) {
     /*
@@ -23,10 +23,14 @@ class HVML {
       "css": "https://www.w3.org/TR/CSS/",
     };
 
-    this.prefixes = Object.keys( this.namespaces ).reduce( ( accumulator, currentPrefix ) => {
-      accumulator[this.namespaces[currentPrefix]] = currentPrefix;
-      return accumulator;
-    }, {} );
+    this.prefixes = Object.keys( this.namespaces )
+      .reduce( ( accumulator, currentPrefix ) => {
+        accumulator[this.namespaces[currentPrefix]] = currentPrefix;
+        return accumulator;
+      }, {} );
+
+    this.schemaPath = 'rng/hvml.rng';
+    this.schemaType = 'rng';
 
     const fileReady = ( new Promise( ( resolve, reject ) => {
       fs.readFile( path, encoding, ( error, data ) => {
@@ -39,7 +43,7 @@ class HVML {
     } ) );
 
     const schemaReady = ( new Promise( ( resolve, reject ) => {
-      fs.readFile( path, encoding, ( error, data ) => {
+      fs.readFile( this.schemaPath, 'utf8', ( error, data ) => {
         if ( error ) {
           reject( error );
         }
@@ -49,13 +53,83 @@ class HVML {
 
     this.ready = Promise.all( [fileReady, schemaReady] ).then( ( data ) => {
       this.xml = xml.parseXmlString( data[0] );
-      this.xsd = xml.parseXmlString( data[1] );
+      this.hvmlPath = path;
+      // this.xsd = xml.parseXmlString( data[1] );
       return this.xml;
     } );
   }
 
-  isValid() {
-    return this.xml.validate( this.xsd );
+  validate( xmllintPath = 'xmllint' ) {
+    // return this.xml.validate( this.xsd );
+    return ( new Promise( ( resolve, reject ) => {
+      exec( `${xmllintPath} --nowarning --noout --relaxng ${this.schemaPath} ${this.hvmlPath}`, ( error, stdout, stderr ) => { // eslint-disable-line
+        if ( error ) {
+          let validationErrors = error.toString().trim().split( '\n' );
+          validationErrors.shift();
+
+          if ( new RegExp( `/bin/sh: ${xmllintPath}: command not found` ).test( validationErrors[0] ) ) {
+            reject( new Error( 'xmllint is not installed or inaccessible' ) );
+            return;
+          }
+
+          validationErrors.pop();
+
+          /* Array [
+            "./examples/redblue.ovml.xml:3: element ovml: Relax-NG validity error : Expecting element hvml, got ovml",
+            "./examples/redblue.ovml.xml fails to validate",
+          ] */
+          validationErrors = validationErrors.map( ( currentValue ) => {
+            const validationErrorRegexPattern = `(?:(${this.hvmlPath}):(\\d+)):\\s+`
+              + `(?:element .+):\\s+(Relax-NG validity error)\\s+:\\s+`
+              + `(Expecting element (\\w+), got (\\w+))`;
+            const expectingGotRegex = new RegExp( validationErrorRegexPattern, 'gi' );
+            const expectingGot = expectingGotRegex.exec( currentValue );
+
+            if ( expectingGot ) {
+              return {
+                "message": expectingGot[0],
+                "file": expectingGot[1],
+                "line": expectingGot[2],
+                "type": expectingGot[3].replace( 'Relax-NG ', '' ),
+                "error": expectingGot[4],
+                "expecting": expectingGot[5],
+                "got": expectingGot[6],
+              };
+            }
+
+            const wrongNamespaceRegexPattern = validationErrorRegexPattern.replace(
+              `(Expecting element (\\w+), got (\\w+))`,
+              `(Element (\\w+) has wrong namespace: expecting (.*))`,
+            );
+            const wrongNamespaceRegex = new RegExp( wrongNamespaceRegexPattern, 'gi' );
+            const wrongNamespace = wrongNamespaceRegex.exec( currentValue );
+
+            if ( wrongNamespace ) {
+              return {
+                "message": wrongNamespace[0],
+                "file": wrongNamespace[1],
+                "line": wrongNamespace[2],
+                "type": wrongNamespace[3].replace( 'Relax-NG ', '' ),
+                "error": wrongNamespace[4],
+                "expecting": wrongNamespace[6],
+                "got": null,
+              };
+            }
+
+            return currentValue;
+          } );
+
+          reject( validationErrors );
+        } else {
+          // xmllint prints diagnostic information, good or bad, to stderr
+          if ( stderr.match( new RegExp( `${this.hvmlPath} validates` ) ) ) {
+            resolve( true );
+          } else {
+            resolve( stderr );
+          }
+        }
+      } );
+    } ) );
   }
 
   _jsonifyAttribute( attribute, attributePath = [] ) {

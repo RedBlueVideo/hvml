@@ -280,7 +280,7 @@
 
   <define name="percentage">
     <data type="token">
-      <param name="pattern">([-+])?(\d*)\.?(\d*)%</param>
+      <param name="pattern">([\-+])?(\d*)\.?(\d*)%</param>
     </data>
   </define>
 
