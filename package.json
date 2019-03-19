@@ -10,6 +10,7 @@
     "coverage": "jest --coverage",
     "xsd": "xmllint --nowarning --noout --schema xsd/hvml.xsd examples/hvml.xml",
     "rng": "xmllint --nowarning --noout --relaxng rng/hvml.rng examples/hvml.xml",
+    "rng2xsd": "java -jar ./jing-trang/build/trang.jar -I rng -O xsd rng/hvml.rng xsd/hvml.xsd",
     "jing-trang-build": "cd jing-trang && ./ant",
     "trang": "java -jar ./jing-trang/build/trang.jar"
   },
