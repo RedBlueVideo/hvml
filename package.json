@@ -1,19 +1,9 @@
 {
   "name": "hvml",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "description": "HVML Parser for JavaScript",
   "main": "index.js",
-  "scripts": {
-    "test": "jest --watch -t 'HVML Library'",
-    "test-xsd": "jest --watch -t 'HVML Schema Definition'",
-    "test-all": "jest --watch",
-    "coverage": "jest --coverage",
-    "xsd": "xmllint --nowarning --noout --schema xsd/hvml.xsd examples/hvml.xml",
-    "rng": "xmllint --nowarning --noout --relaxng rng/hvml.rng examples/hvml.xml",
-    "rng2xsd": "java -jar ./jing-trang/build/trang.jar -I rng -O xsd rng/hvml.rng xsd/hvml.xsd",
-    "jing-trang-build": "cd jing-trang && ./ant",
-    "trang": "java -jar ./jing-trang/build/trang.jar"
-  },
+  "scripts": {},
   "repository": {
     "type": "git",
     "url": "git+https://github.com/RedBlueVideo/hvml.git"
@@ -31,11 +21,5 @@
   "dependencies": {
     "libxmljs": "^0.19.5",
     "lodash.set": "^4.3.2"
-  },
-  "devDependencies": {
-    "eslint": "5.3.0",
-    "eslint-config-airbnb-base": "^13.1.0",
-    "eslint-plugin-import": "^2.16.0",
-    "jest": "^24.1.0"
   }
 }
