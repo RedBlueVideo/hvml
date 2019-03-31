@@ -3,6 +3,8 @@ const xml = require( 'libxmljs' );
 const set = require( 'lodash.set' );
 const { exec } = require( 'child_process' );
 
+const Video = require( './video' );
+
 // https://rclayton.silvrback.com/custom-errors-in-node-js
 class HVML {
   constructor( path, encoding = 'utf8' ) {
@@ -373,4 +375,4 @@ class HVML {
 
 // toJson
 
-module.exports = HVML;
+module.exports = { HVML, Video };
