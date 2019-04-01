@@ -1,5 +1,5 @@
 const Video = require( './video' );
-const { HVMLEnumError, HVMLNotIntegerError } = require( './errors' );
+const Validation = require( './validation' );
 
 describe( 'Video', () => {
   it( 'instantiates', () => {
@@ -29,7 +29,7 @@ describe( 'Video', () => {
 
     expect.assertions( 2 );
 
-    expect( () => new Video( badTypes ) ).toThrowError( HVMLEnumError );
+    expect( () => new Video( badTypes ) ).toThrowError( Validation.EnumError );
 
     try {
       new Video( badTypes ); // eslint-disable-line no-new
@@ -74,7 +74,7 @@ describe( 'Video', () => {
       expect( () => {
         const video = new Video();
         video.setEpisode( NaN );
-      } ).toThrowError( HVMLNotIntegerError );
+      } ).toThrowError( Validation.NotIntegerError );
     } );
   } );
 } );

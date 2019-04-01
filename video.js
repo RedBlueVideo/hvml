@@ -2,7 +2,9 @@
 // const xml = require( 'libxmljs' );
 // const set = require( 'lodash.set' );
 const isObject = require( 'lodash.isobject' );
-const { HVMLEnumError, HVMLNotIntegerError } = require( './errors' );
+const isString = require( 'lodash.isstring' );
+
+const Validation = require( './validation' );
 
 class Video {
   _isValidType( type ) {
@@ -27,7 +29,7 @@ class Video {
     } );
 
     if ( badTypes.length ) {
-      throw new HVMLEnumError( {
+      throw new Validation.EnumError( {
         ...this._baseErrorData,
         "field": "type",
         "badValues": badTypes,
@@ -67,14 +69,16 @@ class Video {
     return { language, region };
   }
 
+  get _baseErrorData() {
+    return {
+      "className": this.constructor.name,
+    };
+  }
+
   constructor( configOrType, lang, id ) {
     let type;
     let language;
     let region;
-
-    this._baseErrorData = {
-      "className": this.constructor.name,
-    };
 
     if ( isObject( configOrType ) ) {
       ( { type, lang, id } = configOrType );
@@ -83,7 +87,7 @@ class Video {
     }
 
     if ( type ) {
-      if ( typeof type === 'string' ) {
+      if ( isString( type ) ) {
         type = type.replace( /\s+/g, ' ' ).trim().split( ' ' );
       } else if ( !Array.isArray( type ) ) {
         throw new Error( `Parameter \`type\` must be of type Array or String` );
@@ -115,8 +119,18 @@ class Video {
   }
 
   setTitle( title, lang ) {
+    const errorData = {
+      ...this._baseErrorData,
+      "field": "title",
+      "expected": "String",
+      "input": title,
+    };
     let language;
     let region;
+
+    if ( !isString( title ) ) {
+      throw new Validation.TypeError( errorData );
+    }
 
     this.title = this.title || {};
 
@@ -145,15 +159,19 @@ class Video {
   }
 
   setEpisode( number ) {
-    if ( typeof number === 'string' ) {
+    const errorData = {
+      ...this._baseErrorData,
+      "field": "episode",
+      "expected": "Integer",
+      "input": number,
+    };
+
+    if ( isString( number ) ) {
       number = parseInt( number, 10 );
     }
 
     if ( !Number.isInteger( number ) ) {
-      throw new HVMLNotIntegerError( {
-        ...this._baseErrorData,
-        "field": "episode",
-      } );
+      throw new Validation.NotIntegerError( errorData );
     }
 
     this.episode = number;
