@@ -2,6 +2,7 @@
 // const xml = require( 'libxmljs' );
 // const set = require( 'lodash.set' );
 const isObject = require( 'lodash.isobject' );
+const { ValueError } = require( './errors' );
 
 class Video {
   _isValidType( type ) {
@@ -26,7 +27,7 @@ class Video {
     } );
 
     if ( badTypes.length ) {
-      throw new Error( `The following are not valid video types: ${badTypes.join( ', ' )}` );
+      throw new ValueError( this.constructor.name, badTypes );
     }
 
     return true;
