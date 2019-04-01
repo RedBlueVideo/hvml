@@ -32,6 +32,36 @@ class Video {
     return true;
   }
 
+  _getRegion( lang ) {
+    let region;
+
+    if ( lang === this.language ) {
+      ( { region } = this );
+    } else {
+      region = '_';
+    }
+
+    return region;
+  }
+
+  _langHasRegion( lang ) {
+    return ( lang.indexOf( '-' ) !== -1 );
+  }
+
+  _getLanguageAndRegion( lang, regionFallback = () => '_' ) {
+    let language;
+    let region;
+
+    if ( this._langHasRegion( lang ) ) {
+      ( [language, region] = lang.split( '-' ) );
+    } else {
+      language = lang;
+      region = regionFallback();
+    }
+
+    return { language, region };
+  }
+
   constructor( configOrType, lang, id ) {
     let type;
     let language;
@@ -55,12 +85,7 @@ class Video {
     }
 
     if ( lang ) {
-      if ( lang.indexOf( '-' ) !== -1 ) {
-        ( [language, region] = lang.split( '-' ) );
-      } else {
-        language = lang;
-        region = '_';
-      }
+      ( { language, region } = this._getLanguageAndRegion( lang ) );
     } else {
       language = '_';
       region = '_';
@@ -87,17 +112,7 @@ class Video {
     this.title = this.title || {};
 
     if ( lang ) {
-      if ( lang.indexOf( '-' ) !== -1 ) {
-        ( [language, region] = lang.split( '-' ) );
-      } else {
-        language = lang;
-
-        if ( lang === this.language ) {
-          ( { region } = this );
-        } else {
-          region = '_';
-        }
-      }
+      ( { language, region } = this._getLanguageAndRegion( lang, () => this._getRegion( lang ) ) );
     } else {
       language = '_';
       region = '_';
@@ -112,17 +127,7 @@ class Video {
     let region;
 
     if ( lang ) {
-      if ( lang.indexOf( '-' ) !== -1 ) {
-        ( [language, region] = lang.split( '-' ) );
-      } else {
-        language = lang;
-
-        if ( lang === this.language ) {
-          ( { region } = this );
-        } else {
-          region = '_';
-        }
-      }
+      ( { language, region } = this._getLanguageAndRegion( lang, () => this._getRegion( lang ) ) );
     } else {
       ( { language, region } = this );
     }
