@@ -2,7 +2,7 @@
 // const xml = require( 'libxmljs' );
 // const set = require( 'lodash.set' );
 const isObject = require( 'lodash.isobject' );
-const { ValueError } = require( './errors' );
+const { HVMLValueError } = require( './errors' );
 
 class Video {
   _isValidType( type ) {
@@ -27,7 +27,7 @@ class Video {
     } );
 
     if ( badTypes.length ) {
-      throw new ValueError( this.constructor.name, badTypes );
+      throw new HVMLValueError( this.constructor.name, 'type', badTypes );
     }
 
     return true;

@@ -12,9 +12,7 @@ describe( 'Video Class', () => {
       "lang": "en-US",
       "id": "foo",
     } );
-    // expect.assertions( 2 );
 
-    expect( video ).toBeInstanceOf( Video );
     expect( video ).toMatchObject( {
       "type": ['narrative', 'ad'],
       "language": "en",
@@ -23,22 +21,36 @@ describe( 'Video Class', () => {
     } );
   } );
 
-  it( 'throws an error for invalid type values', () => {
-    expect( () => new Video( {
-      "type": ['narrative', 'bad'],
-      "lang": "en-US",
-      "id": "foo",
-    } ) ).toThrowError( ValueError );
+  it( 'throws an error for invalid `type` values', () => {
+    const badTypes = {
+      "type": ['narrative', 'bad', 'evil'],
+    };
+    let thrownError;
+
+    expect.assertions( 2 );
+
+    expect( () => new Video( badTypes ) ).toThrowError( ValueError );
+
+    try {
+      new Video( badTypes ); // eslint-disable-line no-new
+    } catch ( error ) {
+      thrownError = error;
+    }
+
+    expect( thrownError.data ).toEqual( {
+      "field": "type",
+      "badValues": ["bad", "evil"],
+    } );
   } );
 
   // it( 'sets titles' )
 
   it( 'handles regional title variants', () => {
     const video = new Video( {
-      "type": ['narrative', 'ad'],
       "lang": "en-US",
-      "id": "foo",
     } );
+
+    expect.assertions( 7 );
 
     video.setTitle( 'Hello', 'en' );
     video.setTitle( 'Allo', 'en-GB' );

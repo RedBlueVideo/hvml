@@ -1,5 +1,5 @@
 // https://rclayton.silvrback.com/custom-errors-in-node-js
-class DomainError extends Error {
+class HVMLDomainError extends Error {
   constructor( message ) {
     super( message );
     // Ensure the name of this error is the same as the class name
@@ -11,13 +11,16 @@ class DomainError extends Error {
   }
 }
 
-class ValueError extends DomainError {
-  constructor( field, badValues ) {
-    super( `The following are not valid ${field} types: ${badValues.join( ', ' )}` );
-    this.data = { field, badValues };
+class HVMLValueError extends HVMLDomainError {
+  constructor( className, fieldName, badValues ) {
+    super( `The following values are invalid for ${className}::${fieldName}: ${badValues.join( ', ' )}` );
+    this.data = {
+      "field": fieldName,
+      badValues,
+    };
   }
 }
 
 module.exports = {
-  ValueError,
+  HVMLValueError,
 };
