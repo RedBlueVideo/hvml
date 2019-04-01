@@ -2,7 +2,7 @@
 // const xml = require( 'libxmljs' );
 // const set = require( 'lodash.set' );
 const isObject = require( 'lodash.isobject' );
-const { HVMLEnumError } = require( './errors' );
+const { HVMLEnumError, HVMLNotIntegerError } = require( './errors' );
 
 class Video {
   _isValidType( type ) {
@@ -142,6 +142,25 @@ class Video {
     }
 
     return this.title[language][region];
+  }
+
+  setEpisode( number ) {
+    if ( typeof number === 'string' ) {
+      number = parseInt( number, 10 );
+    }
+
+    if ( !Number.isInteger( number ) ) {
+      throw new HVMLNotIntegerError( {
+        ...this._baseErrorData,
+        "field": "episode",
+      } );
+    }
+
+    this.episode = number;
+  }
+
+  getEpisode() {
+    return this.episode;
   }
 }
 

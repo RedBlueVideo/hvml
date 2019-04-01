@@ -1,5 +1,5 @@
 const Video = require( './video' );
-const { HVMLEnumError } = require( './errors' );
+const { HVMLEnumError, HVMLNotIntegerError } = require( './errors' );
 
 describe( 'Video', () => {
   it( 'instantiates', () => {
@@ -66,6 +66,15 @@ describe( 'Video', () => {
       expect( video.getTitle( 'ja' ) ).toBe( 'こんにちは' );
       expect( video.getTitle( 'ja-US' ) ).toBe( 'ハロ' );
       expect( video.getTitle( 'ja-JP' ) ).toBeUndefined();
+    } );
+  } );
+
+  describe( 'episode', () => {
+    it( 'throws an error for non-integer values', () => {
+      expect( () => {
+        const video = new Video();
+        video.setEpisode( NaN );
+      } ).toThrowError( HVMLNotIntegerError );
     } );
   } );
 } );
