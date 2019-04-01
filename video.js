@@ -2,8 +2,10 @@
 // const xml = require( 'libxmljs' );
 // const set = require( 'lodash.set' );
 const isObject = require( 'lodash.isobject' );
+const isNumber = require( 'lodash.isnumber' );
 const isString = require( 'lodash.isstring' );
 
+const Time = require( './time' );
 const Validation = require( './validation' );
 
 class Video {
@@ -179,6 +181,55 @@ class Video {
 
   getEpisode() {
     return this.episode;
+  }
+
+  setRuntime( runtime ) {
+    const errorData = {
+      ...this._baseErrorData,
+      "field": "runtime",
+      "expected": ["Number", "ISO8601 Duration"],
+      "input": runtime,
+    };
+
+    this.runtime = this.runtime || {};
+
+    if ( isString( runtime ) ) {
+      if ( Time.isoDurationRegex.test( runtime ) ) {
+        this.runtime = runtime;
+        return;
+      }
+
+      runtime = parseInt( runtime, 10 );
+    }
+
+    if ( !isNumber( runtime ) ) {
+      throw new Validation.TypeError( errorData );
+    }
+
+    if ( runtime <= 0 ) {
+      throw new Validation.RangeError( {
+        ...errorData,
+        "lowerBound": 0,
+      } );
+    }
+
+    this.runtime = `PT${runtime}M`;
+  }
+
+  getRuntime( format ) {
+    if ( isString( format ) ) {
+      format = format.toLowerCase();
+    }
+
+    switch ( format ) {
+      case 'hours':
+        return Time.isoDurationToHours( this.runtime );
+      case 'minutes':
+        return Time.isoDurationToMinutes( this.runtime );
+      case 'iso8601':
+      default:
+        return this.runtime;
+    }
   }
 }
 
