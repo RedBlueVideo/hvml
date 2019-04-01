@@ -2,7 +2,7 @@
 // const xml = require( 'libxmljs' );
 // const set = require( 'lodash.set' );
 const isObject = require( 'lodash.isobject' );
-const { HVMLValueError } = require( './errors' );
+const { HVMLEnumError } = require( './errors' );
 
 class Video {
   _isValidType( type ) {
@@ -27,7 +27,11 @@ class Video {
     } );
 
     if ( badTypes.length ) {
-      throw new HVMLValueError( this.constructor.name, 'type', badTypes );
+      throw new HVMLEnumError( {
+        ...this._baseErrorData,
+        "field": "type",
+        "badValues": badTypes,
+      } );
     }
 
     return true;
@@ -67,6 +71,10 @@ class Video {
     let type;
     let language;
     let region;
+
+    this._baseErrorData = {
+      "className": this.constructor.name,
+    };
 
     if ( isObject( configOrType ) ) {
       ( { type, lang, id } = configOrType );

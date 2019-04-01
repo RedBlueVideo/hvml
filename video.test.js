@@ -38,6 +38,7 @@ describe( 'Video Class', () => {
     }
 
     expect( thrownError.data ).toEqual( {
+      "className": "Video",
       "field": "type",
       "badValues": ["bad", "evil"],
     } );

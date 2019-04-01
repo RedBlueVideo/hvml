@@ -11,16 +11,51 @@ class HVMLDomainError extends Error {
   }
 }
 
-class HVMLValueError extends HVMLDomainError {
-  constructor( className, fieldName, badValues ) {
-    super( `The following values are invalid for ${className}::${fieldName}: ${badValues.join( ', ' )}` );
-    this.data = {
-      "field": fieldName,
-      badValues,
-    };
+class HVMLEnumError extends HVMLDomainError {
+  /* className, field, badValues */
+  constructor( data ) {
+    super( `The following values are invalid for ${data.className}::${data.field}: ${data.badValues.join( ', ' )}` );
+    this.data = data;
+  }
+}
+
+class HVMLTypeError extends HVMLDomainError {
+  /* className, field, expected, extraInfo = '' */
+  constructor( data ) {
+    if ( !data.extraInfo ) {
+      data.extraInfo = '';
+    }
+    super( `${data.className}::${data.field} must be of type ${data.expected}${data.extraInfo}` );
+    this.data = data;
+  }
+}
+
+class HVMLRangeError extends HVMLTypeError {
+  /* className, field, expected, lowerBound, upperBound, inclusiveExclusive = 'inclusive' */
+  constructor( data ) {
+    if ( !data.inclusiveExclusive ) {
+      data.inclusiveExclusive = 'inclusive';
+    }
+    super( {
+      ...data,
+      "extraInfo": ` with a value between ${data.lowerBound} and ${data.upperBound} (${data.inclusiveExclusive})`,
+    } );
+    this.data = data;
+  }
+}
+
+class HVMLNotIntegerError extends HVMLTypeError {
+  constructor( data ) {
+    super( {
+      ...data,
+      "expected": "Integer",
+    } );
   }
 }
 
 module.exports = {
-  HVMLValueError,
+  HVMLEnumError,
+  HVMLTypeError,
+  HVMLRangeError,
+  HVMLNotIntegerError,
 };
