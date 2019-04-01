@@ -97,7 +97,7 @@ const JSON_LD = {
   },
 };
 
-describe( 'HVML Library', () => {
+describe( 'HVML Class', () => {
   it( 'instantiates', () => {
     const hvml = new HVML( './examples/hvml.xml' );
     // const promise = hvml.ready.catch( () => {} );
@@ -227,7 +227,7 @@ describe( 'Video Class', () => {
 
   // it( 'sets titles' )
 
-  it( 'handles multilingual titles', () => {
+  it( 'handles regional title variants', () => {
     const video = new Video( {
       "type": ['narrative', 'ad'],
       "lang": "en-US",
@@ -235,12 +235,14 @@ describe( 'Video Class', () => {
     } );
 
     video.setTitle( 'Hello', 'en' );
+    video.setTitle( 'Allo', 'en-GB' );
     video.setTitle( 'こんにちは', 'ja' );
     video.setTitle( 'ハロ', 'ja-US' );
 
     expect( video.getTitle() ).toBe( 'Hello' );
     expect( video.getTitle( 'en' ) ).toBe( 'Hello' );
     expect( video.getTitle( 'en-US' ) ).toBe( 'Hello' );
+    expect( video.getTitle( 'en-GB' ) ).toBe( 'Allo' );
     expect( video.getTitle( 'ja' ) ).toBe( 'こんにちは' );
     expect( video.getTitle( 'ja-US' ) ).toBe( 'ハロ' );
   } );
