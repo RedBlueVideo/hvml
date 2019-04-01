@@ -5,8 +5,8 @@ const isObject = require( 'lodash.isobject' );
 const isNumber = require( 'lodash.isnumber' );
 const isString = require( 'lodash.isstring' );
 
-const Time = require( './time' );
-const Validation = require( './validation' );
+const Time = require( './util/time' );
+const Validation = require( './util/validation' );
 
 class Video {
   _isValidType( type ) {

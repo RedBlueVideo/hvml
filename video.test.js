@@ -1,5 +1,5 @@
 const Video = require( './video' );
-const Validation = require( './validation' );
+const Validation = require( './util/validation' );
 
 describe( 'Video', () => {
   it( 'instantiates', () => {
