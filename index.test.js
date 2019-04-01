@@ -97,7 +97,7 @@ const JSON_LD = {
   },
 };
 
-describe( 'HVML Class', () => {
+describe( 'HVML', () => {
   it( 'instantiates', () => {
     const hvml = new HVML( './examples/hvml.xml' );
     // const promise = hvml.ready.catch( () => {} );
