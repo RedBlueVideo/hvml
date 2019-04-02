@@ -7,6 +7,7 @@ const isString = require( 'lodash.isstring' );
 
 const Time = require( './util/time' );
 const Validation = require( './util/validation' );
+const Transform = require( './util/transform' );
 
 class Video {
   _isValidType( type ) {
@@ -70,6 +71,10 @@ class Video {
 
     return { language, region };
   }
+
+  // _escapeForJSON( html ) {
+  //   return html.replace( /"/g, `\\"` );
+  // }
 
   get _baseErrorData() {
     return {
@@ -191,8 +196,6 @@ class Video {
       "input": runtime,
     };
 
-    this.runtime = this.runtime || {};
-
     if ( isString( runtime ) ) {
       if ( Time.isoDurationRegex.test( runtime ) ) {
         this.runtime = runtime;
@@ -230,6 +233,95 @@ class Video {
       default:
         return this.runtime;
     }
+  }
+
+  /* type = text|xhtml */
+  setDescription( description, type = 'text' ) {
+    const errorData = {
+      ...this._baseErrorData,
+      "field": "description",
+      "expected": ["String", "Object"],
+    };
+
+    if ( ( type === 'text' ) && !isString( description ) ) {
+      throw new Validation.TypeError( errorData );
+    }
+
+    this.description = {};
+
+    switch ( type ) {
+      case 'xhtml':
+        switch ( typeof description ) {
+          case 'string':
+            this.description.xhtml = Transform.wrapXhtml( description.trim() );
+            break;
+          case 'object':
+            this.description.xhtml = Transform.wrapXhtml( Transform.toXmlString( description ) );
+            break;
+          default:
+            throw new Validation.TypeError( errorData );
+        }
+        break;
+
+      case 'text':
+      default:
+        this.description.text = description.trim();
+    }
+  }
+
+  getDescription( type, parseMarkdown = true, newlinesToBRs = true ) {
+    switch ( type ) {
+      case 'jsonml':
+      case 'json':
+        if ( this.description.xhtml ) {
+          return Transform.toJsonMl( this.description.xhtml );
+        }
+
+        if ( this.description.text ) {
+          return Transform.markdownToJsonMl( this.description.text );
+        }
+        break;
+
+      case 'xhtml':
+      // case 'html':
+      // case 'xml':
+        if ( this.description.xhtml ) {
+          return this.description.xhtml;
+        }
+
+        // If user set a text description, and is trying to get back XHTML,
+        // assume the text is Markdown-formatted and convert it to JSON-ML
+        // before turning it into a DOM string
+        if ( this.description.text ) {
+          let description;
+
+          if ( parseMarkdown ) {
+            description = Transform.markdownToJsonMl( this.description.text );
+          } else {
+            description = this.description.text;
+
+            if ( newlinesToBRs ) {
+              description = description.replace( /\n/g, '<br />' );
+            }
+
+            description = Transform.toJsonMl( Transform.wrapXhtml( `<p>${description}</p>` ) );
+          }
+
+          return Transform.toXmlString( description );
+        }
+        break;
+      case 'text':
+      default:
+        if ( this.description.text ) {
+          return this.description.text;
+        }
+
+        if ( this.description.xhtml ) {
+          return Transform.getJsonMlTextContent( Transform.toJsonMl( this.description.xhtml )[1], true, true );
+        }
+    }
+
+    return null;
   }
 }
 

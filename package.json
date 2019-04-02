@@ -4,10 +4,10 @@
   "description": "HVML Parser for JavaScript",
   "main": "index.js",
   "scripts": {
-    "test": "jest --watch -t 'HVML Class' --verbose",
+    "test": "jest --watch -t 'HVML' --verbose",
     "test-xsd": "jest --watch -t 'HVML Schema Definition' --verbose",
     "test-all": "jest --watch --verbose",
-    "test-video": "jest --watch -t 'Video Class' --verbose",
+    "test-video": "jest --watch --verbose -t 'Video'",
     "coverage": "jest --coverage",
     "xsd": "xmllint --nowarning --noout --schema xsd/hvml.xsd examples/hvml.xml",
     "rng": "xmllint --nowarning --noout --relaxng rng/hvml.rng examples/hvml.xml",
@@ -35,7 +35,9 @@
     "lodash.isnumber": "^3.0.3",
     "lodash.isobject": "^3.0.2",
     "lodash.isstring": "^4.0.1",
-    "lodash.set": "^4.3.2"
+    "lodash.set": "^4.3.2",
+    "md2jsonml": "^2.0.0",
+    "xml-trident": "^1.0.2"
   },
   "devDependencies": {
     "eslint": "5.3.0",

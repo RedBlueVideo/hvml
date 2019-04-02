@@ -77,4 +77,56 @@ describe( 'Video', () => {
       } ).toThrowError( Validation.NotIntegerError );
     } );
   } );
+
+  describe( 'description', () => {
+    it( 'sets/gets type `text`', () => {
+      const video = new Video();
+      const text = [`Nope`, `Dope`, `**Pope**`].join( '\n\n' );
+
+      video.setDescription( text, 'text' );
+
+      expect( video.getDescription( 'text' ) ).toBe( text );
+    } );
+
+    it( 'sets/gets/wraps type `xhtml`', () => {
+      const video = new Video();
+      const xhtml = `<p>Nope</p><p>Dope</p><p><strong>Pope</strong></p>`;
+
+      video.setDescription( xhtml, 'xhtml' );
+
+      expect( video.getDescription( 'xhtml' ) ).toBe( `<div xmlns="http://www.w3.org/1999/xhtml">${xhtml}</div>` );
+    } );
+
+    describe( 'set `text`, get `xhtml`', () => {
+      test( '+ Markdown, + Newlines → br', () => {
+        const video = new Video();
+        const text = [`Nope`, `Dope`, `**Pope**`].join( '\n\n' );
+        const xhtml = `<p>Nope</p><p>Dope</p><p><strong>Pope</strong></p>`;
+
+        video.setDescription( text, 'text' );
+
+        expect( video.getDescription( 'xhtml' ) ).toBe( `<div xmlns="http://www.w3.org/1999/xhtml">${xhtml}</div>` );
+      } );
+
+      test( '- Markdown, + Newlines → br', () => {
+        const video = new Video();
+        const text = [`Nope`, `Dope`, `**Pope**`].join( '\n\n' );
+        const xhtml = `<p>Nope<br /><br />Dope<br /><br />**Pope**</p>`;
+
+        video.setDescription( text, 'text' );
+
+        expect( video.getDescription( 'xhtml', false ) ).toBe( `<div xmlns="http://www.w3.org/1999/xhtml">${xhtml}</div>` );
+      } );
+
+      test( '- Markdown, - Newlines → br', () => {
+        const video = new Video();
+        const text = [`Nope`, `Dope`, `**Pope**`].join( '\n\n' );
+        const xhtml = [`<p>Nope`, `Dope`, `**Pope**</p>`].join( '\n\n' );
+
+        video.setDescription( text, 'text' );
+
+        expect( video.getDescription( 'xhtml', false, false ) ).toBe( `<div xmlns="http://www.w3.org/1999/xhtml">${xhtml}</div>` );
+      } );
+    } );
+  } );
 } );
