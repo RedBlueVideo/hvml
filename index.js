@@ -61,14 +61,29 @@ class HVML {
   }
 
   validate( xmllintPath = 'xmllint' ) {
+    const commandNotFound = {
+      // /bin/sh: xmllint: command not found
+      // -bash: xmllint: command not found
+      // /bin/sh: 1: xmllint: not found
+      "shell": new RegExp( 'not found' ),
+      // xmllint is not recognized as an internal or external command, operable program or batch file
+      "windows": new RegExp( 'is not recognized as an internal or external command' ),
+    };
+
     // return this.xml.validate( this.xsd );
     return ( new Promise( ( resolve, reject ) => {
       exec( `${xmllintPath} --nowarning --noout --relaxng ${this.schemaPath} ${this.hvmlPath}`, ( error, stdout, stderr ) => { // eslint-disable-line
         if ( error ) {
-          let validationErrors = error.toString().trim().split( '\n' );
+          const errorString = error.toString();
+          let validationErrors = errorString.trim().split( '\n' );
           validationErrors.shift();
 
-          if ( new RegExp( `/bin/sh: ${xmllintPath}: command not found` ).test( validationErrors[0] ) ) {
+          console.log( 'error', error );
+          console.log( 'stdout', stdout );
+          console.log( 'stderr', stderr );
+          console.log( 'validationErrors', validationErrors );
+
+          if ( commandNotFound.shell.test( errorString ) || commandNotFound.windows.test( errorString ) ) {
             reject( new Error( 'xmllint is not installed or inaccessible' ) );
             return;
           }
