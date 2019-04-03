@@ -1,7 +1,7 @@
 // const fs = require( 'fs' );
 // const xml = require( 'libxmljs' );
 // const set = require( 'lodash.set' );
-const isObject = require( 'lodash.isobject' );
+const isPlainObject = require( 'lodash.isplainobject' );
 const isNumber = require( 'lodash.isnumber' );
 const isString = require( 'lodash.isstring' );
 
@@ -87,7 +87,7 @@ class Video {
     let language;
     let region;
 
-    if ( isObject( configOrType ) ) {
+    if ( isPlainObject( configOrType ) ) {
       ( { type, lang, id } = configOrType );
     } else {
       type = configOrType;

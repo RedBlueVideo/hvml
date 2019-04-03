@@ -1,7 +1,7 @@
 const md2jsonml = require( 'md2jsonml' );
 const xmlTrident = require( 'xml-trident' );
 const isString = require( 'lodash.isstring' );
-const isObject = require( 'lodash.isobject' );
+const isPlainObject = require( 'lodash.isplainobject' );
 
 const { softTrim } = require( './strings' );
 
@@ -28,9 +28,12 @@ class Transform {
     }];
   }
 
+  static get xhtmlWrapper() {
+    return '<div xmlns="http://www.w3.org/1999/xhtml">$innerHTML</div>';
+  }
+
   static wrapXhtml( innerHTML ) {
-    const xhtmlWrapper = '<div xmlns="http://www.w3.org/1999/xhtml">$innerHTML</div>';
-    return xhtmlWrapper.replace( '$innerHTML', innerHTML );
+    return Transform.xhtmlWrapper.replace( '$innerHTML', innerHTML );
   }
 
   static wrapJsonMl( innerHTML = [] ) {
@@ -44,7 +47,7 @@ class Transform {
     let string = '';
     let childNodesOrTextContent;
 
-    if ( isObject( jsonML[1] ) ) {
+    if ( isPlainObject( jsonML[1] ) ) {
       childNodesOrTextContent = jsonML.slice( 2 );
     } else {
       childNodesOrTextContent = jsonML.slice( 1 );
@@ -55,7 +58,7 @@ class Transform {
         if ( preserveBRs && ( node[0].toLowerCase() === 'br' ) ) {
           string += '\n';
         } else {
-          string += this._jsonMLtextContent( node, preserveBRs, normalizeWhitespace );
+          string += Transform.getJsonMlTextContent( node, preserveBRs, normalizeWhitespace );
         }
       } else if ( isString( node ) ) {
         // console.log( 'isString: ', `'${node}'` );

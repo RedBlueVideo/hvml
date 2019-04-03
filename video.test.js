@@ -79,7 +79,7 @@ describe( 'Video', () => {
   } );
 
   describe( 'description', () => {
-    it( 'sets/gets type `text`', () => {
+    it( 'sets and gets `text`', () => {
       const video = new Video();
       const text = [`Nope`, `Dope`, `**Pope**`].join( '\n\n' );
 
@@ -88,7 +88,7 @@ describe( 'Video', () => {
       expect( video.getDescription( 'text' ) ).toBe( text );
     } );
 
-    it( 'sets/gets/wraps type `xhtml`', () => {
+    it( 'sets and gets `xhtml`', () => {
       const video = new Video();
       const xhtml = `<p>Nope</p><p>Dope</p><p><strong>Pope</strong></p>`;
 
@@ -97,7 +97,7 @@ describe( 'Video', () => {
       expect( video.getDescription( 'xhtml' ) ).toBe( `<div xmlns="http://www.w3.org/1999/xhtml">${xhtml}</div>` );
     } );
 
-    describe( 'set `text`, get `xhtml`', () => {
+    describe( 'sets `text`, gets `xhtml`', () => {
       test( '+ Markdown, + Newlines → br', () => {
         const video = new Video();
         const text = [`Nope`, `Dope`, `**Pope**`].join( '\n\n' );
@@ -105,7 +105,17 @@ describe( 'Video', () => {
 
         video.setDescription( text, 'text' );
 
-        expect( video.getDescription( 'xhtml' ) ).toBe( `<div xmlns="http://www.w3.org/1999/xhtml">${xhtml}</div>` );
+        expect( video.getDescription( 'xhtml', true, true ) ).toBe( `<div xmlns="http://www.w3.org/1999/xhtml">${xhtml}</div>` );
+      } );
+
+      test( '+ Markdown, - Newlines → br', () => {
+        const video = new Video();
+        const text = [`Nope`, `Dope`, `**Pope**`].join( '\n\n' );
+        const xhtml = `<p>Nope</p><p>Dope</p><p><strong>Pope</strong></p>`;
+
+        video.setDescription( text, 'text' );
+
+        expect( video.getDescription( 'xhtml', true, false ) ).toBe( `<div xmlns="http://www.w3.org/1999/xhtml">${xhtml}</div>` );
       } );
 
       test( '- Markdown, + Newlines → br', () => {
@@ -115,7 +125,7 @@ describe( 'Video', () => {
 
         video.setDescription( text, 'text' );
 
-        expect( video.getDescription( 'xhtml', false ) ).toBe( `<div xmlns="http://www.w3.org/1999/xhtml">${xhtml}</div>` );
+        expect( video.getDescription( 'xhtml', false, true ) ).toBe( `<div xmlns="http://www.w3.org/1999/xhtml">${xhtml}</div>` );
       } );
 
       test( '- Markdown, - Newlines → br', () => {
@@ -127,6 +137,15 @@ describe( 'Video', () => {
 
         expect( video.getDescription( 'xhtml', false, false ) ).toBe( `<div xmlns="http://www.w3.org/1999/xhtml">${xhtml}</div>` );
       } );
+    } );
+
+    it( 'sets `xhtml`, gets `text`', () => {
+      const video = new Video();
+      const xhtml = `<p>Nope</p><p>Dope</p><p><strong>Pope</strong></p>`;
+
+      video.setDescription( xhtml, 'xhtml' );
+
+      expect( video.getDescription( 'text' ) ).toBe( 'NopeDopePope' );
     } );
   } );
 } );
