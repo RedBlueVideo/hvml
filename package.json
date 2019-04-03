@@ -4,9 +4,10 @@
   "description": "HVML Parser for JavaScript",
   "main": "index.js",
   "scripts": {
-    "test": "jest --watch -t 'HVML' --verbose",
+    "test": "jest --verbose",
+    "test-dev": "jest --watch --verbose",
+    "test-hvml": "jest --watch -t 'HVML' --verbose",
     "test-xsd": "jest --watch -t 'HVML Schema Definition' --verbose",
-    "test-all": "jest --watch --verbose",
     "test-video": "jest --watch --verbose -t 'Video'",
     "coverage": "jest --coverage",
     "xsd": "xmllint --nowarning --noout --schema xsd/hvml.xsd examples/hvml.xml",

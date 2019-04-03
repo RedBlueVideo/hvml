@@ -1,0 +1,21 @@
+language: node_js
+
+os:
+  - windows
+  - linux
+  - osx
+
+node_js:
+  - node
+  - lts/*
+
+branches:
+  only:
+    - master
+
+cache:
+  directories:
+    - node_modules
+
+before_script:
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install yarn; fi
