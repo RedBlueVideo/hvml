@@ -26,7 +26,7 @@
     <!-- <group xml:id="season-x" type="series"></group> -->
     <group xml:id="season-01" type="series">
       <title>Season 1</title>
-      <video type="personal" xml:id="ep-0" xml:lang="en">
+      <video type="personal documentary" xml:id="ep-0" xml:lang="en">
         <title>Introduction</title>
         <episode>0</episode>
         <runtime>PT9M51S</runtime>
@@ -81,7 +81,7 @@
           </file>
         </presentation>
       </video>
-      <video type="personal" xml:id="ep-1" xml:lang="en">
+      <video type="personal documentary" xml:id="ep-1" xml:lang="en">
         <title>A Late Start; Why Open Source?</title>
         <episode>1</episode>
         <runtime>PT4M21S</runtime>
@@ -121,7 +121,7 @@
           </file>
         </presentation>
       </video>
-      <video type="personal" xml:id="ep-2">
+      <video type="personal documentary" xml:id="ep-2">
         <title>Fun vs. Productivity</title>
         <episode>2</episode>
         <runtime>PT7M52S</runtime>
@@ -161,7 +161,7 @@
           </file>
         </presentation>
       </video>
-      <video type="personal" xml:id="ep-3">
+      <video type="personal documentary" xml:id="ep-3">
         <title>Early Rise; Web Development Stalled</title>
         <episode>3</episode>
         <runtime>PT3M22S</runtime>
@@ -201,7 +201,7 @@
           </file>
         </presentation>
       </video>
-      <video type="personal" xml:id="ep-4">
+      <video type="personal documentary" xml:id="ep-4">
         <title>First Week In Review</title>
         <episode>4</episode>
         <runtime>PT6M11S</runtime>
@@ -241,7 +241,7 @@
           </file>
         </presentation>
       </video>
-      <video type="personal" xml:id="ep-5">
+      <video type="personal documentary" xml:id="ep-5">
         <title>A Healthier Lifestyle; Which Product to Develop?</title>
         <episode>5</episode>
         <runtime>PT6M56S</runtime>
@@ -260,7 +260,7 @@
           </venue>
         </showing>
       </video>
-      <video type="personal" xml:id="ep-6">
+      <video type="personal documentary" xml:id="ep-6">
         <title>I Hate Computers</title>
         <episode>6</episode>
         <runtime>PT3M44S</runtime>
@@ -279,7 +279,7 @@
           </venue>
         </showing>
       </video>
-      <video type="personal" xml:id="ep-7">
+      <video type="personal documentary" xml:id="ep-7">
         <title>No More Website Woes; A Shorter Path to Profitability</title>
         <episode>7</episode>
         <runtime>PT5M</runtime>
@@ -298,7 +298,7 @@
           </venue>
         </showing>
       </video>
-      <video type="personal" xml:id="ep-8">
+      <video type="personal documentary" xml:id="ep-8">
         <title>Landing Page; Soylent First Impressions</title>
         <episode>8</episode>
         <runtime>PT7M6S</runtime>
@@ -320,7 +320,7 @@
     </group>
     <group xml:id="season-02" type="series">
       <title>Season 2</title>
-      <video type="personal" xml:id="ep-9" xml:lang="en">
+      <video type="personal documentary" xml:id="ep-9" xml:lang="en">
         <title>A New Approach to Vlogging; Dad Powers</title>
         <episode>9</episode>
         <runtime>PT12M56S</runtime>
@@ -352,7 +352,7 @@
           </venue>
         </showing>
       </video>
-      <video type="personal" xml:id="ep-10">
+      <video type="personal documentary" xml:id="ep-10">
         <title>Frozen Energy Drink; Editing</title>
         <episode>10</episode>
         <runtime>PT4M35S</runtime>
@@ -378,7 +378,7 @@
           </venue>
         </showing>
       </video>
-      <video type="personal" xml:id="ep-11" xml:lang="en">
+      <video type="personal documentary" xml:id="ep-11" xml:lang="en">
         <title>Runway Woes; Advice from A Former Founder</title>
         <episode>11</episode>
         <runtime>PT6M35S</runtime>
@@ -409,7 +409,7 @@
           </venue>
         </showing>
       </video>
-      <video type="personal" xml:id="ep-12">
+      <video type="personal documentary" xml:id="ep-12">
         <title>New Video Equipment; Improv Killed My Workday</title>
         <episode>12</episode>
         <runtime>PT13M50S</runtime>
@@ -435,7 +435,7 @@
           </venue>
         </showing>
       </video>
-      <video type="personal" xml:id="ep-13" xml:lang="en">
+      <video type="personal documentary" xml:id="ep-13" xml:lang="en">
         <title>Foiled by Trivia; The Grape Gatsby</title>
         <episode>13</episode>
         <runtime>PT12M5S</runtime>
@@ -461,7 +461,7 @@
           </venue>
         </showing>
       </video>
-      <video type="personal" xml:id="ep-14" xml:lang="en">
+      <video type="personal documentary" xml:id="ep-14" xml:lang="en">
         <title>I met Daymond John!</title>
         <episode>14</episode>
         <runtime>PT8M51S</runtime>
@@ -485,7 +485,7 @@
           </venue>
         </showing>
       </video>
-      <video type="personal" xml:id="ep-15" xml:lang="en">
+      <video type="personal documentary" xml:id="ep-15" xml:lang="en">
         <title>Last Day of Summer ’16</title>
         <episode>15</episode>
         <runtime>PT12M13S</runtime>
@@ -512,7 +512,7 @@
     </group>
     <group xml:id="season-03" type="series">
       <title>Season 3</title>
-      <video type="personal" xml:id="ep-16" xml:lang="en">
+      <video type="personal documentary" xml:id="ep-16" xml:lang="en">
         <title>I Took A Blood Oath to Vlog Every Day</title>
         <episode>16</episode>
         <runtime>PT17M39S</runtime>
@@ -551,7 +551,7 @@
           </venue>
         </showing>
       </video>
-      <video type="personal" xml:id="ep-17" xml:lang="en">
+      <video type="personal documentary" xml:id="ep-17" xml:lang="en">
         <title>4 Reasons Daily Vlogging Is Hard</title>
         <episode>17</episode>
         <runtime>PT18M46S</runtime>
@@ -579,7 +579,7 @@
           </venue>
         </showing>
       </video>
-      <video type="personal" xml:id="ep-18" xml:lang="en">
+      <video type="personal documentary" xml:id="ep-18" xml:lang="en">
         <title>Hacking My Body to Edit Longer</title>
         <episode>18</episode>
         <runtime>PT8M4S</runtime>
@@ -608,7 +608,7 @@
           </venue>
         </showing>
       </video>
-      <video type="personal" xml:id="ep-19" xml:lang="en">
+      <video type="personal documentary" xml:id="ep-19" xml:lang="en">
         <title>Coffiest First Impressions</title>
         <episode>19</episode>
         <runtime>PT5M23S</runtime>
@@ -635,7 +635,7 @@
           </venue>
         </showing>
       </video>
-      <video type="personal" xml:id="ep-20" xml:lang="en">
+      <video type="personal documentary" xml:id="ep-20" xml:lang="en">
         <title>New Jersey–bound. I Wish It Were Under Better Circumstances.</title>
         <episode>20</episode>
         <runtime>PT20M8S</runtime>
@@ -671,7 +671,7 @@
           </venue>
         </showing>
       </video>
-      <video type="personal" xml:id="ep-21" xml:lang="en">
+      <video type="personal documentary" xml:id="ep-21" xml:lang="en">
         <title>My First Paid Photography Gig! + Improv with Midnight Avenue</title>
         <episode>21</episode>
         <runtime>PT11M49S</runtime>
@@ -711,7 +711,7 @@
           </venue>
         </showing>
       </video>
-      <video type="personal" xml:id="ep-22" xml:lang="en">
+      <video type="personal documentary" xml:id="ep-22" xml:lang="en">
         <title>Buying Soda &amp; Breaking My Blood Oath</title>
         <episode>22</episode>
         <runtime>PT3M57S</runtime>
