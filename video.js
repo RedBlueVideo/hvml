@@ -167,6 +167,18 @@ class Video {
     throw new Validation.ParamError( errorData );
   }
 
+  isFictional() {
+    return ( this.hasType( 'narrative' ) || this.hasType( 'ad' ) );
+  }
+
+  isVlogEpisode() {
+    return this.hasType( ['personal', 'documentary'] );
+  }
+
+  isArchived() {
+    return this.hasType( ['historical', 'personal'] );
+  }
+
   setTitle( title, lang ) {
     const errorData = {
       ...this._baseErrorData,
