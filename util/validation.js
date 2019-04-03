@@ -26,14 +26,42 @@ class HVMLTypeError extends HVMLDomainError {
       data.extraInfo = null;
     }
 
-    if ( !data.got && data.input ) {
+    if ( !data.got && ( 'input' in data ) ) {
       data.got = data.input.constructor.name;
     }
 
-    super( `${data.className}::${data.field} must be of type ${data.expected}; got ${data.got}${data.extraInfo || ''}` );
+    let expected;
+    if ( Array.isArray( data.expected ) ) {
+      expected = data.expected.join( '|' );
+    } else {
+      ( { expected } = data );
+    }
+
+    let fieldOrParameter = '';
+    const hasClassName = ( 'className' in data );
+    const hasMethodName = ( 'methodName' in data );
+    const hasField = ( 'field' in data );
+
+    if ( hasClassName && hasMethodName ) {
+      fieldOrParameter += `${data.className}.${data.methodName}`;
+    } else if ( hasClassName && !hasMethodName ) {
+      fieldOrParameter += data.className;
+    } else if ( !hasClassName && hasMethodName ) {
+      fieldOrParameter += data.methodName;
+    }
+
+    if ( hasField ) {
+      fieldOrParameter += `::${data.field}`;
+    } else {
+      fieldOrParameter += `()`;
+    }
+
+    super( `${fieldOrParameter} must be of type ${expected}; got ${data.got}${data.extraInfo || ''}` );
     this.data = data;
   }
 }
+
+class HVMLParamError extends HVMLTypeError {}
 
 class HVMLRangeError extends HVMLTypeError {
   /* className, field, expected, lowerBound, upperBound, exclusivity = 'inclusive' */
@@ -88,6 +116,7 @@ class HVMLNotIntegerError extends HVMLTypeError {
 module.exports = {
   "EnumError": HVMLEnumError,
   "TypeError": HVMLTypeError,
+  "ParamError": HVMLParamError,
   "RangeError": HVMLRangeError,
   "NotIntegerError": HVMLNotIntegerError,
 };

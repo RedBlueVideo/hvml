@@ -44,6 +44,80 @@ describe( 'Video', () => {
     } );
   } );
 
+  describe( 'hasType()', () => {
+    it( 'returns `true` for types that are present', () => {
+      const video = new Video( {
+        "type": ["narrative", "documentary"],
+      } );
+
+      expect.assertions( 2 );
+
+      expect( video.hasType( 'narrative' ) ).toBe( true );
+      expect( video.hasType( 'documentary' ) ).toBe( true );
+    } );
+
+    it( 'returns `false` for types that are absent', () => {
+      const video = new Video( {
+        "type": ["narrative", "documentary"],
+      } );
+
+      expect.assertions( 3 );
+
+      expect( video.hasType( 'ad' ) ).toBe( false );
+      expect( video.hasType( ['ad', 'personal'] ) ).toBe( false );
+      expect( video.hasType( ['narrative', 'ad'] ) ).toBe( false );
+    } );
+
+    it( 'handles space-separated input values', () => {
+      const video = new Video( {
+        "type": ["narrative", "documentary"],
+      } );
+
+      expect.assertions( 5 );
+
+      expect( video.hasType( 'narrative documentary' ) ).toBe( true );
+      expect( video.hasType( '  narrative documentary' ) ).toBe( true );
+      expect( video.hasType( 'narrative documentary  ' ) ).toBe( true );
+      expect( video.hasType( 'narrative  documentary' ) ).toBe( true );
+      expect( video.hasType( '  narrative  documentary  ' ) ).toBe( true );
+    } );
+
+    it( 'disregards the order of parameters', () => {
+      const video = new Video( {
+        "type": ["narrative", "documentary"],
+      } );
+
+      expect( video.hasType( ['documentary', 'narrative'] ) ).toBe( true );
+    } );
+
+    it( 'throws an error for invalid parameters', () => {
+      const video = new Video( {
+        "type": ["narrative", "documentary"],
+      } );
+      const badInput = 0;
+      let thrownError;
+
+      expect.assertions( 2 );
+
+      expect( () => video.hasType( badInput ) ).toThrowError( Validation.ParamError );
+
+      try {
+        video.hasType( badInput );
+      } catch ( error ) {
+        thrownError = error;
+      }
+
+      expect( thrownError.data ).toEqual(
+        expect.objectContaining( {
+          "className": "Video",
+          "got": "Number",
+          "input": badInput,
+          "methodName": "hasType",
+        } ),
+      );
+    } );
+  } );
+
   describe( 'title', () => {
     // it( 'sets titles' )
 

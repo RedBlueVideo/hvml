@@ -13,6 +13,7 @@ class Video {
   _isValidType( type ) {
     switch ( type ) {
       case 'narrative':
+      case 'documentary':
       case 'ad':
       case 'personal':
       case 'historical':
@@ -123,6 +124,47 @@ class Video {
     }
 
     return this;
+  }
+
+  hasType( type ) {
+    if ( !this.type ) {
+      return false;
+    }
+
+    const errorData = {
+      ...this._baseErrorData,
+      "methodName": "hasType",
+      "expected": ["String", "Array"],
+      "input": type,
+    };
+    const hasAll = () => type.every( typeValue => this.type.indexOf( typeValue ) !== -1 );
+
+    if ( Array.isArray( type ) ) {
+      const numberOfTypesToCheck = type.length;
+      const numberOfTypesVideoHas = this.type.length;
+
+      if ( numberOfTypesToCheck > numberOfTypesVideoHas ) {
+        return false;
+      }
+
+      if ( numberOfTypesToCheck === 1 ) {
+        return ( this.type.indexOf( type[0] ) !== -1 );
+      }
+
+      return hasAll();
+    }
+
+    if ( isString( type ) ) {
+      // Split multi-value strings ( e.g. 'narrative documentary' ) into an array
+      if ( type.indexOf( ' ' ) !== -1 ) {
+        type = type.trim().replace( /\s+/g, ' ' ).split( ' ' );
+        return hasAll();
+      }
+
+      return ( this.type.indexOf( type ) !== -1 );
+    }
+
+    throw new Validation.ParamError( errorData );
   }
 
   setTitle( title, lang ) {
