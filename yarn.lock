@@ -359,6 +359,11 @@ atob@^2.1.1:
   resolved "https://registry.yarnpkg.com/atob/-/atob-2.1.2.tgz#6d9517eb9e030d2436666651e86bd9f6f13533c9"
   integrity sha512-Wm6ukoaOGJi/73p/cl2GvLjTI5JM1k/O14isD73YML8StrH/7/lRFgmg8nICZgD3bZZvjwCGxtMOD3wWNAu8cg==
 
+auto-curry@^0.2.1:
+  version "0.2.1"
+  resolved "https://registry.yarnpkg.com/auto-curry/-/auto-curry-0.2.1.tgz#d50a2c4273b465e5a2d311bbe946355a68be6e53"
+  integrity sha1-1QosQnO0ZeWi0xG76UY1Wmi+blM=
+
 aws-sign2@~0.7.0:
   version "0.7.0"
   resolved "https://registry.yarnpkg.com/aws-sign2/-/aws-sign2-0.7.0.tgz#b46e890934a9591f2d2f6f86d7e6a9f1b3fe76a8"
@@ -3582,6 +3587,13 @@ sisteransi@^1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/sisteransi/-/sisteransi-1.0.0.tgz#77d9622ff909080f1c19e5f4a1df0c1b0a27b88c"
   integrity sha512-N+z4pHB4AmUv0SjveWRd6q1Nj5w62m5jodv+GD8lvmbY/83T/rpbJGZOnK5T149OldDj4Db07BSv9xY4K6NTPQ==
+
+skip-if@^1.1.1:
+  version "1.1.1"
+  resolved "https://registry.yarnpkg.com/skip-if/-/skip-if-1.1.1.tgz#a812d0696d154f439a814d0fa6341f0d8aae94fc"
+  integrity sha512-UlpDqwiq6tgBsGHuG04VUd06Y6Ql/tW/FbZDRERMxksqW8q0zVlgjt3HiImDpE9vEteAbmvybyGenbHoyRfDUg==
+  dependencies:
+    auto-curry "^0.2.1"
 
 slash@^2.0.0:
   version "2.0.0"
