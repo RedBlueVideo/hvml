@@ -103,14 +103,19 @@ const JSON_LD = {
 // skipIf(condition, name, test)
 const skipIfXmllintUnavailable = skipIf( () => {
   let exitCode;
+  let error;
 
   try {
     exitCode = execSync( 'xmllint', { "encoding": "utf8" } );
-  } catch ( error ) {
-    exitCode = error.status;
+  } catch ( err ) {
+    error = err;
+    exitCode = err.status;
   }
 
-  return ( exitCode == 127 ); // eslint-disable-line eqeqeq
+  return (
+    ( exitCode === 127 )
+    || !/xmllint [options] XMLfiles/.test( error.message )
+  );
 } );
 
 describe( 'HVML', () => {

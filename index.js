@@ -61,33 +61,33 @@ class HVML {
   }
 
   validate( xmllintPath = 'xmllint' ) {
-    const commandNotFound = {
-      // /bin/sh: xmllint: command not found
-      // -bash: xmllint: command not found
-      // /bin/sh: 1: xmllint: not found
-      "shell": new RegExp( 'not found' ),
-      // xmllint is not recognized as an internal or external command, operable program or batch file
-      "windows": new RegExp( 'is not recognized as an internal or external command' ),
-    };
-
     // return this.xml.validate( this.xsd );
     return ( new Promise( ( resolve, reject ) => {
       exec( `${xmllintPath} --nowarning --noout --relaxng ${this.schemaPath} ${this.hvmlPath}`, ( error, stdout, stderr ) => { // eslint-disable-line
         if ( error ) {
-          const errorString = error.toString();
-          let validationErrors = errorString.trim().split( '\n' );
-          validationErrors.shift();
+          const xmllintNotFound = (
+            // Linux/macOS exit code 127 means command not found
+            ( error.code === 127 )
+            // Windows may exit with code 1 instead of 127,
+            // which is the same code thrown by xmllint
+            // when it finds validation errors.
+            //
+            // So instead, test for the nonexistence of a pass/fail message.
+            // (Rather than testing against “command not found” strings which
+            // will be localized into different languages for different users.)
+            || (
+              !/fails to validate/.test( error.message )
+              && !/validates/.test( error.message )
+            )
+          );
 
-          console.log( 'error', error );
-          console.log( 'stdout', stdout );
-          console.log( 'stderr', stderr );
-          console.log( 'validationErrors', validationErrors );
-
-          if ( commandNotFound.shell.test( errorString ) || commandNotFound.windows.test( errorString ) ) {
+          if ( xmllintNotFound ) {
             reject( new Error( 'xmllint is not installed or inaccessible' ) );
             return;
           }
 
+          let validationErrors = error.toString().trim().split( '\n' );
+          validationErrors.shift();
           validationErrors.pop();
 
           /* Array [
