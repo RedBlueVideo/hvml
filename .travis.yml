@@ -14,8 +14,6 @@ branches:
     - master
 
 cache:
+  yarn: true
   directories:
     - node_modules
-
-before_script:
-  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install yarn; fi
