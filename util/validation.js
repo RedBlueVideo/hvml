@@ -27,7 +27,19 @@ class HVMLTypeError extends HVMLDomainError {
     }
 
     if ( !data.got && ( 'input' in data ) ) {
-      data.got = data.input.constructor.name;
+      let gotType;
+      const gotTypeIsNull = ( data.input === null );
+
+      if ( data.input || !gotTypeIsNull ) {
+        gotType = data.input.constructor.name;
+      } else if ( gotTypeIsNull ) {
+        gotType = 'Null';
+      } else {
+        gotType = ( typeof data.input );
+        gotType = `${gotType.charAt( 0 ).toUpperCase()}${gotType.slice( 1 )}`;
+      }
+
+      data.got = gotType;
     }
 
     let expected;
