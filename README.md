@@ -1,6 +1,8 @@
 # hvml
 [HVML](https://hypervideo.tech) Parser for Node.js
 
+[![Build Status](https://api.travis-ci.com/RedBlueVideo/hvml.svg?branch=master)](https://travis-ci.com/RedBlueVideo/hvml)
+
 HVML (Hypervideo Markup Language) is a video metadata vocabulary. It covers three main classes of metadata:
 - Technical details, like the available resolutions or codecs of a media file;
 - Artistic details, like who appears in a given movie or what awards it has won; and
