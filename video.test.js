@@ -222,4 +222,81 @@ describe( 'Video', () => {
       expect( video.getDescription( 'text' ) ).toBe( 'NopeDopePope' );
     } );
   } );
+
+  describe( 'runtime', () => {
+    const sampleRuntime = {
+      "minutes": 90,
+      "hours": 1.5,
+      "iso8601": 'PT90M',
+    };
+
+    it( 'throws an error for incorrect input values', () => {
+      const video = new Video();
+      const badValue = null;
+      let thrownError;
+
+      expect.assertions( 2 );
+
+      expect( () => video.setRuntime( badValue ) ).toThrowError( Validation.TypeError );
+
+      try {
+        video.setRuntime( badValue );
+      } catch ( error ) {
+        thrownError = error;
+      }
+
+      expect( thrownError.data ).toEqual(
+        expect.objectContaining( {
+          "className": "Video",
+          "field": "runtime",
+          "expected": [
+            "Number",
+            "ISO8601 Duration",
+          ],
+          "got": "Null",
+          "input": null,
+        } ),
+      );
+    } );
+
+    describe( 'sets and gets the same value', () => {
+      test( 'minutes', () => {
+        const video = new Video();
+        video.setRuntime( sampleRuntime.minutes );
+        expect( video.getRuntime( 'minutes' ) ).toBe( sampleRuntime.minutes );
+      } );
+
+      test( 'ISO 8601 duration', () => {
+        const video = new Video();
+        video.setRuntime( sampleRuntime.iso8601 );
+        expect( video.getRuntime( 'iso8601' ) ).toBe( sampleRuntime.iso8601 );
+      } );
+    } );
+
+    describe( 'sets a value and gets back another equivalent value', () => {
+      test( 'minutes → hours', () => {
+        const video = new Video();
+        video.setRuntime( sampleRuntime.minutes );
+        expect( video.getRuntime( 'hours' ) ).toBe( sampleRuntime.hours );
+      } );
+
+      test( 'minutes → ISO 8601 duration', () => {
+        const video = new Video();
+        video.setRuntime( sampleRuntime.minutes );
+        expect( video.getRuntime( 'iso8601' ) ).toBe( sampleRuntime.iso8601 );
+      } );
+
+      test( 'ISO 8601 duration → minutes', () => {
+        const video = new Video();
+        video.setRuntime( sampleRuntime.iso8601 );
+        expect( video.getRuntime( 'minutes' ) ).toBe( sampleRuntime.minutes );
+      } );
+
+      test( 'ISO 8601 duration → hours', () => {
+        const video = new Video();
+        video.setRuntime( sampleRuntime.iso8601 );
+        expect( video.getRuntime( 'hours' ) ).toBe( sampleRuntime.hours );
+      } );
+    } );
+  } );
 } );
