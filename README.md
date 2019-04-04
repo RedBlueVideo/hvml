@@ -6,7 +6,7 @@
 HVML (Hypervideo Markup Language) is a video metadata vocabulary. It covers three main classes of metadata:
 - Technical details, like the available resolutions or codecs of a media file;
 - Artistic details, like who appears in a given movie or what awards it has won; and
-- interactive UI instructions for compatible video players such as [RedBlue](https://github.com/RedBlueVideo/redblue).
+- Interactive UI instructions for compatible video players such as [RedBlue](https://github.com/RedBlueVideo/redblue).
 
 HVML is designed to be human-friendly enough to write by hand in most cases. This library is not required in order to use it; it just provides an imperative API for working with it programmatically.
 
