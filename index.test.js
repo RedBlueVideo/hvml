@@ -114,7 +114,7 @@ const skipIfXmllintUnavailable = skipIf( () => {
 
   return (
     ( exitCode === 127 )
-    || !/xmllint [options] XMLfiles/.test( error.message )
+    || !/xmllint \[options\] XMLfiles/.test( error.stdout )
   );
 } );
 
