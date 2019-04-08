@@ -10,6 +10,7 @@
     "test-xsd": "jest --watch -t 'HVML Schema Definition' --verbose",
     "test-video": "jest --watch --verbose -t 'Video'",
     "coverage": "jest --coverage",
+    "codecov": "./node_modules/.bin/codecov",
     "xsd": "xmllint --nowarning --noout --schema xsd/hvml.xsd examples/hvml.xml",
     "rng": "xmllint --nowarning --noout --relaxng rng/hvml.rng examples/hvml.xml",
     "rng2xsd": "java -jar ./jing-trang/build/trang.jar -I rng -O xsd rng/hvml.rng xsd/hvml.xsd",
@@ -32,6 +33,7 @@
   },
   "homepage": "https://github.com/RedBlueVideo/hvml#readme",
   "dependencies": {
+    "codecov": "^3.3.0",
     "libxmljs": "^0.19.5",
     "lodash.isnumber": "^3.0.3",
     "lodash.isplainobject": "^4.0.6",

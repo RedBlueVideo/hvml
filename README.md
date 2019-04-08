@@ -1,7 +1,7 @@
 # hvml
 [HVML](https://hypervideo.tech) Parser for Node.js
 
-[![Build Status](https://api.travis-ci.com/RedBlueVideo/hvml.svg?branch=master)](https://travis-ci.com/RedBlueVideo/hvml)
+[![Build Status](https://api.travis-ci.com/RedBlueVideo/hvml.svg?branch=master)](https://travis-ci.com/RedBlueVideo/hvml) [![Codecov Coverage](https://img.shields.io/codecov/c/github/RedBlueVideo/hvml/master.svg)](https://codecov.io/gh/RedBlueVideo/hvml/)
 
 HVML (Hypervideo Markup Language) is a video metadata vocabulary. It covers three main classes of metadata:
 - Technical details, like the available resolutions or codecs of a media file;
