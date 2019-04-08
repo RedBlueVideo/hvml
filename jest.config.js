@@ -5,4 +5,10 @@ module.exports = {
     "text",
     "lcov",
   ],
+  "coveragePathIgnorePatterns": [
+    "node_modules/",
+    "package.json",
+    ".eslintrc.js",
+    "jest.config.js",
+  ],
 };
