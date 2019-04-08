@@ -45,6 +45,7 @@
   "devDependencies": {
     "eslint": "5.3.0",
     "eslint-config-airbnb-base": "^13.1.0",
+    "eslint-config-hughx": "^0.0.1",
     "eslint-plugin-import": "^2.16.0",
     "jest": "^24.1.0",
     "skip-if": "^1.1.1"

@@ -1001,6 +1001,11 @@ eslint-config-airbnb-base@^13.1.0:
     object.assign "^4.1.0"
     object.entries "^1.0.4"
 
+eslint-config-hughx@^0.0.1:
+  version "0.0.1"
+  resolved "https://registry.yarnpkg.com/eslint-config-hughx/-/eslint-config-hughx-0.0.1.tgz#d6b3983da314c8e96d3310553894e87b5cf5aac9"
+  integrity sha512-MSxwus84bbH6Yieo0UrYUy6GTebkdNZ71fb9W3TjLAj3u6RCmgwDq7jSuewTLMXFK+A5nlEgEyMUMsv+YjhAJg==
+
 eslint-import-resolver-node@^0.3.2:
   version "0.3.2"
   resolved "https://registry.yarnpkg.com/eslint-import-resolver-node/-/eslint-import-resolver-node-0.3.2.tgz#58f15fb839b8d0576ca980413476aab2472db66a"
