@@ -39,7 +39,7 @@ class Time {
           case 'D':
             hours += ( parseInt( matches[4], 10 ) * 24 );
             break;
-          default:
+          // no default
         }
       }
 
@@ -89,7 +89,7 @@ class Time {
           case 'D':
             minutes += ( parseInt( matches[4], 10 ) * 1440 );
             break;
-          default:
+          // no default
         }
       }
 
