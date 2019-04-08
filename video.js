@@ -311,7 +311,7 @@ class Video {
             this.description.xhtml = Transform.wrapXhtml( description.trim() );
             break;
           case 'object':
-            this.description.xhtml = Transform.wrapXhtml( Transform.toXmlString( description ) );
+            this.description.xhtml = Transform.wrapXhtml( Transform.jsonMlToXmlString( description ) );
             break;
           default:
             throw new Validation.TypeError( errorData );
@@ -329,7 +329,7 @@ class Video {
       case 'jsonml':
       case 'json':
         if ( this.description.xhtml ) {
-          return Transform.toJsonMl( this.description.xhtml );
+          return Transform.xmlStringToJsonMl( this.description.xhtml );
         }
 
         if ( this.description.text ) {
@@ -359,10 +359,10 @@ class Video {
               description = description.replace( /\n/g, '<br />' );
             }
 
-            description = Transform.toJsonMl( Transform.wrapXhtml( `<p>${description}</p>` ) );
+            description = Transform.xmlStringToJsonMl( Transform.wrapXhtml( `<p>${description}</p>` ) );
           }
 
-          return Transform.toXmlString( description );
+          return Transform.jsonMlToXmlString( description );
         }
         break;
       case 'text':
@@ -372,7 +372,7 @@ class Video {
         }
 
         if ( this.description.xhtml ) {
-          return Transform.getJsonMlTextContent( Transform.toJsonMl( this.description.xhtml )[1], true, true );
+          return Transform.getJsonMlTextContent( Transform.xmlStringToJsonMl( this.description.xhtml )[1], true, true );
         }
     }
 
