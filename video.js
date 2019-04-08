@@ -35,7 +35,7 @@ class Video {
     if ( badTypes.length ) {
       throw new Validation.EnumError( {
         ...this._baseErrorData,
-        "field": "type",
+        "fieldName": "type",
         "badValues": badTypes,
       } );
     }
@@ -134,6 +134,7 @@ class Video {
     const errorData = {
       ...this._baseErrorData,
       "methodName": "hasType",
+      "fieldName": "type",
       "expected": ["String", "Array"],
       "input": type,
     };
@@ -164,7 +165,7 @@ class Video {
       return ( this.type.indexOf( type ) !== -1 );
     }
 
-    throw new Validation.ParamError( errorData );
+    throw new Validation.TypeError( errorData );
   }
 
   isFictional() {
@@ -182,7 +183,7 @@ class Video {
   setTitle( title, lang ) {
     const errorData = {
       ...this._baseErrorData,
-      "field": "title",
+      "fieldName": "title",
       "expected": "String",
       "input": title,
     };
@@ -222,7 +223,7 @@ class Video {
   setEpisode( number ) {
     const errorData = {
       ...this._baseErrorData,
-      "field": "episode",
+      "fieldName": "episode",
       "expected": "Integer",
       "input": number,
     };
@@ -245,7 +246,7 @@ class Video {
   setRuntime( runtime ) {
     const errorData = {
       ...this._baseErrorData,
-      "field": "runtime",
+      "fieldName": "runtime",
       "expected": ["Number", "ISO8601 Duration"],
       "input": runtime,
     };
@@ -293,7 +294,7 @@ class Video {
   setDescription( description, type = 'text' ) {
     const errorData = {
       ...this._baseErrorData,
-      "field": "description",
+      "fieldName": "description",
       "expected": ["String", "Object"],
     };
 

@@ -4,6 +4,11 @@ function softTrim( string ) {
   return string.replace( /^\x20+|\x20+$/gm, '' );
 }
 
+function ucFirst( string ) {
+  return `${string.charAt( 0 ).toUpperCase()}${string.slice( 1 )}`;
+}
+
 module.exports = {
   softTrim,
+  ucFirst,
 };

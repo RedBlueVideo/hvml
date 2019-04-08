@@ -1,3 +1,5 @@
+const { ucFirst } = require( './strings' );
+
 // https://rclayton.silvrback.com/custom-errors-in-node-js
 class HVMLDomainError extends Error {
   constructor( message ) {
@@ -14,104 +16,185 @@ class HVMLDomainError extends Error {
 class HVMLEnumError extends HVMLDomainError {
   /* className, field, badValues */
   constructor( data ) {
-    super( `The following values are invalid for ${data.className}::${data.field}: ${data.badValues.join( ', ' )}` );
+    let forField = '';
+
+    if ( !data ) {
+      const error = new HVMLTypeError( {
+        "className": "HVMLEnumError",
+        "expected": "Object",
+        "input": data,
+        "methodName": "constructor",
+        "fieldName": "data",
+      } );
+
+      throw new TypeError( error.message );
+    } else if ( !( 'badValues' in data ) ) {
+      const error = new HVMLTypeError( {
+        "className": "HVMLEnumError",
+        "expected": "Array",
+        "input": data.badValues,
+        "methodName": "constructor",
+        "fieldName": "data.badValues",
+      } );
+
+      throw new TypeError( error.message );
+    }
+
+    if ( 'className' in data ) {
+      forField += ` for ${data.className}${data.fieldName ? ( '::' + data.fieldName ) : '.constructor'}`; // eslint-disable-line prefer-template
+    }
+
+    super( `The following values are invalid${forField}: ${data.badValues.join( ', ' )}` );
+
     this.data = data;
   }
 }
 
 class HVMLTypeError extends HVMLDomainError {
   /* className, field, expected, extraInfo = '' */
-  constructor( data ) {
-    if ( !data.extraInfo ) {
-      data.extraInfo = null;
+  static getGot( data ) {
+    let gotType;
+    const inputTypeIsNull = ( data.input === null );
+    const inputTypeIsNotNull = !inputTypeIsNull;
+
+    if ( data.input && inputTypeIsNotNull ) {
+      gotType = data.input.constructor.name;
+    } else if ( inputTypeIsNull ) {
+      gotType = 'Null';
+    } else {
+      gotType = ucFirst( typeof data.input );
     }
 
-    if ( !data.got && ( 'input' in data ) ) {
-      let gotType;
-      const gotTypeIsNull = ( data.input === null );
+    return gotType;
+  }
 
-      if ( data.input || !gotTypeIsNull ) {
-        gotType = data.input.constructor.name;
-      } else if ( gotTypeIsNull ) {
-        gotType = 'Null';
-      } else {
-        gotType = ( typeof data.input );
-        gotType = `${gotType.charAt( 0 ).toUpperCase()}${gotType.slice( 1 )}`;
-      }
-
-      data.got = gotType;
-    }
-
+  static getExpected( data ) {
     let expected;
+
     if ( Array.isArray( data.expected ) ) {
       expected = data.expected.join( '|' );
     } else {
       ( { expected } = data );
     }
 
-    let fieldOrParameter = '';
+    if ( !expected ) {
+      const error = new HVMLTypeError( {
+        "className": "HVMLTypeError",
+        "expected": "String",
+        "input": expected,
+        "methodName": "constructor",
+        "fieldName": "data.expected",
+      } );
+
+      throw new TypeError( error.message );
+    }
+
+    return expected;
+  }
+
+  static getFieldOrParameter( data ) {
     const hasClassName = ( 'className' in data );
     const hasMethodName = ( 'methodName' in data );
-    const hasField = ( 'field' in data );
+    const hasFieldName = ( 'fieldName' in data );
+    let fieldOrParameter = '';
 
-    if ( hasClassName && hasMethodName ) {
-      fieldOrParameter += `${data.className}.${data.methodName}`;
-    } else if ( hasClassName && !hasMethodName ) {
+    if ( hasClassName ) {
       fieldOrParameter += data.className;
-    } else if ( !hasClassName && hasMethodName ) {
+
+      if ( hasMethodName ) {
+        fieldOrParameter += `.${data.methodName}`;
+      }
+    } else if ( hasMethodName ) {
       fieldOrParameter += data.methodName;
     }
 
-    if ( hasField ) {
-      fieldOrParameter += `::${data.field}`;
+    if ( hasFieldName ) {
+      fieldOrParameter += `::${data.fieldName}`;
+    } else if ( !hasClassName && !hasMethodName ) {
+      fieldOrParameter = 'Field or parameter';
     } else {
-      fieldOrParameter += `()`;
+      const error = new HVMLTypeError( {
+        "className": "HVMLTypeError",
+        "expected": "String",
+        "input": data.fieldName,
+        "methodName": "constructor",
+        "fieldName": "data.fieldName",
+      } );
+
+      throw new TypeError( error.message );
     }
 
-    super( `${fieldOrParameter} must be of type ${expected}; got ${data.got}${data.extraInfo || ''}` );
+    return fieldOrParameter;
+  }
+
+  constructor( data ) {
+    if ( !data ) {
+      const error = new HVMLTypeError( {
+        "className": "HVMLTypeError",
+        "expected": "Object",
+        "input": data,
+        "methodName": "constructor",
+        "fieldName": "data",
+      } );
+
+      throw new TypeError( error.message );
+    }
+
+    const fieldOrParameter = HVMLTypeError.getFieldOrParameter( data );
+    const expected = HVMLTypeError.getExpected( data );
+
+    data.extraInfo = ( data.extraInfo || null );
+    data.got = ( data.got || HVMLTypeError.getGot( data ) );
+
+    super( `${fieldOrParameter} must be of type ${expected}${data.extraInfo || ''}; got ${data.got}` );
+
     this.data = data;
   }
 }
 
-class HVMLParamError extends HVMLTypeError {}
-
 class HVMLRangeError extends HVMLTypeError {
   /* className, field, expected, lowerBound, upperBound, exclusivity = 'inclusive' */
   constructor( data ) {
+    const lowerBoundDefault = Number.NEGATIVE_INFINITY;
+    const upperBoundDefault = Number.POSITIVE_INFINITY;
     let lowerBoundDefined;
     let upperBoundDefined;
     let extraInfo;
 
-    if ( typeof data.lowerBound !== 'undefined' ) {
-      lowerBoundDefined = true;
+    if ( data ) {
+      if ( typeof data.lowerBound !== 'undefined' ) {
+        lowerBoundDefined = true;
+      } else {
+        data.lowerBound = lowerBoundDefault;
+      }
+
+      if ( typeof data.upperBound !== 'undefined' ) {
+        upperBoundDefined = true;
+      } else {
+        data.upperBound = upperBoundDefault;
+      }
     } else {
-      data.lowerBound = Number.NEGATIVE_INFINITY;
+      data = {};
+      data.lowerBound = lowerBoundDefault;
+      data.upperBound = upperBoundDefault;
     }
 
-    if ( typeof data.upperBound !== 'undefined' ) {
-      upperBoundDefined = true;
-    } else {
-      data.upperBound = Number.POSITIVE_INFINITY;
-    }
-
-    if ( !data.exclusivity ) {
-      data.exclusivity = 'inclusive';
-    }
+    data.expected = ( data.expected || 'Number' );
+    data.exclusivity = ( data.exclusivity || 'inclusive' );
 
     if ( lowerBoundDefined && !upperBoundDefined ) {
       extraInfo = ` with a value greater than or equal to ${data.lowerBound}`;
     } else if ( !lowerBoundDefined && upperBoundDefined ) {
       extraInfo = ` with a value less than or equal to ${data.upperBound}`;
-    } else if ( lowerBoundDefined && upperBoundDefined ) {
-      extraInfo = ` with a value between ${data.lowerBound} and ${data.upperBound} (${data.exclusivity})`;
     } else {
-      extraInfo = ``;
+      extraInfo = ` with a value between ${data.lowerBound} and ${data.upperBound} (${data.exclusivity})`;
     }
 
     super( {
       ...data,
       extraInfo,
     } );
+
     this.data = data;
   }
 }
@@ -126,9 +209,9 @@ class HVMLNotIntegerError extends HVMLTypeError {
 }
 
 module.exports = {
+  "DomainError": HVMLDomainError,
   "EnumError": HVMLEnumError,
   "TypeError": HVMLTypeError,
-  "ParamError": HVMLParamError,
   "RangeError": HVMLRangeError,
   "NotIntegerError": HVMLNotIntegerError,
 };

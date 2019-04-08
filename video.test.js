@@ -39,7 +39,7 @@ describe( 'Video', () => {
 
     expect( thrownError.data ).toEqual( {
       "className": "Video",
-      "field": "type",
+      "fieldName": "type",
       "badValues": ["bad", "evil"],
     } );
   } );
@@ -99,7 +99,7 @@ describe( 'Video', () => {
 
       expect.assertions( 2 );
 
-      expect( () => video.hasType( badInput ) ).toThrowError( Validation.ParamError );
+      expect( () => video.hasType( badInput ) ).toThrowError( Validation.TypeError );
 
       try {
         video.hasType( badInput );
@@ -248,7 +248,7 @@ describe( 'Video', () => {
       expect( thrownError.data ).toEqual(
         expect.objectContaining( {
           "className": "Video",
-          "field": "runtime",
+          "fieldName": "runtime",
           "expected": [
             "Number",
             "ISO8601 Duration",
