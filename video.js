@@ -1,6 +1,3 @@
-// const fs = require( 'fs' );
-// const xml = require( 'libxmljs' );
-// const set = require( 'lodash.set' );
 const isPlainObject = require( 'lodash.isplainobject' );
 const isNumber = require( 'lodash.isnumber' );
 const isString = require( 'lodash.isstring' );
@@ -10,7 +7,7 @@ const Validation = require( './util/validation' );
 const Transform = require( './util/transform' );
 
 class Video {
-  _isValidType( type ) {
+  static isValidType( type ) {
     switch ( type ) {
       case 'narrative':
       case 'documentary':
@@ -27,7 +24,7 @@ class Video {
     const badTypes = [];
 
     types.forEach( ( type ) => {
-      if ( !this._isValidType( type ) ) {
+      if ( !Video.isValidType( type ) ) {
         badTypes.push( type );
       }
     } );
@@ -73,10 +70,6 @@ class Video {
     return { language, region };
   }
 
-  // _escapeForJSON( html ) {
-  //   return html.replace( /"/g, `\\"` );
-  // }
-
   get _baseErrorData() {
     return {
       "className": this.constructor.name,
@@ -87,6 +80,10 @@ class Video {
     let type;
     let language;
     let region;
+    const errorData = {
+      ...this._baseErrorData,
+      "methodName": "constructor",
+    };
 
     if ( isPlainObject( configOrType ) ) {
       ( { type, lang, id } = configOrType );
@@ -98,7 +95,12 @@ class Video {
       if ( isString( type ) ) {
         type = type.replace( /\s+/g, ' ' ).trim().split( ' ' );
       } else if ( !Array.isArray( type ) ) {
-        throw new Error( `Parameter \`type\` must be of type Array or String` );
+        throw new Validation.TypeError( {
+          ...errorData,
+          "fieldName": "type",
+          "expected": ["String", "Array"],
+          "input": type,
+        } );
       }
 
       this._validateTypes( type );
@@ -114,10 +116,15 @@ class Video {
     this.language = language;
     this.region = region;
 
-    if ( id ) {
-      if ( typeof id !== 'string' ) {
+    if ( typeof id !== 'undefined' ) {
+      if ( !isString( id ) ) {
         // @todo: validate for XML ID
-        throw new Error( `Parameter \`id\` must be of type String` );
+        throw new Validation.TypeError( {
+          ...errorData,
+          "fieldName": "id",
+          "expected": "String",
+          "input": id,
+        } );
       }
 
       this.id = id;
@@ -168,10 +175,6 @@ class Video {
     throw new Validation.TypeError( errorData );
   }
 
-  isFictional() {
-    return ( this.hasType( 'narrative' ) || this.hasType( 'ad' ) );
-  }
-
   isVlogEpisode() {
     return this.hasType( ['personal', 'documentary'] );
   }
@@ -187,8 +190,8 @@ class Video {
       "expected": "String",
       "input": title,
     };
-    let language;
-    let region;
+    let language = '_';
+    let region = '_';
 
     if ( !isString( title ) ) {
       throw new Validation.TypeError( errorData );
@@ -199,8 +202,7 @@ class Video {
     if ( lang ) {
       ( { language, region } = this._getLanguageAndRegion( lang, () => this._getRegion( lang ) ) );
     } else {
-      language = '_';
-      region = '_';
+      ( { language, region } = this );
     }
 
     this.title[language] = this.title[language] || {};
@@ -275,6 +277,7 @@ class Video {
   }
 
   getRuntime( format ) {
+    /* istanbul ignore else */
     if ( isString( format ) ) {
       format = format.toLowerCase();
     }
@@ -294,7 +297,9 @@ class Video {
   setDescription( description, type = 'text' ) {
     const errorData = {
       ...this._baseErrorData,
+      "methodName": "setDescription",
       "fieldName": "description",
+      "input": description,
       "expected": ["String", "Object"],
     };
 
@@ -305,13 +310,14 @@ class Video {
     this.description = {};
 
     switch ( type ) {
+      case 'jsonml':
+        this.description.xhtml = Transform.jsonMlToXmlString( Transform.wrapJsonMl( description ) );
+        break;
+
       case 'xhtml':
         switch ( typeof description ) {
           case 'string':
             this.description.xhtml = Transform.wrapXhtml( description.trim() );
-            break;
-          case 'object':
-            this.description.xhtml = Transform.wrapXhtml( Transform.jsonMlToXmlString( description ) );
             break;
           default:
             throw new Validation.TypeError( errorData );
@@ -324,22 +330,30 @@ class Video {
     }
   }
 
-  getDescription( type, parseMarkdown = true, newlinesToBRs = true ) {
+  getDescription( type, parseMarkdown = true, newlinesToBRs = true ) { // eslint-disable-line consistent-return
+    if ( !this.description ) {
+      return null;
+    }
+
     switch ( type ) {
       case 'jsonml':
-      case 'json':
+      // case 'json':
+        /* istanbul ignore else */
         if ( this.description.xhtml ) {
           return Transform.xmlStringToJsonMl( this.description.xhtml );
         }
 
+        /* istanbul ignore else */
         if ( this.description.text ) {
           return Transform.markdownToJsonMl( this.description.text );
         }
+        /* istanbul ignore next */
         break;
 
       case 'xhtml':
       // case 'html':
       // case 'xml':
+        /* istanbul ignore else */
         if ( this.description.xhtml ) {
           return this.description.xhtml;
         }
@@ -347,6 +361,7 @@ class Video {
         // If user set a text description, and is trying to get back XHTML,
         // assume the text is Markdown-formatted and convert it to JSON-ML
         // before turning it into a DOM string
+        /* istanbul ignore else */
         if ( this.description.text ) {
           let description;
 
@@ -364,19 +379,21 @@ class Video {
 
           return Transform.jsonMlToXmlString( description );
         }
+        /* istanbul ignore next */
         break;
       case 'text':
       default:
+        /* istanbul ignore else */
         if ( this.description.text ) {
           return this.description.text;
         }
 
+        /* istanbul ignore else */
         if ( this.description.xhtml ) {
           return Transform.getJsonMlTextContent( Transform.xmlStringToJsonMl( this.description.xhtml )[1], true, true );
         }
+        // throw new Validation.DomainError( 'Something broke. Please file a bug.' );
     }
-
-    return null;
   }
 }
 
