@@ -1,6 +1,6 @@
-const isPlainObject = require( 'lodash.isplainobject' );
-const isNumber = require( 'lodash.isnumber' );
-const isString = require( 'lodash.isstring' );
+const isPlainObject = require( 'lodash/isPlainObject' );
+const isNumber = require( 'lodash/isNumber' );
+const isString = require( 'lodash/isString' );
 
 const Time = require( './util/time' );
 const Validation = require( './util/validation' );
