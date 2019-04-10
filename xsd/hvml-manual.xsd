@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema
+  xmlns="https://hypervideo.tech/hvml#"
+  xmlns:xs="http://www.w3.org/2001/XMLSchema"
+  xmlns:xml="http://www.w3.org/XML/1998/namespace"
+  xmlns:xhtml="http://www.w3.org/1999/xhtml"
+  xmlns:atom="http://www.w3.org/2005/Atom"
+  targetNamespace="https://hypervideo.tech/hvml#"
+  elementFormDefault="qualified"
+>
+  <!-- https://www.w3.org/2005/08/xml.xsd -->
+  <xs:import namespace="http://www.w3.org/XML/1998/namespace" schemaLocation="w3c/xml.xsd" />
+  <!-- https://www.w3.org/MarkUp/SCHEMA/xhtml11.xsd -->
+  <!-- <xs:import namespace="http://www.w3.org/1999/xhtml" schemaLocation="xsd/xhtml11.xsd" /> -->
+  <!-- http://cweiske.de/tagebuch/atom-validation.htm -->
+  <!-- <xs:import namespace="http://www.w3.org/2005/Atom" schemaLocation="trang/atom.xsd" /> -->
+
+  <xs:attributeGroup name="xml-global-attributes">
+    <xs:attribute ref="xml:lang" />
+    <xs:attribute ref="xml:id" />
+  </xs:attributeGroup>
+
+  <!-- <xs:group name="anyXHTML">
+    <xs:sequence>
+      <xs:any namespace="http://www.w3.org/1999/xhtml" processContents="skip" />
+    </xs:sequence>
+  </xs:group> -->
+
+  <xs:element name="video">
+    <xs:complexType>
+      <xs:all>
+        <xs:element name="title" type="xs:string" />
+        <xs:element name="episode" type="xs:integer" />
+        <xs:element name="recorded" type="xs:date" />
+        <xs:element ref="description" />
+      </xs:all>
+      <!-- <xs:attribute ref="type" /> -->
+      <xs:attributeGroup ref="xml-global-attributes" />
+      <xs:attribute name="type">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:pattern value="narrative|ad|personal|historical" />
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:attribute>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="description">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="atom:atomXHTMLTextConstruct" />
+      </xs:sequence>
+      <xs:attribute name="type">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:pattern value="xhtml" />
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:attribute>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="hvml">
+    <xs:complexType>
+      <xs:all>
+        <xs:element ref="video" />
+      </xs:all>
+      <xs:attributeGroup ref="xml-global-attributes" />
+      <xs:attribute name="hidden" />
+    </xs:complexType>
+  </xs:element>
+</xs:schema>

@@ -61,6 +61,4 @@ typings/
 .DS_Store
 
 # Project-specific
-dev.js
-dev.html
 dist/
