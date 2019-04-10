@@ -7,6 +7,7 @@ module.exports = {
   ],
   "coveragePathIgnorePatterns": [
     "node_modules/",
+    "dist/",
     "package.json",
     ".eslintrc.js",
     "jest.config.js",

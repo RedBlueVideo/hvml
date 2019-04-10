@@ -15,7 +15,8 @@
     "rng": "xmllint --nowarning --noout --relaxng rng/hvml.rng examples/hvml.xml",
     "rng2xsd": "java -jar ./jing-trang/build/trang.jar -I rng -O xsd rng/hvml.rng xsd/hvml.xsd",
     "jing-trang-build": "cd jing-trang && ./ant",
-    "trang": "java -jar ./jing-trang/build/trang.jar"
+    "trang": "java -jar ./jing-trang/build/trang.jar",
+    "dist": "yarn run test && node ./npmify.js"
   },
   "repository": {
     "type": "git",
@@ -33,7 +34,6 @@
   },
   "homepage": "https://github.com/RedBlueVideo/hvml#readme",
   "dependencies": {
-    "codecov": "^3.3.0",
     "libxmljs": "^0.19.5",
     "lodash.isnumber": "^3.0.3",
     "lodash.isplainobject": "^4.0.6",
@@ -43,11 +43,14 @@
     "xml-trident": "^1.0.2"
   },
   "devDependencies": {
+    "codecov": "^3.3.0",
     "eslint": "5.3.0",
     "eslint-config-airbnb-base": "^13.1.0",
     "eslint-config-hughx": "^0.0.1",
     "eslint-plugin-import": "^2.16.0",
     "jest": "^24.1.0",
+    "recursive-copy": "^2.0.10",
+    "rimraf": "^2.6.3",
     "skip-if": "^1.1.1"
   }
 }

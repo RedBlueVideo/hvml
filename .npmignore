@@ -2,8 +2,17 @@ coverage/
 examples/
 rng/atom.rng
 .eslintrc.json
+.eslintrc.js
 *.test.js
 yarn.lock
 *.log
 .gitattributes
 .gitmodules
+.eslintignore
+jest.config.js
+webpack.config.js
+.travis.yml
+dist/
+dev.js
+.tern-project
+npmify.js

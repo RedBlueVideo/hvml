@@ -63,3 +63,4 @@ typings/
 # Project-specific
 dev.js
 dev.html
+dist/
