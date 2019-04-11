@@ -23,6 +23,32 @@ describe( 'Video', () => {
     } );
   } );
 
+  it( 'throws an error for invalid `config` values', () => {
+    let thrownError;
+    const badConfig = ['bad', 'config'];
+
+    expect.assertions( 2 );
+
+    expect( () => new Video( badConfig ) ).toThrowError( Validation.TypeError );
+
+    try {
+      new Video( badConfig ); // eslint-disable-line no-new
+    } catch ( error ) {
+      thrownError = error;
+    }
+
+    expect( thrownError.data ).toEqual(
+      expect.objectContaining( {
+        "className": "Video",
+        "methodName": "constructor",
+        "fieldName": "config",
+        "expected": "Object",
+        "got": "Array",
+        "input": badConfig,
+      } ),
+    );
+  } );
+
   it( 'throws an error for invalid `type` values', () => {
     const badTypes = {
       "type": ['narrative', 'bad', 'evil'],
@@ -41,7 +67,7 @@ describe( 'Video', () => {
 
     expect( thrownError.data ).toEqual( {
       "className": "Video",
-      "fieldName": "type",
+      "fieldName": "config.type",
       "badValues": ["bad", "evil"],
     } );
   } );
@@ -65,7 +91,7 @@ describe( 'Video', () => {
     expect( thrownError.data ).toEqual(
       expect.objectContaining( {
         "className": "Video",
-        "fieldName": "type",
+        "fieldName": "config.type",
         "expected": ["String", "Array"],
         "got": "Number",
         "input": badType.type,

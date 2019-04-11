@@ -1,6 +1,7 @@
 const isPlainObject = require( 'lodash/isPlainObject' );
 const isNumber = require( 'lodash/isNumber' );
 const isString = require( 'lodash/isString' );
+const isUndefined = require( 'lodash/isUndefined' );
 
 const Time = require( './util/time' );
 const Validation = require( './util/validation' );
@@ -20,7 +21,7 @@ class Video {
     }
   }
 
-  _validateTypes( types ) {
+  _validateTypes( types, fieldName = 'type' ) {
     const badTypes = [];
 
     types.forEach( ( type ) => {
@@ -32,7 +33,7 @@ class Video {
     if ( badTypes.length ) {
       throw new Validation.EnumError( {
         ...this._baseErrorData,
-        "fieldName": "type",
+        fieldName,
         "badValues": badTypes,
       } );
     }
@@ -76,8 +77,7 @@ class Video {
     };
   }
 
-  constructor( configOrType, lang, id ) {
-    let type;
+  constructor( config = {} ) {
     let language;
     let region;
     const errorData = {
@@ -85,30 +85,33 @@ class Video {
       "methodName": "constructor",
     };
 
-    if ( isPlainObject( configOrType ) ) {
-      ( { type, lang, id } = configOrType );
-    } else {
-      type = configOrType;
+    if ( !isPlainObject( config ) ) {
+      throw new Validation.TypeError( {
+        ...errorData,
+        "fieldName": "config",
+        "expected": "Object",
+        "input": config,
+      } );
     }
 
-    if ( type ) {
-      if ( isString( type ) ) {
-        type = type.replace( /\s+/g, ' ' ).trim().split( ' ' );
-      } else if ( !Array.isArray( type ) ) {
+    if ( config.type ) {
+      if ( isString( config.type ) ) {
+        config.type = config.type.replace( /\s+/g, ' ' ).trim().split( ' ' );
+      } else if ( !Array.isArray( config.type ) ) {
         throw new Validation.TypeError( {
           ...errorData,
-          "fieldName": "type",
+          "fieldName": "config.type",
           "expected": ["String", "Array"],
-          "input": type,
+          "input": config.type,
         } );
       }
 
-      this._validateTypes( type );
-      this.type = type;
+      this._validateTypes( config.type, 'config.type' );
+      this.type = config.type;
     }
 
-    if ( lang ) {
-      ( { language, region } = this._getLanguageAndRegion( lang ) );
+    if ( config.lang ) {
+      ( { language, region } = this._getLanguageAndRegion( config.lang ) );
     } else {
       language = '_';
       region = '_';
@@ -116,18 +119,18 @@ class Video {
     this.language = language;
     this.region = region;
 
-    if ( typeof id !== 'undefined' ) {
-      if ( !isString( id ) ) {
+    if ( !isUndefined( config.id ) ) {
+      if ( !isString( config.id ) ) {
         // @todo: validate for XML ID
         throw new Validation.TypeError( {
           ...errorData,
           "fieldName": "id",
           "expected": "String",
-          "input": id,
+          "input": config.id,
         } );
       }
 
-      this.id = id;
+      this.id = config.id;
     }
 
     return this;

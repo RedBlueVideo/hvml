@@ -22,45 +22,70 @@ npm install hvml
 ## Example Usage
 
 ```js
-const HVML = require( 'hvml' );
+const { HVML, Video } = require( 'hvml' );
+
 const hvml = new HVML( './hvml.xml' );
 hvml.ready.then( () => {
   // Instance methods available now
   console.log( hvml.toJson() );
 } );
+
+const video = new Video( {
+  "type": ["personal", "documentary"],
+  "lang": "en-US",
+  "id": "welcome-to-my-channel",
+} );
+video.setTitle( 'Welcome to My Channel!' );
+video.setTitle( 'チャンネルへようこそ！', 'ja' );
+// The Video types `personal` and `documentary` combine
+// to create an implicit "vlog episode" semantic.
+console.log( video.isVlogEpisode() ); // true
 ```
 
 ## API
 
-### Constructor
+### HVML
 
-#### `new HVML(path, [encoding])`
+A Class representing the [`hvml` root element](https://hypervideo.tech/elements/hvml/).
+
+#### Constructor: `new HVML(path, [config])`
 
 - `path`: HVML file to be read.
-- `encoding`: `readFile` character encoding. Defaults to `utf8`.
+- `config`: (optional) Configuration object with keys:
+  - `schemaPath` Path to validation schema. Defaults to `rng/hvml.rng` (relative to `node_modules/hvml/`).
+  - `schemaType`: Type of validation schema, `rng` for RELAX NG or `xsd` for XML Schema Definition. Currently only `rng` is supported. Defaults to `rng`.
+  - `encoding`: `readFile` character encoding. Defaults to `utf8`.
 
-### Instance Properties
+Returns <b>Object</b>, an instance of `HVML`.
 
-#### `.ready`
-A Promise that resolves when your HVML file and the internal schema used for validation are both successfully read from the file system.
+#### Instance Properties
+
+##### `.ready`
+
+<b>Promise</b> that resolves when your HVML file and the internal schema used for validation are both successfully read from the file system.
 
 The Promise itself returns a [libxmljs](https://github.com/libxmljs/libxmljs) object representing the XML tree of the file. This object is also accessible as the instance property `.xml`, so you don’t need to capture it on your first `then()`.
 
-#### `.xml`
-A [libxmljs](https://github.com/libxmljs/libxmljs) object representing the XML tree of the file.
+##### `.xml`
+
+<b>Object</b> representing the XML tree of your HVML file, as returned from [libxmljs](https://github.com/libxmljs/libxmljs).
 
 This is mostly just used internally but it’s provided as a convenience for custom operations.
 
-#### `.hvmlPath`
-The path specified in the constructor.
+##### `.hvmlPath`
 
-### Instance Methods
+<b>String</b>. The HVML file path specified in the constructor.
 
-#### `.toJson()`
+#### Instance Methods
+
+##### `.toJson()`
+
 Transforms the current HVML tree to its JSON representation (i.e. an object literal).
 
-#### `.validate([xmllintPath])`
-Validates the HVML file against an internal Relax-NG schema.
+Returns <b>Object</b>.
+
+##### `.validate([xmllintPath])`
+Validates the HVML file against an internal RELAX NG schema.
 
 - `xmllintPath`: Path where Node can find `xmllint`¹. Defaults to `xmllint` (which assumes it is somewhere in your system’s `$PATH`, such as `/usr/bin/`).
 
@@ -92,3 +117,102 @@ make install
 ```
 
 We realize this is a pain but we’d rather ship the feature than be blocked by a lack of C/C++ experience. Pull requests welcome!
+
+### Video
+
+A Class representing a [`video` element](https://hypervideo.tech/elements/video/).
+
+#### Constructor: `new Video([config])`
+
+- `config`: (optional) Configuration object with keys:
+  - `type`: Space-separated string or array containing valid video types (`narrative`, `documentary`, `ad`, `personal`, `historical`).
+  - `lang`: A [BCP 47](https://tools.ietf.org/html/bcp47) language/region tag, e.g. `en` or `en-US`.
+  - `id`: An XML/HTML-style unique ID for querying.
+
+Returns <b>Object</b>, an instance of `Video`.
+
+##### Example
+
+```js
+const { Video } = require( 'hvml' );
+const video = new Video( {
+  "type": ["personal", "documentary"],
+  "lang": "en-US",
+  "id": "welcome-to-my-channel",
+} );
+```
+
+#### Static Methods
+
+##### `isValidType(type)`
+
+Checks if the given video type is allowed in HVML.
+
+- `type`: String of individual type to check.
+
+Returns <b>Boolean</b>.
+
+##### Example
+
+```js
+const { Video } = require( 'hvml' );
+console.log( Video.isValidType( 'narrative' ) ); // true
+console.log( Video.isValidType( 'big-chungus' ) ); // false
+```
+
+#### Instance Methods
+
+##### `hasType(type)`
+
+Checks if a `Video` object has a given type set.
+
+Returns <b>Boolean</b>.
+
+##### Example
+
+```js
+const { Video } = require( 'hvml' );
+const video = new Video( {
+  "type": ["personal", "documentary"],
+  "lang": "en-US",
+  "id": "welcome-to-my-channel",
+} );
+console.log( Video.hasType( 'documentary' ) ); // true
+console.log( Video.hasType( 'ad' ) ); // false
+```
+
+##### `isVlogEpisode()`
+
+Convenience method. Checks if a `Video` object contains the special type combination `personal` + `documentary`.
+
+Returns <b>Boolean</b>.
+
+##### Example
+
+```js
+const { Video } = require( 'hvml' );
+const video = new Video( {
+  "type": ["personal", "documentary"],
+  "lang": "en-US",
+  "id": "welcome-to-my-channel",
+} );
+console.log( video.isVlogEpisode() ); // true
+```
+
+##### `isArchived()`
+
+Convenience method. Checks if a `Video` object contains the special type combination `personal` + `historical`.
+
+Returns <b>Boolean</b>.
+
+##### Example
+
+```js
+const { Video } = require( 'hvml' );
+const video = new Video( {
+  "type": ["personal", "historical"],
+  "lang": "en-US",
+  "id": "welcome-to-my-channel",
+} );
+console.log( video.isArchived() ); // true
+```
