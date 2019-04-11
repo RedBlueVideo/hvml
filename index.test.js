@@ -126,9 +126,17 @@ describe( 'HVML', () => {
     return expect( hvml.ready ).resolves.toEqual( expect.anything() );
   } );
 
-  // it( 'fails for nonexistent files', () => {
-  //   const hvml = new HVML( './hvml.gone' );
-  // } );
+  it( 'fails for nonexistent files', () => {
+    const hvml = new HVML( './gone.hvml' );
+    return expect( hvml.ready ).rejects.toEqual( expect.anything() );
+  } );
+
+  it( 'fails for nonexistent schema files', () => {
+    const hvml = new HVML( './examples/hvml.xml', {
+      "schemaPath": "rng/gone.rng",
+    } );
+    return expect( hvml.ready ).rejects.toEqual( expect.anything() );
+  } );
 
   it( 'parses XML into JSON-LD', () => {
     const hvml = new HVML( './examples/hvml.xml' );
@@ -143,6 +151,27 @@ describe( 'HVML', () => {
         throw new Error( error.toString() );
       } );
   } );
+
+  // test( '_jsonifyChild', () => {
+  //   const hvml = new HVML( './examples/hvml.xml' );
+  //   const parsed = xml.parseXmlString(
+  //     '<?xml version="1.0" encoding="UTF-8"?><foo><bar><baz /></bar><qux><quux /></qux></foo>',
+  //   );
+  //   const path = [];
+  //
+  //   hvml.ready
+  //     .then( () => {
+  //       parsed.root().childNodes().forEach( ( node ) => {
+  //         if ( node.type() === 'element' ) {
+  //           // console.log( 'node', node.name() );
+  //           // hvml._jsonifyChild( node, path, true );
+  //           hvml._jsonifyChild( node );
+  //           // console.log( 'path', path );
+  //           console.log( 'hvml.json', hvml.json );
+  //         }
+  //       } );
+  //     } );
+  // } );
 
   describe( 'Validation', () => {
     skipIfXmllintUnavailable( 'validates good HVML', ( done ) => {
@@ -160,52 +189,153 @@ describe( 'HVML', () => {
         } );
     } );
 
-    skipIfXmllintUnavailable( 'validates bad HVML: unexpected element', ( done ) => {
-      const badHvmlPath = './examples/redblue.ovml.xml';
-      const badHvml = new HVML( badHvmlPath );
+    describe( 'validates bad HVML', () => {
+      skipIfXmllintUnavailable( 'unexpected element', ( done ) => {
+        const badHvmlPath = './examples/legacy/redblue.ovml.xml';
+        const badHvml = new HVML( badHvmlPath );
 
-      badHvml.ready
-        .then( () => badHvml.validate() )
-        .then( ( badValidationResult ) => {
-          expect( badValidationResult ).toBeUndefined();
-          done();
-        } )
-        .catch( ( error ) => {
-          expect( error ).toStrictEqual( [{
-            "error": "Expecting element hvml, got ovml",
-            "expecting": "hvml",
-            "file": badHvmlPath,
-            "got": "ovml",
-            "line": "3",
-            "message": `${badHvmlPath}:3: element ovml: Relax-NG validity error : Expecting element hvml, got ovml`, // eslint-disable-line
-            "type": "validity",
-          }] );
-          done();
-        } );
-    } );
+        badHvml.ready
+          .then( () => badHvml.validate() )
+          .then( ( badValidationResult ) => {
+            expect( badValidationResult ).toBeUndefined();
+            done();
+          } )
+          .catch( ( error ) => {
+            expect( error ).toStrictEqual( [{
+              "error": "Expecting element hvml, got ovml",
+              "expecting": "hvml",
+              "file": badHvmlPath,
+              "got": "ovml",
+              "line": "3",
+              "message": `${badHvmlPath}:3: element ovml: Relax-NG validity error : Expecting element hvml, got ovml`, // eslint-disable-line
+              "type": "validity",
+            }] );
+            done();
+          } );
+      } );
 
-    skipIfXmllintUnavailable( 'validates bad HVML: wrong namespace', ( done ) => {
-      const badHvmlPath = './examples/vlog.hvml';
-      const badHvml = new HVML( badHvmlPath );
+      skipIfXmllintUnavailable( 'wrong namespace', ( done ) => {
+        const badHvmlPath = './examples/legacy/vlog.hvml';
+        const badHvml = new HVML( badHvmlPath );
 
-      badHvml.ready
-        .then( () => badHvml.validate() )
-        .then( ( badValidationResult ) => {
-          expect( badValidationResult ).toBeUndefined();
-          done();
-        } )
-        .catch( ( error ) => {
-          expect( error ).toStrictEqual( [{
-            "error": "Element hvml has wrong namespace: expecting https://hypervideo.tech/hvml#",
-            "expecting": "https://hypervideo.tech/hvml#",
-            "file": badHvmlPath,
-            "got": null,
-            "line": "2",
-            "message": `${badHvmlPath}:2: element hvml: Relax-NG validity error : Element hvml has wrong namespace: expecting https://hypervideo.tech/hvml#`,
-            "type": "validity error",
-          }] );
-          done();
-        } );
+        badHvml.ready
+          .then( () => badHvml.validate() )
+          .then( ( badValidationResult ) => {
+            expect( badValidationResult ).toBeUndefined();
+            done();
+          } )
+          .catch( ( error ) => {
+            expect( error ).toStrictEqual( [{
+              "error": "Element hvml has wrong namespace: expecting https://hypervideo.tech/hvml#",
+              "element": "hvml",
+              "expecting": "https://hypervideo.tech/hvml#",
+              "file": badHvmlPath,
+              // "got": null,
+              "line": "2",
+              "message": `${badHvmlPath}:2: element hvml: Relax-NG validity error : Element hvml has wrong namespace: expecting https://hypervideo.tech/hvml#`,
+              "type": "validity error",
+            }] );
+            done();
+          } );
+      } );
+
+      skipIfXmllintUnavailable( 'missing namespace', ( done ) => {
+        const badHvmlPath = './examples/bad/missing-namespace.hvml';
+        const badHvml = new HVML( badHvmlPath );
+
+        badHvml.ready
+          .then( () => badHvml.validate() )
+          .then( ( badValidationResult ) => {
+            expect( badValidationResult ).toBeUndefined();
+            done();
+          } )
+          .catch( ( error ) => {
+            expect( error ).toStrictEqual( [{
+              "error": "Expecting a namespace for element hvml",
+              "element": "hvml",
+              "expecting": "https://hypervideo.tech/hvml#",
+              "file": badHvmlPath,
+              "got": null,
+              "line": "2",
+              "message": `${badHvmlPath}:2: element hvml: Relax-NG validity error : Expecting a namespace for element hvml`,
+              "type": "validity error",
+            }] );
+            done();
+          } );
+      } );
+
+      skipIfXmllintUnavailable( 'unexpected text', ( done ) => {
+        const badHvmlPath = './examples/bad/unexpected-text-children.hvml';
+        const badHvml = new HVML( badHvmlPath );
+
+        badHvml.ready
+          .then( () => badHvml.validate() )
+          .then( ( badValidationResult ) => {
+            expect( badValidationResult ).toBeUndefined();
+            done();
+          } )
+          .catch( ( error ) => {
+            expect( error ).toStrictEqual( [{
+              "error": "Did not expect text in element hvml content",
+              "element": "hvml",
+              "file": badHvmlPath,
+              "got": "Text",
+              "line": "2",
+              "message": `${badHvmlPath}:2: element hvml: Relax-NG validity error : Did not expect text in element hvml content`,
+              "type": "validity error",
+            }] );
+            done();
+          } );
+      } );
+
+      skipIfXmllintUnavailable( 'invalid attribute', ( done ) => {
+        const badHvmlPath = './examples/bad/invalid-attribute.hvml';
+        const badHvml = new HVML( badHvmlPath );
+
+        badHvml.ready
+          .then( () => badHvml.validate() )
+          .then( ( badValidationResult ) => {
+            expect( badValidationResult ).toBeUndefined();
+            done();
+          } )
+          .catch( ( error ) => {
+            expect( error ).toStrictEqual( [{
+              "error": "Invalid attribute x for element hvml",
+              "element": "hvml",
+              "file": badHvmlPath,
+              "got": "x",
+              "line": "2",
+              "message": `${badHvmlPath}:2: element hvml: Relax-NG validity error : Invalid attribute x for element hvml`,
+              "type": "validity error",
+            }] );
+            done();
+          } );
+      } );
+
+      skipIfXmllintUnavailable( 'unexpected element', ( done ) => {
+        const badHvmlPath = './examples/bad/unexpected-element.hvml';
+        const badHvml = new HVML( badHvmlPath );
+
+        badHvml.ready
+          .then( () => badHvml.validate() )
+          .then( ( badValidationResult ) => {
+          //   expect( badValidationResult ).toBeUndefined();
+            console.log( 'badValidationResult', badValidationResult );
+            done();
+          } )
+          .catch( ( error ) => {
+            expect( error ).toStrictEqual( [{
+              "error": "Did not expect element big-chungus there",
+              // "element": "hvml",
+              "file": badHvmlPath,
+              "got": "big-chungus",
+              "line": "3",
+              "message": `${badHvmlPath}:3: element big-chungus: Relax-NG validity error : Did not expect element big-chungus there`,
+              "type": "validity error",
+            }] );
+            done();
+          } );
+      } );
     } );
   } );
 

@@ -4,9 +4,10 @@ const set = require( 'lodash/set' );
 const { exec } = require( 'child_process' );
 
 const Video = require( './video' );
+const Validation = require( './util/validation' );
 
 class HVML {
-  constructor( path, encoding = 'utf8' ) {
+  constructor( path, config = {} ) {
     /*
       fs.readFile(path[, options], callback)
       - path <string> | <Buffer> | <URL> | <integer> filename or file descriptor
@@ -17,6 +18,17 @@ class HVML {
         - err <Error>
         - data <string> | <Buffer>
     */
+    const defaultConfig = {
+      "schemaPath": "rng/hvml.rng",
+      "schemaType": "rng",
+      "encoding": "utf8",
+    };
+
+    config = {
+      ...defaultConfig,
+      ...config,
+    };
+
     this.namespaces = {
       "html": "http://www.w3.org/1999/xhtml",
       "hvml": "https://hypervideo.tech/hvml#",
@@ -30,11 +42,15 @@ class HVML {
         return accumulator;
       }, {} );
 
-    this.schemaPath = 'rng/hvml.rng';
-    this.schemaType = 'rng';
+    this.schemaPath = config.schemaPath;
+    this.schemaType = config.schemaType;
+
+    this.json = {
+      "@context": "https://redblue.video/guide/hvml.context.jsonld",
+    };
 
     const fileReady = ( new Promise( ( resolve, reject ) => {
-      fs.readFile( path, encoding, ( error, data ) => {
+      fs.readFile( path, config.encoding, ( error, data ) => {
         if ( error ) {
           // throw new Error( error );
           reject( error );
@@ -65,6 +81,7 @@ class HVML {
     return ( new Promise( ( resolve, reject ) => {
       exec( `${xmllintPath} --nowarning --noout --relaxng ${this.schemaPath} ${this.hvmlPath}`, ( error, stdout, stderr ) => { // eslint-disable-line
         if ( error ) {
+          /* istanbul ignore next */
           const xmllintNotFound = (
             // Linux/macOS exit code 127 means command not found
             ( error.code === 127 )
@@ -97,7 +114,7 @@ class HVML {
           validationErrors = validationErrors.map( ( currentValue ) => {
             const validationErrorRegexPattern = `(?:(${this.hvmlPath}):(\\d+)):\\s+`
               + `(?:element .+):\\s+(Relax-NG validity error)\\s+:\\s+`
-              + `(Expecting element (\\w+), got (\\w+))`;
+              + `(Expecting element (.+), got (.+))`;
             const expectingGotRegex = new RegExp( validationErrorRegexPattern, 'gi' );
             const expectingGot = expectingGotRegex.exec( currentValue );
 
@@ -114,8 +131,8 @@ class HVML {
             }
 
             const wrongNamespaceRegexPattern = validationErrorRegexPattern.replace(
-              `(Expecting element (\\w+), got (\\w+))`,
-              `(Element (\\w+) has wrong namespace: expecting (.*))`,
+              `(Expecting element (.+), got (.+))`,
+              `(Element (.+) has wrong namespace: expecting (.+))`,
             );
             const wrongNamespaceRegex = new RegExp( wrongNamespaceRegexPattern, 'gi' );
             const wrongNamespace = wrongNamespaceRegex.exec( currentValue );
@@ -127,17 +144,132 @@ class HVML {
                 "line": wrongNamespace[2],
                 "type": wrongNamespace[3].replace( 'Relax-NG ', '' ),
                 "error": wrongNamespace[4],
+                "element": wrongNamespace[5],
                 "expecting": wrongNamespace[6],
+                // "got": null,
+              };
+            }
+
+            const missingNamespaceRegexPattern = wrongNamespaceRegexPattern.replace(
+              `(Element (.+) has wrong namespace: expecting (.+))`,
+              `(Expecting a namespace for element (.+))`,
+            );
+            const missingNamespaceRegex = new RegExp( missingNamespaceRegexPattern, 'gi' );
+            const missingNamespace = missingNamespaceRegex.exec( currentValue );
+
+            if ( missingNamespace ) {
+              let namespace = missingNamespace[6];
+
+              /* istanbul ignore else: optional */
+              if ( !namespace && ( missingNamespace[5] === 'hvml' ) ) {
+                namespace = this.namespaces.hvml;
+              }
+
+              return {
+                "message": missingNamespace[0],
+                "file": missingNamespace[1],
+                "line": missingNamespace[2],
+                "type": missingNamespace[3].replace( 'Relax-NG ', '' ),
+                "error": missingNamespace[4],
+                "element": missingNamespace[5],
+                "expecting": namespace,
                 "got": null,
               };
             }
 
-            return currentValue;
+            const unexpectedTextRegexPattern = missingNamespaceRegexPattern.replace(
+              `(Expecting a namespace for element (.+))`,
+              `(Did not expect text in element (.+) content)`,
+            );
+            const unexpectedTextRegex = new RegExp( unexpectedTextRegexPattern, 'gi' );
+            const unexpectedText = unexpectedTextRegex.exec( currentValue );
+
+            if ( unexpectedText ) {
+              return {
+                "message": unexpectedText[0],
+                "file": unexpectedText[1],
+                "line": unexpectedText[2],
+                "type": unexpectedText[3].replace( 'Relax-NG ', '' ),
+                "error": unexpectedText[4],
+                "element": unexpectedText[5],
+                // "expecting": namespace,
+                "got": "Text",
+              };
+            }
+
+            const invalidAttributeRegexPattern = unexpectedTextRegexPattern.replace(
+              `(Did not expect text in element (.+) content)`,
+              `(Invalid attribute (.+) for element (.+))`,
+            );
+            const invalidAttributeRegex = new RegExp( invalidAttributeRegexPattern, 'gi' );
+            const invalidAttribute = invalidAttributeRegex.exec( currentValue );
+
+            if ( invalidAttribute ) {
+              return {
+                "message": invalidAttribute[0],
+                "file": invalidAttribute[1],
+                "line": invalidAttribute[2],
+                "type": invalidAttribute[3].replace( 'Relax-NG ', '' ),
+                "error": invalidAttribute[4],
+                "element": invalidAttribute[6],
+                // "expecting": namespace,
+                "got": invalidAttribute[5],
+              };
+            }
+
+            const unexpectedElementRegexPattern = invalidAttributeRegexPattern.replace(
+              `(Invalid attribute (.+) for element (.+))`,
+              `(Did not expect element (.+) there)`,
+            );
+            const unexpectedElementRegex = new RegExp( unexpectedElementRegexPattern, 'gi' );
+            const unexpectedElement = unexpectedElementRegex.exec( currentValue );
+
+            /* istanbul ignore else: covered later */
+            if ( unexpectedElement ) {
+              return {
+                "message": unexpectedElement[0],
+                "file": unexpectedElement[1],
+                "line": unexpectedElement[2],
+                "type": unexpectedElement[3].replace( 'Relax-NG ', '' ),
+                "error": unexpectedElement[4],
+                "element": unexpectedElement[6],
+                // "expecting": namespace,
+                "got": unexpectedElement[5],
+              };
+            }
+
+            /* istanbul ignore next: defensive */
+            const otherValidationErrorRegexPattern = unexpectedElementRegexPattern.replace(
+              `(Did not expect element (.+) there)`,
+              `(.*)`,
+            );
+            /* istanbul ignore next: defensive */
+            const otherValidationErrorRegex = new RegExp( otherValidationErrorRegexPattern, 'gi' );
+            /* istanbul ignore next: defensive */
+            const otherValidationError = otherValidationErrorRegex.exec( currentValue );
+
+            /* istanbul ignore next: defensive */
+            if ( otherValidationError ) {
+              return {
+                "message": otherValidationError[0],
+                "file": otherValidationError[1],
+                "line": otherValidationError[2],
+                "type": otherValidationError[3].replace( 'Relax-NG ', '' ),
+                "error": otherValidationError[4],
+                // "element": otherValidationError[6],
+                // "expecting": namespace,
+                "got": otherValidationError[5],
+              };
+            }
+
+            /* istanbul ignore next: defensive */
+            throw new Validation.DomainError( currentValue );
           } );
 
           reject( validationErrors );
         } else {
           // xmllint prints diagnostic information, good or bad, to stderr
+          /* istanbul ignore else: defensive */
           if ( stderr.match( new RegExp( `${this.hvmlPath} validates` ) ) ) {
             resolve( true );
           } else {
@@ -148,6 +280,7 @@ class HVML {
     } ) );
   }
 
+  /* istanbul ignore next: internals of toJson(), which is already tested */
   _jsonifyAttribute( attribute, attributePath = [] ) {
     const namespace = attribute.namespace();
     let property = attribute.name();
@@ -192,6 +325,7 @@ class HVML {
     attributePath.pop();
   }
 
+  /* istanbul ignore next: internals of toJson(), which is already tested */
   _jsonifyChild( child, path = [], domNode = false, childIndex ) {
     const type = child.type();
     const attributes = child.attrs();
@@ -359,9 +493,9 @@ class HVML {
   }
 
   toJson() {
-    this.json = {
-      "@context": "https://redblue.video/guide/hvml.context.jsonld",
-    };
+    // this.json = {
+    //   "@context": "https://redblue.video/guide/hvml.context.jsonld",
+    // };
 
     this.xml.root().childNodes().forEach( ( node ) => {
       if ( node.type() === 'element' ) {
@@ -374,6 +508,7 @@ class HVML {
           this._jsonifyAttribute( attribute );
         } );
 
+        /* istanbul ignore else: optional */
         if ( children.length ) {
           children.forEach( ( child ) => {
             this._jsonifyChild( child );
