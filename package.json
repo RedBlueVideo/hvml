@@ -1,6 +1,6 @@
 {
   "name": "hvml",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "HVML Parser for JavaScript",
   "main": "index.js",
   "scripts": {
