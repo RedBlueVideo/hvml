@@ -1,4 +1,4 @@
-const Validation = require( './validation' );
+const Validation = require( './validation.cjs' ).default;
 
 describe( 'Validation', () => {
   describe( 'HVMLDomainError', () => {

@@ -1,4 +1,4 @@
-const Time = require( './time' );
+const Time = require( './time.cjs' ).default;
 
 describe( 'Time', () => {
   it( 'parses ISO 8601 durations', () => {

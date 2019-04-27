@@ -1,9 +1,9 @@
-const md2jsonml = require( 'md2jsonml' );
-const xmlTrident = require( 'xml-trident' );
-const isString = require( 'lodash/isString' );
-const isPlainObject = require( 'lodash/isPlainObject' );
+import md2jsonml from 'md2jsonml';
+import * as xmlTrident from 'xml-trident';
+import isString from 'lodash/isString';
+import isPlainObject from 'lodash/isPlainObject';
 
-const { softTrim } = require( './strings' );
+import { softTrim } from './strings';
 
 class Transform {
   static markdownToJsonMl( input ) {
@@ -76,4 +76,4 @@ class Transform {
   }
 }
 
-module.exports = Transform;
+export default Transform;

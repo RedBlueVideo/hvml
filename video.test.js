@@ -1,5 +1,5 @@
-const Video = require( './video' );
-const Validation = require( './util/validation' );
+const Video = require( './video.js' );
+const Validation = require( './util/validation.js' );
 
 describe( 'Video', () => {
   /* --- Instantiation --- */

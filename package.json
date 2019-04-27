@@ -34,6 +34,7 @@
   },
   "homepage": "https://github.com/RedBlueVideo/hvml#readme",
   "dependencies": {
+    "esm": "^3.2.22",
     "libxmljs": "^0.19.5",
     "lodash": "^4.17.11",
     "md2jsonml": "^2.0.0",
@@ -47,6 +48,7 @@
     "eslint-plugin-import": "^2.16.0",
     "eslint-plugin-lodash": "^5.1.0",
     "jest": "^24.1.0",
+    "nyc": "^14.0.0",
     "recursive-copy": "^2.0.10",
     "rimraf": "^2.6.3",
     "skip-if": "^1.1.1"

@@ -1,10 +1,10 @@
-const fs = require( 'fs' );
-const xml = require( 'libxmljs' );
-const set = require( 'lodash/set' );
-const { exec } = require( 'child_process' );
+import fs from 'fs';
+import xml from 'libxmljs';
+import set from 'lodash/set';
+import { exec } from 'child_process';
 
-const Video = require( './video' );
-const Validation = require( './util/validation' );
+import Video from './video';
+import Validation from './util/validation';
 
 class HVML {
   constructor( path, config = {} ) {
@@ -524,4 +524,4 @@ class HVML {
 
 // toJson
 
-module.exports = { HVML, Video };
+export { HVML, Video };

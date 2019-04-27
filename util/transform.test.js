@@ -1,4 +1,4 @@
-const Transform = require( './transform' );
+const Transform = require( './transform.cjs' ).default;
 
 describe( 'Transform', () => {
   test( 'markdownToJsonMl', () => {

@@ -1,4 +1,4 @@
-const { ucFirst } = require( './strings' );
+import { ucFirst } from './strings.js';
 
 // https://rclayton.silvrback.com/custom-errors-in-node-js
 class HVMLDomainError extends Error {
@@ -10,43 +10,6 @@ class HVMLDomainError extends Error {
     // It's not absolutely essential, but it does make the stack trace a little nicer.
     //  @see Node.js reference (bottom)
     Error.captureStackTrace( this, this.constructor );
-  }
-}
-
-class HVMLEnumError extends HVMLDomainError {
-  /* className, field, badValues */
-  constructor( data ) {
-    let forField = '';
-
-    if ( !data ) {
-      const error = new HVMLTypeError( {
-        "className": "HVMLEnumError",
-        "expected": "Object",
-        "input": data,
-        "methodName": "constructor",
-        "fieldName": "data",
-      } );
-
-      throw new TypeError( error.message );
-    } else if ( !( 'badValues' in data ) ) {
-      const error = new HVMLTypeError( {
-        "className": "HVMLEnumError",
-        "expected": "Array",
-        "input": data.badValues,
-        "methodName": "constructor",
-        "fieldName": "data.badValues",
-      } );
-
-      throw new TypeError( error.message );
-    }
-
-    if ( 'className' in data ) {
-      forField += ` for ${data.className}${data.fieldName ? ( '::' + data.fieldName ) : '.constructor'}`; // eslint-disable-line prefer-template
-    }
-
-    super( `The following values are invalid${forField}: ${data.badValues.join( ', ' )}` );
-
-    this.data = data;
   }
 }
 
@@ -152,6 +115,43 @@ class HVMLTypeError extends HVMLDomainError {
   }
 }
 
+class HVMLEnumError extends HVMLDomainError {
+  /* className, field, badValues */
+  constructor( data ) {
+    let forField = '';
+
+    if ( !data ) {
+      const error = new HVMLTypeError( {
+        "className": "HVMLEnumError",
+        "expected": "Object",
+        "input": data,
+        "methodName": "constructor",
+        "fieldName": "data",
+      } );
+
+      throw new TypeError( error.message );
+    } else if ( !( 'badValues' in data ) ) {
+      const error = new HVMLTypeError( {
+        "className": "HVMLEnumError",
+        "expected": "Array",
+        "input": data.badValues,
+        "methodName": "constructor",
+        "fieldName": "data.badValues",
+      } );
+
+      throw new TypeError( error.message );
+    }
+
+    if ( 'className' in data ) {
+      forField += ` for ${data.className}${data.fieldName ? ( '::' + data.fieldName ) : '.constructor'}`; // eslint-disable-line prefer-template
+    }
+
+    super( `The following values are invalid${forField}: ${data.badValues.join( ', ' )}` );
+
+    this.data = data;
+  }
+}
+
 class HVMLRangeError extends HVMLTypeError {
   /* className, field, expected, lowerBound, upperBound, exclusivity = 'inclusive' */
   constructor( data ) {
@@ -208,7 +208,7 @@ class HVMLNotIntegerError extends HVMLTypeError {
   }
 }
 
-module.exports = {
+export default {
   "DomainError": HVMLDomainError,
   "EnumError": HVMLEnumError,
   "TypeError": HVMLTypeError,

@@ -1,5 +1,5 @@
 module.exports = {
-  "collectCoverage": true,
+  "collectCoverage": false,
   "coverageReporters": [
     "json-summary",
     "text",
@@ -12,4 +12,7 @@ module.exports = {
     ".eslintrc.js",
     "jest.config.js",
   ],
+  // "transform": {
+  //   "^.+\\.js$": "esm",
+  // },
 };

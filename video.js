@@ -1,11 +1,11 @@
-const isPlainObject = require( 'lodash/isPlainObject' );
-const isNumber = require( 'lodash/isNumber' );
-const isString = require( 'lodash/isString' );
-const isUndefined = require( 'lodash/isUndefined' );
+import isPlainObject from 'lodash/isPlainObject';
+import isNumber from 'lodash/isNumber';
+import isString from 'lodash/isString';
+import isUndefined from 'lodash/isUndefined';
 
-const Time = require( './util/time' );
-const Validation = require( './util/validation' );
-const Transform = require( './util/transform' );
+import Time from './util/time';
+import Validation from './util/validation';
+import Transform from './util/transform';
 
 class Video {
   static isValidType( type ) {
@@ -400,4 +400,4 @@ class Video {
   }
 }
 
-module.exports = Video;
+export default Video;

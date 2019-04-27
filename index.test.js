@@ -2,7 +2,7 @@
 const skipIf = require( 'skip-if' );
 const { execSync } = require( 'child_process' );
 
-const { HVML } = require( './index.js' );
+const { HVML } = require( './index.cjs' );
 
 // test( 'opens files successfully', () => {} );
 
