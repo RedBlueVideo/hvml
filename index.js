@@ -1,6 +1,6 @@
 const fs = require( 'fs' );
 const xml = require( 'libxmljs' );
-const set = require( 'lodash.set' );
+const set = require( 'lodash.set' ); // eslint-disable-line lodash/import-scope
 const { exec } = require( 'child_process' );
 
 const Video = require( './video' );
