@@ -1,4 +1,4 @@
-const isPlainObject = require( 'lodash/isPlainObject' );
+const isPlainObject = require( './util/isPlainObject' );
 const isNumber = require( 'lodash/isNumber' );
 const isString = require( 'lodash/isString' );
 const isUndefined = require( 'lodash/isUndefined' );
