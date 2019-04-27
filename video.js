@@ -1,7 +1,7 @@
 const isPlainObject = require( './util/isPlainObject' );
 const isNumber = require( './util/isNumber' );
 const isString = require( './util/isString' );
-const isUndefined = require( 'lodash/isUndefined' );
+const isUndefined = require( './util/isUndefined' );
 
 const Time = require( './util/time' );
 const Validation = require( './util/validation' );
