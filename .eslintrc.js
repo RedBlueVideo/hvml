@@ -1,8 +1,11 @@
 module.exports = {
-  "plugins": ["lodash"],
+  "plugins": [
+    "lodash",
+    "you-dont-need-lodash-underscore"
+  ],
   "extends": [
     "eslint-config-hughx",
-    // "plugin:lodash/recommended",
+    "plugin:you-dont-need-lodash-underscore/all",
   ],
   "rules": {
     "lodash/callback-binding": 2,
