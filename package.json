@@ -35,7 +35,7 @@
   "homepage": "https://github.com/RedBlueVideo/hvml#readme",
   "dependencies": {
     "libxmljs": "^0.19.5",
-    "lodash": "^4.17.11",
+    "lodash.set": "^4.3.2",
     "md2jsonml": "^2.0.0",
     "xml-trident": "^1.0.2"
   },
