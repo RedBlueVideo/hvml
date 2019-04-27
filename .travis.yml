@@ -6,7 +6,7 @@ os:
   - osx
 
 node_js:
-  - node
+  # - node
   - lts/*
 
 branches:

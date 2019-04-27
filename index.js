@@ -232,7 +232,7 @@ class HVML {
                 "line": unexpectedElement[2],
                 "type": unexpectedElement[3].replace( 'Relax-NG ', '' ),
                 "error": unexpectedElement[4],
-                "element": unexpectedElement[6],
+                // "element": unexpectedElement[6],
                 // "expecting": namespace,
                 "got": unexpectedElement[5],
               };
