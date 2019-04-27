@@ -36,7 +36,7 @@ module.exports = {
     "lodash/prefer-is-nil": 2,
     "lodash/prefer-lodash-chain": 2,
     // "lodash/prefer-lodash-method": 2,
-    "lodash/prefer-lodash-typecheck": 2,
+    // "lodash/prefer-lodash-typecheck": 2,
     "lodash/prefer-map": 2,
     "lodash/prefer-matches": [2, 3],
     "lodash/prefer-noop": 2,
