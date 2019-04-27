@@ -1,6 +1,6 @@
 const isPlainObject = require( './util/isPlainObject' );
 const isNumber = require( './util/isNumber' );
-const isString = require( 'lodash/isString' );
+const isString = require( './util/isString' );
 const isUndefined = require( 'lodash/isUndefined' );
 
 const Time = require( './util/time' );

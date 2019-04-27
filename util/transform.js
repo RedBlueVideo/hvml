@@ -1,6 +1,6 @@
 const md2jsonml = require( 'md2jsonml' );
 const xmlTrident = require( 'xml-trident' );
-const isString = require( 'lodash/isString' );
+const isString = require( './isString' );
 const isPlainObject = require( './isPlainObject' );
 
 const { softTrim } = require( './strings' );
