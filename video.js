@@ -1,7 +1,9 @@
-const isPlainObject = require( './util/isPlainObject' );
-const isNumber = require( './util/isNumber' );
-const isString = require( './util/isString' );
-const isUndefined = require( './util/isUndefined' );
+const {
+  isPlainObject,
+  isNumber,
+  isString,
+  isUndefined,
+} = require( './util/types' );
 
 const Time = require( './util/time' );
 const Validation = require( './util/validation' );
