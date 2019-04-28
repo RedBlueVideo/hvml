@@ -6,7 +6,7 @@
   "scripts": {
     "test": "jest --verbose",
     "test-dev": "jest --watch --verbose",
-    "test-hvml": "jest --watch -t 'HVML' --verbose",
+    "test-hvml": "jest --watch -t '\\bHVML\\b' --verbose",
     "test-xsd": "jest --watch -t 'HVML Schema Definition' --verbose",
     "test-video": "jest --watch --verbose -t 'Video'",
     "coverage": "jest --coverage",
@@ -34,7 +34,6 @@
   },
   "homepage": "https://github.com/RedBlueVideo/hvml#readme",
   "dependencies": {
-    "libxmljs": "^0.19.5",
     "lodash.set": "^4.3.2",
     "md2jsonml": "^2.0.0",
     "xml-trident": "^1.0.2"
@@ -51,5 +50,8 @@
     "recursive-copy": "^2.0.10",
     "rimraf": "^2.6.3",
     "skip-if": "^1.1.1"
+  },
+  "optionalDependencies": {
+    "libxmljs": "^0.19.5"
   }
 }

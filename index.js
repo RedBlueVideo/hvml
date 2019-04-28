@@ -1,10 +1,24 @@
 const fs = require( 'fs' );
-const xml = require( 'libxmljs' );
 const set = require( 'lodash.set' ); // eslint-disable-line lodash/import-scope
+const { extname } = require( 'path' );
 const { exec } = require( 'child_process' );
 
 const Video = require( './video' );
 const Validation = require( './util/validation' );
+const { hasProperty } = require( './util/types.js' );
+
+let xml;
+let canParseXml = false;
+
+try {
+  xml = require( 'libxmljs' ); /* eslint-disable-line global-require */ /* eslint-disable-line import/no-extraneous-dependencies */
+  /* istanbul ignore next */
+  if ( hasProperty( xml, 'parseXmlString' ) ) {
+    canParseXml = true;
+  }
+} catch ( error ) {
+  // eslint-disable-line no-empty
+}
 
 class HVML {
   constructor( path, config = {} ) {
@@ -36,6 +50,18 @@ class HVML {
       "css": "https://www.w3.org/TR/CSS/",
     };
 
+    this.fileExtensions = {
+      "xml": [
+        "xml",
+        "ovml",
+        "hvml",
+      ],
+      "json": [
+        "json",
+        "jsonld",
+      ],
+    };
+
     this.prefixes = Object.keys( this.namespaces )
       .reduce( ( accumulator, currentPrefix ) => {
         accumulator[this.namespaces[currentPrefix]] = currentPrefix;
@@ -44,10 +70,6 @@ class HVML {
 
     this.schemaPath = config.schemaPath;
     this.schemaType = config.schemaType;
-
-    this.json = {
-      "@context": "https://redblue.video/guide/hvml.context.jsonld",
-    };
 
     const fileReady = ( new Promise( ( resolve, reject ) => {
       fs.readFile( path, config.encoding, ( error, data ) => {
@@ -69,10 +91,34 @@ class HVML {
     } ) );
 
     this.ready = Promise.all( [fileReady, schemaReady] ).then( ( data ) => {
-      this.xml = xml.parseXmlString( data[0] );
-      this.hvmlPath = path;
-      // this.xsd = xml.parseXmlString( data[1] );
-      return this.xml;
+      const fileContents = data[0];
+      const extension = extname( path ).slice( 1 );
+      const isXml = ( this.fileExtensions.xml.indexOf( extension ) !== -1 );
+      const isJson = ( this.fileExtensions.json.indexOf( extension ) !== -1 );
+
+      if ( isXml ) {
+        if ( !canParseXml ) {
+          throw new Validation.OptionalDependencyNotInstalled( {
+            "className": "HVML",
+            "fieldName": "ready",
+            "dependency": "libxmljs",
+          } );
+        }
+
+        this.xml = xml.parseXmlString( fileContents );
+        this.hvmlPath = path;
+        // this.xsd = xml.parseXmlString( data[1] );
+        return this.xml;
+      }
+
+      if ( isJson ) {
+        this.json = JSON.parse( fileContents );
+        this.hvmlPath = path;
+        // throw new Error( 'JSON Parsing not implemented yet' );
+        return this.json;
+      }
+
+      throw new Error( 'Unsupported file type' );
     } );
   }
 
@@ -99,7 +145,11 @@ class HVML {
           );
 
           if ( xmllintNotFound ) {
-            reject( new Error( 'xmllint is not installed or inaccessible' ) );
+            reject( new Validation.OptionalDependencyNotInstalled( {
+              "className": "HVML",
+              "fieldName": "validate",
+              "dependency": "xmllint",
+            } ) );
             return;
           }
 
@@ -493,29 +543,31 @@ class HVML {
   }
 
   toJson() {
-    // this.json = {
-    //   "@context": "https://redblue.video/guide/hvml.context.jsonld",
-    // };
+    if ( !this.json ) {
+      this.json = {
+        "@context": "https://redblue.video/guide/hvml.context.jsonld",
+      };
+      this.xml.root().childNodes().forEach( ( node ) => {
+        if ( node.type() === 'element' ) {
+          const attributes = node.attrs();
+          const children = node.childNodes();
 
-    this.xml.root().childNodes().forEach( ( node ) => {
-      if ( node.type() === 'element' ) {
-        const attributes = node.attrs();
-        const children = node.childNodes();
+          this.json['@type'] = node.name();
 
-        this.json['@type'] = node.name();
-
-        attributes.forEach( ( attribute ) => {
-          this._jsonifyAttribute( attribute );
-        } );
-
-        /* istanbul ignore else: optional */
-        if ( children.length ) {
-          children.forEach( ( child ) => {
-            this._jsonifyChild( child );
+          attributes.forEach( ( attribute ) => {
+            this._jsonifyAttribute( attribute );
           } );
+
+          /* istanbul ignore else: optional */
+          if ( children.length ) {
+            children.forEach( ( child ) => {
+              this._jsonifyChild( child );
+            } );
+          }
         }
-      }
-    } );
+      } );
+    }
+
     return this.json;
   }
 }

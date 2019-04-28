@@ -208,10 +208,18 @@ class HVMLNotIntegerError extends HVMLTypeError {
   }
 }
 
+class HVMLOptionalDependencyNotInstalled extends HVMLDomainError {
+  constructor( data ) {
+    super( `Optional dependency ${data.dependency} is not installed, so ${HVMLTypeError.getFieldOrParameter( data )} can not be used` );
+    this.data = data;
+  }
+}
+
 module.exports = {
   "DomainError": HVMLDomainError,
   "EnumError": HVMLEnumError,
   "TypeError": HVMLTypeError,
   "RangeError": HVMLRangeError,
   "NotIntegerError": HVMLNotIntegerError,
+  "OptionalDependencyNotInstalled": HVMLOptionalDependencyNotInstalled,
 };

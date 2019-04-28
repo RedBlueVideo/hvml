@@ -17,9 +17,14 @@ function isUndefined( object ) {
   return ( typeof object === 'undefined' );
 }
 
+function hasProperty( object, property ) {
+  return Object.prototype.hasOwnProperty.call( object, property );
+}
+
 module.exports = {
   isNumber,
   isPlainObject,
   isString,
   isUndefined,
+  hasProperty,
 };
