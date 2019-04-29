@@ -52,10 +52,23 @@ describe( 'HVML', () => {
       jest.resetModules();
     } );
 
-    skipIfLibxmljsUnavailable( 'from XML', () => {
+    test( 'from nothing', () => {
+      const { HVML } = require( './index.js' );
+      const hvml = new HVML();
+      return expect( hvml.ready ).resolves.toEqual( { "@context": JSON_LD['@context'] } );
+    } );
+
+    skipIfLibxmljsUnavailable( 'from XML', ( done ) => {
       const { HVML } = require( './index.js' );
       const hvml = new HVML( './examples/hvml.xml' );
-      return expect( hvml.ready ).resolves.toEqual( expect.anything() );
+
+      expect.assertions( 2 );
+
+      expect( hvml.ready ).resolves.toEqual( expect.anything() );
+      hvml.ready.then( ( xml ) => {
+        expect( xml.constructor.name ).toBe( 'Document' );
+        done();
+      } );
     } );
 
     test( 'from XML: throws an error when libxmljs is not installed', () => {
@@ -72,7 +85,7 @@ describe( 'HVML', () => {
     test( 'from JSON-LD', () => {
       const { HVML } = require( './index.js' );
       const hvml = new HVML( './examples/hvml.jsonld' );
-      return expect( hvml.ready ).resolves.toEqual( expect.anything() );
+      return expect( hvml.ready ).resolves.toEqual( JSON_LD );
     } );
 
     it( 'throws an error for unsupported file types', () => {

@@ -21,6 +21,12 @@ try {
 }
 
 class HVML {
+  static _getJsonBoilerplate() {
+    return {
+      "@context": "https://redblue.video/guide/hvml.context.jsonld",
+    };
+  }
+
   constructor( path, config = {} ) {
     /*
       fs.readFile(path[, options], callback)
@@ -71,55 +77,65 @@ class HVML {
     this.schemaPath = config.schemaPath;
     this.schemaType = config.schemaType;
 
-    const fileReady = ( new Promise( ( resolve, reject ) => {
-      fs.readFile( path, config.encoding, ( error, data ) => {
-        if ( error ) {
-          // throw new Error( error );
-          reject( error );
+    if ( path ) {
+      const fileReady = ( new Promise( ( resolve, reject ) => {
+        fs.readFile( path, config.encoding, ( error, data ) => {
+          if ( error ) {
+            // throw new Error( error );
+            reject( error );
+          }
+          resolve( data );
+        } );
+      } ) );
+
+      const schemaReady = ( new Promise( ( resolve, reject ) => {
+        fs.readFile( this.schemaPath, 'utf8', ( error, data ) => {
+          if ( error ) {
+            reject( error );
+          }
+          resolve( data );
+        } );
+      } ) );
+
+      this.ready = Promise.all( [fileReady, schemaReady] ).then( ( data ) => {
+        const fileContents = data[0];
+        const extension = extname( path ).slice( 1 );
+        const isXml = ( this.fileExtensions.xml.indexOf( extension ) !== -1 );
+        const isJson = ( this.fileExtensions.json.indexOf( extension ) !== -1 );
+
+        if ( isXml ) {
+          if ( !canParseXml ) {
+            throw new Validation.OptionalDependencyNotInstalled( {
+              "className": "HVML",
+              "fieldName": "ready",
+              "dependency": "libxmljs",
+            } );
+          }
+
+          this.xml = xml.parseXmlString( fileContents );
+          this.json = null;
+          this.hvmlPath = path;
+          // this.xsd = xml.parseXmlString( data[1] );
+          return this.xml;
         }
-        resolve( data );
+
+        if ( isJson ) {
+          this.xml = null;
+          this.json = JSON.parse( fileContents );
+          this.hvmlPath = path;
+          // throw new Error( 'JSON Parsing not implemented yet' );
+          return this.json;
+        }
+
+        throw new Error( 'Unsupported file type' );
       } );
-    } ) );
-
-    const schemaReady = ( new Promise( ( resolve, reject ) => {
-      fs.readFile( this.schemaPath, 'utf8', ( error, data ) => {
-        if ( error ) {
-          reject( error );
-        }
-        resolve( data );
-      } );
-    } ) );
-
-    this.ready = Promise.all( [fileReady, schemaReady] ).then( ( data ) => {
-      const fileContents = data[0];
-      const extension = extname( path ).slice( 1 );
-      const isXml = ( this.fileExtensions.xml.indexOf( extension ) !== -1 );
-      const isJson = ( this.fileExtensions.json.indexOf( extension ) !== -1 );
-
-      if ( isXml ) {
-        if ( !canParseXml ) {
-          throw new Validation.OptionalDependencyNotInstalled( {
-            "className": "HVML",
-            "fieldName": "ready",
-            "dependency": "libxmljs",
-          } );
-        }
-
-        this.xml = xml.parseXmlString( fileContents );
-        this.hvmlPath = path;
-        // this.xsd = xml.parseXmlString( data[1] );
-        return this.xml;
-      }
-
-      if ( isJson ) {
-        this.json = JSON.parse( fileContents );
-        this.hvmlPath = path;
-        // throw new Error( 'JSON Parsing not implemented yet' );
-        return this.json;
-      }
-
-      throw new Error( 'Unsupported file type' );
-    } );
+    } else {
+      // Instantiate with empty JSON data if no file path is specified
+      this.xml = null;
+      this.json = HVML._getJsonBoilerplate();
+      this.hvmlPath = null;
+      this.ready = Promise.resolve( this.json );
+    }
   }
 
   validate( xmllintPath = 'xmllint' ) {
@@ -543,10 +559,12 @@ class HVML {
   }
 
   toJson() {
-    if ( !this.json ) {
-      this.json = {
-        "@context": "https://redblue.video/guide/hvml.context.jsonld",
-      };
+    if ( this.xml ) {
+      /* istanbul ignore else: assumed to already be set otherwise */
+      if ( !this.json ) {
+        this.json = HVML._getJsonBoilerplate();
+      }
+
       this.xml.root().childNodes().forEach( ( node ) => {
         if ( node.type() === 'element' ) {
           const attributes = node.attrs();
