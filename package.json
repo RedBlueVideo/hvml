@@ -16,7 +16,7 @@
     "rng2xsd": "java -jar ./jing-trang/build/trang.jar -I rng -O xsd rng/hvml.rng xsd/hvml.xsd",
     "jing-trang-build": "cd jing-trang && ./ant",
     "trang": "java -jar ./jing-trang/build/trang.jar",
-    "dist": "yarn run test && node ./npmify.js"
+    "dist": "yarn run test && npm-minify"
   },
   "repository": {
     "type": "git",
@@ -47,6 +47,7 @@
     "eslint-plugin-lodash": "^5.1.0",
     "eslint-plugin-you-dont-need-lodash-underscore": "^6.4.0",
     "jest": "^24.7.1",
+    "npm-minify": "^0.0.2",
     "recursive-copy": "^2.0.10",
     "rimraf": "^2.6.3",
     "skip-if": "^1.1.1"
