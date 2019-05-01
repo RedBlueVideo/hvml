@@ -13,48 +13,6 @@ class HVMLDomainError extends Error {
   }
 }
 
-class HVMLEnumError extends HVMLDomainError {
-  /* className, field, badValues */
-  constructor( data ) {
-    let forField = '';
-
-    if ( !data ) {
-      const error = new HVMLTypeError( {
-        "className": "HVMLEnumError",
-        "expected": "Object",
-        "input": data,
-        "methodName": "constructor",
-        "fieldName": "data",
-      } );
-
-      throw new TypeError( error.message );
-    } else if ( !( 'badValues' in data ) ) {
-      const error = new HVMLTypeError( {
-        "className": "HVMLEnumError",
-        "expected": "Array",
-        "input": data.badValues,
-        "methodName": "constructor",
-        "fieldName": "data.badValues",
-      } );
-
-      throw new TypeError( error.message );
-    }
-
-    if ( data.className || data.methodName || data.fieldName ) {
-      try {
-        forField = ` for ${HVMLTypeError.getFieldOrParameter( data )}`;
-      // Only time getFieldOrParameter throws is if className is present but fieldName is missing.
-      } catch ( error ) {
-        forField = ` for ${data.className}.${data.methodName || 'constructor'}`;
-      }
-    }
-
-    super( `The following values are invalid${forField}: ${data.badValues.join( ', ' )}` );
-
-    this.data = data;
-  }
-}
-
 class HVMLTypeError extends HVMLDomainError {
   /* className, field, expected, extraInfo = '' */
   static getGot( data ) {
@@ -159,6 +117,48 @@ class HVMLTypeError extends HVMLDomainError {
     data.got = ( data.got || HVMLTypeError.getGot( data ) );
 
     super( `${fieldOrParameter} must be of type ${expected}${data.extraInfo || ''}; got ${data.got}` );
+
+    this.data = data;
+  }
+}
+
+class HVMLEnumError extends HVMLDomainError {
+  /* className, field, badValues */
+  constructor( data ) {
+    let forField = '';
+
+    if ( !data ) {
+      const error = new HVMLTypeError( {
+        "className": "HVMLEnumError",
+        "expected": "Object",
+        "input": data,
+        "methodName": "constructor",
+        "fieldName": "data",
+      } );
+
+      throw new TypeError( error.message );
+    } else if ( !( 'badValues' in data ) ) {
+      const error = new HVMLTypeError( {
+        "className": "HVMLEnumError",
+        "expected": "Array",
+        "input": data.badValues,
+        "methodName": "constructor",
+        "fieldName": "data.badValues",
+      } );
+
+      throw new TypeError( error.message );
+    }
+
+    if ( data.className || data.methodName || data.fieldName ) {
+      try {
+        forField = ` for ${HVMLTypeError.getFieldOrParameter( data )}`;
+      // Only time getFieldOrParameter throws is if className is present but fieldName is missing.
+      } catch ( error ) {
+        forField = ` for ${data.className}.${data.methodName || 'constructor'}`;
+      }
+    }
+
+    super( `The following values are invalid${forField}: ${data.badValues.join( ', ' )}` );
 
     this.data = data;
   }
