@@ -54,13 +54,13 @@ describe( 'HVML', () => {
     } );
 
     test( 'from nothing', () => {
-      const { HVML } = require( './index.js' );
+      const { HVML } = require( './hvml' );
       const hvml = new HVML();
       return expect( hvml.ready ).resolves.toEqual( { "@context": JSON_LD['@context'] } );
     } );
 
     skipIfLibxmljsUnavailable( 'from XML', ( done ) => {
-      const { HVML } = require( './index.js' );
+      const { HVML } = require( './hvml' );
       const hvml = new HVML( './examples/hvml.xml' );
 
       expect.assertions( 2 );
@@ -78,31 +78,31 @@ describe( 'HVML', () => {
           throw new Error( `Cannot find module 'libxmljs'` );
         } );
       }
-      const { HVML } = require( './index.js' );
+      const { HVML } = require( './hvml' );
       const hvml = new HVML( './examples/hvml.xml' );
       return expect( hvml.ready ).rejects.toEqual( expect.anything() );
     } );
 
     test( 'from JSON-LD', () => {
-      const { HVML } = require( './index.js' );
+      const { HVML } = require( './hvml' );
       const hvml = new HVML( './examples/hvml.jsonld' );
       return expect( hvml.ready ).resolves.toEqual( JSON_LD );
     } );
 
     it( 'throws an error for unsupported file types', () => {
-      const { HVML } = require( './index.js' );
+      const { HVML } = require( './hvml' );
       const hvml = new HVML( './examples/hvml.yaml' );
       return expect( hvml.ready ).rejects.toEqual( expect.anything() );
     } );
 
     it( 'throws an error for nonexistent files', () => {
-      const { HVML } = require( './index.js' );
+      const { HVML } = require( './hvml' );
       const hvml = new HVML( './gone.hvml' );
       return expect( hvml.ready ).rejects.toEqual( expect.anything() );
     } );
 
     it( 'throws an error for nonexistent schema files', () => {
-      const { HVML } = require( './index.js' );
+      const { HVML } = require( './hvml' );
       const hvml = new HVML( './examples/hvml.xml', {
         "schemaPath": "rng/gone.rng",
       } );
@@ -111,7 +111,7 @@ describe( 'HVML', () => {
   } );
 
   describe( 'Returns data as JSON-LD', () => {
-    const { HVML } = require( './index.js' );
+    const { HVML } = require( './hvml' );
 
     skipIfLibxmljsUnavailable( 'from XML', () => {
       const hvml = new HVML( './examples/hvml.xml' );
@@ -158,7 +158,7 @@ describe( 'HVML', () => {
   // } );
 
   describe( 'Validation', () => {
-    const { HVML } = require( './index.js' );
+    const { HVML } = require( './hvml' );
 
     skipIfXmllintUnavailable( 'validates good HVML', ( done ) => {
       const goodHvml = new HVML( './examples/hvml.xml' );
@@ -338,7 +338,7 @@ describe( 'HVML', () => {
   } );
 
   describe( 'MOM Manipulation', () => {
-    const { HVML, Video } = require( './index.js' );
+    const { HVML, Video } = require( './hvml' );
 
     it( 'appends children', () => {
       const hvml = new HVML();

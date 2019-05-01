@@ -2,7 +2,7 @@
   "name": "hvml",
   "version": "0.0.3",
   "description": "HVML Parser for JavaScript",
-  "main": "index.js",
+  "main": "hvml.js",
   "scripts": {
     "test": "jest --verbose",
     "test-dev": "jest --watch --verbose",
