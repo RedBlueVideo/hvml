@@ -5,11 +5,12 @@ const {
   isUndefined,
 } = require( './util/types' );
 
+const HVMLElement = require( './hvml-element' );
 const Time = require( './util/time' );
 const Validation = require( './util/validation' );
 const Transform = require( './util/transform' );
 
-class Video {
+class Video extends HVMLElement {
   static isValidType( type ) {
     switch ( type ) {
       case 'narrative':
@@ -73,13 +74,9 @@ class Video {
     return { language, region };
   }
 
-  get _baseErrorData() {
-    return {
-      "className": this.constructor.name,
-    };
-  }
-
   constructor( config = {} ) {
+    super();
+
     let language;
     let region;
     const errorData = {
