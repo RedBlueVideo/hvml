@@ -40,8 +40,13 @@ class HVMLEnumError extends HVMLDomainError {
       throw new TypeError( error.message );
     }
 
-    if ( 'className' in data ) {
-      forField += ` for ${data.className}${data.fieldName ? ( '::' + data.fieldName ) : '.constructor'}`; // eslint-disable-line prefer-template
+    if ( data.className || data.methodName || data.fieldName ) {
+      try {
+        forField = ` for ${HVMLTypeError.getFieldOrParameter( data )}`;
+      // Only time getFieldOrParameter throws is if className is present but fieldName is missing.
+      } catch ( error ) {
+        forField = ` for ${data.className}.${data.methodName || 'constructor'}`;
+      }
     }
 
     super( `The following values are invalid${forField}: ${data.badValues.join( ', ' )}` );
@@ -104,24 +109,31 @@ class HVMLTypeError extends HVMLDomainError {
       if ( hasMethodName ) {
         fieldOrParameter += `.${data.methodName}`;
       }
+
+      if ( hasFieldName ) {
+        fieldOrParameter += `::${data.fieldName}`;
+      } else {
+        const error = new HVMLTypeError( {
+          "className": "HVMLTypeError",
+          "expected": "String",
+          "input": data.fieldName,
+          "methodName": "constructor",
+          "fieldName": "data.fieldName",
+        } );
+
+        throw new TypeError( error.message );
+      }
     } else if ( hasMethodName ) {
       fieldOrParameter += data.methodName;
-    }
 
-    if ( hasFieldName ) {
-      fieldOrParameter += `::${data.fieldName}`;
-    } else if ( !hasClassName && !hasMethodName ) {
-      fieldOrParameter = 'Field or parameter';
+      /* istanbul ignore else */
+      if ( hasFieldName ) {
+        fieldOrParameter += `::${data.fieldName}`;
+      }
+    } else if ( hasFieldName ) {
+      fieldOrParameter += data.fieldName;
     } else {
-      const error = new HVMLTypeError( {
-        "className": "HVMLTypeError",
-        "expected": "String",
-        "input": data.fieldName,
-        "methodName": "constructor",
-        "fieldName": "data.fieldName",
-      } );
-
-      throw new TypeError( error.message );
+      fieldOrParameter = 'Field or parameter';
     }
 
     return fieldOrParameter;

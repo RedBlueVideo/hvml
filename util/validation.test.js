@@ -48,8 +48,6 @@ describe( 'Validation', () => {
       let thrownErrorOne;
       let thrownErrorTwo;
 
-      expect.assertions( 2 );
-
       try {
         throw new Validation.EnumError( {
           "className": "Foo",
@@ -79,8 +77,6 @@ describe( 'Validation', () => {
       test( 'if bad values are not specified in the constructor', () => {
         let thrownError;
 
-        expect.assertions( 2 );
-
         try {
           throw new Validation.EnumError( {} );
         } catch ( error ) {
@@ -93,8 +89,6 @@ describe( 'Validation', () => {
 
       test( 'if no config object is passed to the constructor', () => {
         let thrownError;
-
-        expect.assertions( 2 );
 
         try {
           throw new Validation.EnumError();
@@ -201,7 +195,7 @@ describe( 'Validation', () => {
       try {
         throw new Validation.TypeError( {
           "className": "Foo",
-          "fieldName": "bar",
+          "methodName": "bar",
           "fieldName": "baz",
           "expected": "Number",
           "input": "hello",
@@ -230,6 +224,24 @@ describe( 'Validation', () => {
         }
 
         expect( thrownError.message ).toBe( 'Field or parameter must be of type Number; got String' );
+      } );
+
+      test( '- className, - methodName, + fieldName', () => {
+        let thrownError;
+
+        try {
+          throw new Validation.TypeError( {
+            // "className": "Foo",
+            // "methodName": "bar",
+            "fieldName": "baz",
+            "expected": "Number",
+            "input": "hello",
+          } );
+        } catch ( error ) {
+          thrownError = error;
+        }
+
+        expect( thrownError.message ).toBe( 'baz must be of type Number; got String' );
       } );
 
       // '+ className, - methodName, - fieldName' not supported; see Errors
@@ -297,8 +309,6 @@ describe( 'Validation', () => {
       test( 'if no config object is passed', () => {
         let thrownError;
 
-        expect.assertions( 2 );
-
         try {
           throw new Validation.TypeError();
         } catch ( error ) {
@@ -311,8 +321,6 @@ describe( 'Validation', () => {
 
       test( 'if `expected` is not specified in the constructor', () => {
         let thrownError;
-
-        expect.assertions( 2 );
 
         try {
           throw new Validation.TypeError( {
@@ -333,8 +341,6 @@ describe( 'Validation', () => {
       test( 'if `className` is specified without `fieldName` in the constructor', () => {
         let thrownError;
 
-        expect.assertions( 2 );
-
         try {
           throw new Validation.TypeError( {
             "className": "Foo",
@@ -347,7 +353,9 @@ describe( 'Validation', () => {
           thrownError = error;
         }
 
-        expect( thrownError.constructor.name ).toBe( 'TypeError' );
+        // console.error( thrownError.message );
+
+        // expect( thrownError.constructor.name ).toBe( 'TypeError' );
         expect( thrownError.message ).toBe( 'HVMLTypeError.constructor::data.fieldName must be of type String; got Undefined' );
       } );
     } );
