@@ -54,6 +54,7 @@ class HVML {
       "hvml": "https://hypervideo.tech/hvml#",
       "xlink": "http://www.w3.org/1999/xlink",
       "css": "https://www.w3.org/TR/CSS/",
+      "rng": "http://relaxng.org/ns/structure/1.0",
     };
 
     this.fileExtensions = {
@@ -61,6 +62,7 @@ class HVML {
         "xml",
         "ovml",
         "hvml",
+        // "rng",
       ],
       "json": [
         "json",
@@ -115,6 +117,7 @@ class HVML {
           this.xml = xml.parseXmlString( fileContents );
           this.json = null;
           this.hvmlPath = path;
+          this.children = [];
           // this.xsd = xml.parseXmlString( data[1] );
           return this.xml;
         }
@@ -123,6 +126,7 @@ class HVML {
           this.xml = null;
           this.json = JSON.parse( fileContents );
           this.hvmlPath = path;
+          this.children = [];
           // throw new Error( 'JSON Parsing not implemented yet' );
           return this.json;
         }
@@ -134,8 +138,15 @@ class HVML {
       this.xml = null;
       this.json = HVML._getJsonBoilerplate();
       this.hvmlPath = null;
+      this.children = [];
       this.ready = Promise.resolve( this.json );
     }
+  }
+
+  get _baseErrorData() {
+    return {
+      "className": this.constructor.name,
+    };
   }
 
   validate( xmllintPath = 'xmllint' ) {
@@ -587,6 +598,47 @@ class HVML {
     }
 
     return this.json;
+  }
+
+  appendChild( child ) {
+    const errorData = {
+      ...this._baseErrorData,
+      "methodName": "appendChild",
+    };
+
+    switch ( child.constructor ) {
+      case Video:
+        this.children.push( child );
+        if ( hasProperty( child, 'id' ) ) {
+          this.children[child.id] = this.children[this.children.length - 1];
+        }
+        break;
+
+      default:
+        throw new Validation.EnumError( {
+          ...errorData,
+          // "message": `${child.constructor.name} can not be a child of ${this.constructor.name}`,
+          "fieldName": "child",
+          "expected": ["Video"],
+          "badValues": [child],
+        } );
+    }
+  }
+
+  removeChild( child ) {
+    let i = this.children.length;
+
+    while ( i-- ) {
+      const element = this.children[i];
+
+      if ( Object.is( child, this.children[i] ) ) {
+        this.children.splice( i, 1 );
+
+        if ( hasProperty( element, 'id' ) ) {
+          delete this.children[element.id];
+        }
+      }
+    }
   }
 }
 

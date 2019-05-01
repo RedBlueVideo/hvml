@@ -6,6 +6,7 @@ const { readFileSync } = require( 'fs' );
 // test( 'opens files successfully', () => {} );
 
 const JSON_LD = JSON.parse( readFileSync( './examples/hvml.jsonld', 'utf8' ) );
+const Validation = require( './util/validation' );
 
 // skipIf(condition, name, test)
 
@@ -333,6 +334,89 @@ describe( 'HVML', () => {
           expect( validationErrors.message ).toBe( 'Optional dependency xmllint is not installed, so HVML::validate can not be used' );
           done();
         } );
+    } );
+  } );
+
+  describe( 'MOM Manipulation', () => {
+    const { HVML, Video } = require( './index.js' );
+
+    it( 'appends children', () => {
+      const hvml = new HVML();
+      const channel = new Video();
+      const secondChannel = new Video();
+
+      hvml.appendChild( channel );
+      hvml.appendChild( secondChannel );
+
+      expect( hvml.children.length ).toBe( 2 );
+      expect( Object.keys( hvml.children ).length ).toBe( 2 );
+      expect( hvml.children[0] ).toStrictEqual( channel );
+      expect( hvml.children[1] ).toStrictEqual( secondChannel );
+    } );
+
+    it( 'registers named indices when appending children with IDs', () => {
+      const hvml = new HVML();
+      const channel = new Video( {
+        "id": "welcome-to-my-channel",
+      } );
+      const secondChannel = new Video( {
+        "id": "welcome-to-my-second-channel",
+      } );
+
+      hvml.appendChild( channel );
+      hvml.appendChild( secondChannel );
+
+      expect( hvml.children['welcome-to-my-channel'] ).toStrictEqual( channel );
+      expect( hvml.children['welcome-to-my-second-channel'] ).toStrictEqual( secondChannel );
+    } );
+
+    it( 'removes children', () => {
+      const hvml = new HVML();
+      const channel = new Video();
+      const secondChannel = new Video();
+
+      hvml.appendChild( channel );
+      hvml.appendChild( secondChannel );
+      hvml.removeChild( channel );
+
+      expect( hvml.children.length ).toBe( 1 );
+      expect( Object.keys( hvml.children ).length ).toBe( 1 );
+    } );
+
+    it( 'deregisters named indices when removing children with IDs', () => {
+      const hvml = new HVML();
+      const channel = new Video( {
+        "id": "welcome-to-my-channel",
+      } );
+      const secondChannel = new Video( {
+        "id": "welcome-to-my-second-channel",
+      } );
+
+      hvml.appendChild( channel );
+      hvml.appendChild( secondChannel );
+      hvml.removeChild( channel );
+
+      expect( hvml.children.length ).toBe( 1 );
+      expect( Object.keys( hvml.children ).length ).toBe( 2 );
+      expect( hvml.children['welcome-to-my-channel'] ).toBeUndefined();
+      expect( hvml.children['welcome-to-my-second-channel'] ).toStrictEqual( secondChannel );
+    } );
+
+    it( 'throws an error when appending children of unexpected types', () => {
+      const hvml = new HVML();
+      const channel = {
+        "id": "welcome-to-my-channel",
+      };
+      let thrownError;
+
+      try {
+        hvml.appendChild( channel );
+      } catch ( error ) {
+        thrownError = error;
+      }
+
+      expect( thrownError.constructor ).toBe( Validation.EnumError );
+      expect( thrownError.message ).toBe( 'The following values are invalid for HVML.appendChild::child: [object Object]' );
     } );
   } );
 } );
