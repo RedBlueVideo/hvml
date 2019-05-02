@@ -6,6 +6,8 @@ const {
 } = require( './util/types' );
 
 const HVMLElement = require( './hvml-element' );
+// const Series = require( './series' );
+
 const Time = require( './util/time' );
 const Validation = require( './util/validation' );
 const Transform = require( './util/transform' );

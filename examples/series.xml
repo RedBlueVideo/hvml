@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<hvml
+ xmlns="https://hypervideo.tech/hvml#"
+ xmlns:xlink="http://www.w3.org/1999/xlink"
+ xml:lang="en"
+>
+ <series xml:id="hughs-vlog">
+   <title>Hugh’s Vlog</title>
+   <series xml:id="season-01">
+     <video xml:id="episode-01"></video>
+     <video xml:id="episode-02"></video>
+     <video xml:id="episode-03"></video>
+   </series>
+ </series>
+</hvml>

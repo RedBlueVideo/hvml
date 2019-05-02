@@ -4,6 +4,9 @@ const { exec } = require( 'child_process' );
 
 const HVMLElement = require( './hvml-element' );
 const Video = require( './video' );
+const Series = require( './series' );
+const Group = require( './group' );
+
 const Validation = require( './util/validation' );
 const { hasProperty } = require( './util/types.js' );
 const Data = require( './util/data' );
@@ -355,6 +358,7 @@ class HVML extends HVMLElement {
 
     switch ( child.constructor ) {
       case Video:
+      case Series:
         super.appendChild( child );
         break;
 
@@ -374,4 +378,9 @@ class HVML extends HVMLElement {
 
 // toJson
 
-module.exports = { HVML, Video };
+module.exports = {
+  HVML,
+  Series,
+  Group,
+  Video,
+};
