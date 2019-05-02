@@ -1,6 +1,7 @@
 const fs = require( 'fs' );
 const { extname } = require( 'path' );
 const { exec } = require( 'child_process' );
+const set = require( 'lodash.set' );
 
 const HVMLElement = require( './hvml-element' );
 const Video = require( './video' );
@@ -10,6 +11,7 @@ const Group = require( './group' );
 const Validation = require( './util/validation' );
 const { hasProperty } = require( './util/types.js' );
 const Data = require( './util/data' );
+const { ucFirst } = require( './util/strings' );
 
 let xml;
 let canParseXml = false;
@@ -22,6 +24,10 @@ try {
   }
 } catch ( error ) {
   // eslint-disable-line no-empty
+}
+
+const classMap = {
+  "Video": Video,
 }
 
 class HVML extends HVMLElement {
@@ -348,6 +354,82 @@ class HVML extends HVMLElement {
         }
       } );
     } ) );
+  }
+
+  _momifyChild( key, value, target = this.children ) {
+    if ( key === '@type' ) {
+      const className = ucFirst( value );
+      const instance = new classMap[className]();
+      target.push( instance );
+    } else {
+      const lastChild = target[target.length - 1];
+      // console.log( 'lastChild', lastChild );
+
+      switch ( typeof value ) {
+        case 'string':
+          switch ( key ) {
+            case 'xml:id':
+              lastChild.id = value;
+              break;
+
+            case 'title':
+            case 'episode':
+            case 'description':
+            // case 'type':
+            // case 'recorded':
+              lastChild[`set${ucFirst( key )}`]( value );
+              break;
+
+            case '@context':
+              break;
+
+            default:
+              // console.log( key, value );
+              break;
+          }
+          break;
+
+        case 'object':
+          // set( this.children,  )
+          // for ( const [subKey, subValue] of Object.entries( this.json ) ) {
+          //   this._momifyChild( subKey, subValue, target );
+          // }
+          switch ( key ) {
+            case 'description':
+              switch ( value.type ) {
+                case 'xhtml':
+                  lastChild.setDescription( value['html:div'], 'xhtml' );
+                  break;
+
+                default:
+                  break;
+              }
+              
+              break;
+
+            default:
+              console.log( 'ucFirst( key )', ucFirst( key ) );
+              try {
+                target.push( new classMap[ucFirst( key )]() );
+              } catch ( error ) {}
+          }
+          break;
+
+        default:
+      }
+    }
+  }
+
+  toMom() {
+    if ( this.json ) {
+      this.children = [];
+
+      for ( const [key, value] of Object.entries( this.json ) ) {
+        this._momifyChild( key, value );
+      }
+    }
+
+    return this.children;
   }
 
   appendChild( child ) {
