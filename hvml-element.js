@@ -3,7 +3,14 @@ const Data = require( './util/data' );
 const { hasProperty } = require( './util/types' );
 
 class HVMLElement {
-  constructor() {
+  constructor( data ) {
+    if ( data ) {
+      /* istanbul ignore else */
+      if ( data.id ) {
+        this.id = data.id;
+      }
+    }
+
     this.children = [];
   }
 
@@ -127,7 +134,10 @@ class HVMLElement {
               grandchildren.forEach( ( grandchild ) => {
                 // path.pop();
                 ++i;
-                if ( grandchild.name() === 'animate' ) {
+                if (
+                  ( grandchild.name() === 'animate' )
+                  || ( grandchild.name() === 'video' )
+                ) {
                   wasBlank = this._jsonifyChild( grandchild, path, false, i );
                   path.pop();
                   path.pop();
@@ -225,13 +235,142 @@ class HVMLElement {
     return false;
   }
 
-  toJson() {
-    if ( this.xml ) {
-      /* istanbul ignore else: assumed to already be set otherwise */
-      if ( !this.json ) {
-        this.json = Data.getJsonBoilerplate();
-      }
+  /* istanbul ignore next: internals of toJson(), which is already tested */
+  _setJsonChild( child, path = [], root = false, atIndex = null ) {
+    const nodeName = child.constructor.name.toLowerCase();
+    // const attributes = { ...child };
+    let attributes = {};
 
+    if ( child.id ) {
+      attributes['xml:id'] = child.id;
+    }
+
+    if ( child.language && ( child.language !== '_' ) ) {
+      if ( child.region && ( child.region !== '_' ) ) {
+        attributes['xml:lang'] = `${child.language}-${child.region}`;
+      } else {
+        attributes['xml:lang'] = child.language;
+      }
+    }
+
+    attributes = {
+      ...attributes,
+      ...child,
+    };
+    delete attributes.id;
+    delete attributes.children;
+    delete attributes.language;
+    delete attributes.region;
+
+    // const parentNode = path[path.length - 1 ];
+
+    if ( root ) {
+      if ( atIndex !== null ) {
+        this.json = {
+          ...this.json,
+          "@type": nodeName,
+        };
+        path.push( atIndex );
+        set( this.json, path, attributes );
+        path.pop();
+        path.pop();
+      } else {
+        this.json = {
+          ...this.json,
+          "@type": nodeName,
+          ...attributes,
+        };
+        // set( this.json, path, attributes );
+      }
+    } else {
+      path.push( nodeName );
+
+      if ( atIndex !== null ) {
+        path.push( atIndex );
+        set( this.json, path, attributes );
+        path.pop();
+        path.pop();
+      } else {
+        set( this.json, path, attributes );
+      }
+    }
+
+    if ( child.children.length ) {
+      const grandchildren = child.children;
+      const grandchildCounts = {};
+
+      grandchildren.forEach( ( grandchild ) => {
+        const key = grandchild.constructor.name.toLowerCase();
+
+        if ( hasProperty( grandchildCounts, key ) ) {
+          grandchildCounts[key].count += 1;
+        } else {
+          grandchildCounts[key] = {
+            "count": 1,
+            "i": -1,
+          };
+        }
+      } );
+
+      grandchildren.forEach( ( grandchild ) => {
+        const grandchildNodeName = grandchild.constructor.name.toLowerCase();
+
+        if ( grandchildCounts[grandchildNodeName].count > 1 ) {
+          ++grandchildCounts[grandchildNodeName].i;
+
+          this._setJsonChild( grandchild, path, null, grandchildCounts[grandchildNodeName].i );
+        } else {
+          this._setJsonChild( grandchild, path );
+        }
+      } );
+    }
+  }
+
+  toJson() {
+    /* istanbul ignore else: assumed to already be set otherwise */
+    if ( !this.json ) {
+      this.json = Data.getJsonBoilerplate();
+    }
+
+    if ( this.children.length ) {
+      const path = [];
+      // path.push( nodeName );
+
+      // this.children.forEach( ( child ) => {
+      //   this._setJsonChild( child, path, true );
+      // } );
+      const { children } = this;
+      const childCounts = {};
+
+      children.forEach( ( child ) => {
+        const key = child.constructor.name.toLowerCase();
+
+        if ( hasProperty( childCounts, key ) ) {
+          childCounts[key].count += 1;
+        } else {
+          childCounts[key] = {
+            "count": 1,
+            "i": -1,
+          };
+        }
+      } );
+
+      children.forEach( ( child ) => {
+        const childNodeName = child.constructor.name.toLowerCase();
+
+        if ( childCounts[childNodeName].count > 1 ) {
+          path.push( '@list' );
+          ++childCounts[childNodeName].i;
+
+          this._setJsonChild( child, path, true, childCounts[childNodeName].i );
+          path.pop();
+        } else {
+          this._setJsonChild( child, path, true );
+        }
+      } );
+    }
+
+    if ( this.xml ) {
       this.xml.root().childNodes().forEach( ( node ) => {
         if ( node.type() === 'element' ) {
           const attributes = node.attrs();
