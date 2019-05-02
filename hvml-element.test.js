@@ -1,6 +1,5 @@
 const HVMLElement = require( './hvml-element' );
-const Video = require( './video' );
-const Series = require( './series' );
+const { HVML, Video, Series } = require( './hvml' );
 
 describe( 'HVMLElement', () => {
   describe( 'MOM Manipulation', () => {
@@ -138,6 +137,42 @@ describe( 'HVMLElement', () => {
           { "xml:id": "video-01", "xml:lang": "en-US" },
           { "xml:id": "video-02", "xml:lang": "en" },
         ],
+      } );
+    } );
+
+    it( 'produces the same output whether converting from children or file', ( done ) => {
+      const hvmlElement = new HVMLElement();
+      const hughsVlog = new Series( {
+        "id": "hughs-vlog",
+        "title": "Hugh’s Vlog",
+      } );
+      const seasonOne = new Series( {
+        "id": "season-01",
+      } );
+      const episodeOne = new Video( {
+        "id": "episode-01",
+      } );
+      const episodeTwo = new Video( {
+        "id": "episode-02",
+      } );
+      const episodeThree = new Video( {
+        "id": "episode-03",
+      } );
+
+      seasonOne.appendChild( episodeOne );
+      seasonOne.appendChild( episodeTwo );
+      seasonOne.appendChild( episodeThree );
+      hughsVlog.appendChild( seasonOne );
+      hvmlElement.appendChild( hughsVlog );
+
+      const imperativeToJson = hvmlElement.toJson();
+
+      const hvml = new HVML( './examples/series.xml' );
+      hvml.ready.then( () => {
+        const declarativeToJson = hvml.toJson();
+
+        expect( imperativeToJson ).toStrictEqual( declarativeToJson );
+        done();
       } );
     } );
   } );
