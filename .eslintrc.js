@@ -50,7 +50,5 @@ module.exports = {
     "lodash/preferred-alias": 2,
     "lodash/prop-shorthand": [2, "always"],
     "lodash/unwrap": 2,
-    // !TODO: Add to eslint-config-hughx
-    "no-restricted-syntax": ["error", "ForInStatement", "LabeledStatement", "WithStatement"]
   },
 };
