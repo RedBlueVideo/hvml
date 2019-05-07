@@ -324,23 +324,23 @@ class Video extends HVMLElement {
             this.description.xhtml = Transform.wrapXhtml( description.trim() );
             break;
 
-          case 'object':
-            if ( Array.isArray( description.childNodes ) ) {
-              this.description.xhtml = '';
+            // case 'object':
+            //   if ( Array.isArray( description.childNodes ) ) {
+            //     this.description.xhtml = '';
 
-              description.childNodes.forEach( ( childNode ) => {
-                if ( childNode['@type'] && childNode.textContent ) {
-                  const attributes = { ...childNode };
-                  delete attributes['@type'];
-                  delete attributes.textContent;
+            //     description.childNodes.forEach( ( childNode ) => {
+            //       if ( childNode['@type'] && childNode.textContent ) {
+            //         const attributes = { ...childNode };
+            //         delete attributes['@type'];
+            //         delete attributes.textContent;
 
-                  this.description.xhtml += Transform.jsonMlToXmlString(
-                    [childNode['@type'], attributes, childNode.textContent],
-                  );
-                }
-              } );
-            }
-            break;
+            //         this.description.xhtml += Transform.jsonMlToXmlString(
+            //           [childNode['@type'], attributes, childNode.textContent],
+            //         );
+            //       }
+            //     } );
+            //   }
+            //   break;
 
           default:
             throw new Validation.TypeError( errorData );
