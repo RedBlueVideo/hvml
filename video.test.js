@@ -573,27 +573,27 @@ describe( 'Video', () => {
       );
     } );
 
-    it( 'throws an error when setting type `xhtml` with a non-string description', () => {
-      const video = new Video();
-      const xhtml = null;
-      let thrownError;
+    // it( 'throws an error when setting type `xhtml` with a non-string description', () => {
+    //   const video = new Video();
+    //   const xhtml = null;
+    //   let thrownError;
 
-      try {
-        video.setDescription( xhtml, 'xhtml' );
-      } catch ( error ) {
-        thrownError = error;
-      }
+    //   try {
+    //     video.setDescription( xhtml, 'xhtml' );
+    //   } catch ( error ) {
+    //     thrownError = error;
+    //   }
 
-      expect( thrownError.data ).toEqual(
-        expect.objectContaining( {
-          "className": "Video",
-          "expected": ["String", "Object"],
-          "fieldName": "description",
-          "got": "Null",
-          "input": null,
-        } ),
-      );
-    } );
+    //   expect( thrownError.data ).toEqual(
+    //     expect.objectContaining( {
+    //       "className": "Video",
+    //       "expected": ["String", "Object"],
+    //       "fieldName": "description",
+    //       "got": "Null",
+    //       "input": null,
+    //     } ),
+    //   );
+    // } );
 
     describe( 'sets `text`, gets `xhtml`', () => {
       test( '+ Markdown, + Newlines → br', () => {

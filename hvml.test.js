@@ -372,6 +372,40 @@ describe( 'HVML', () => {
       expect( thrownError.constructor ).toBe( Validation.EnumError );
       expect( thrownError.message ).toBe( 'The following values are invalid for HVML.appendChild::child: [object Object]' );
     } );
+
+    test( 'toMom', ( done ) => {
+      const hvml = new HVML( './examples/hvml.jsonld' );
+      hvml.ready.then( () => {
+        const MOM = hvml.toMom();
+        // console.error( 'hvml.toMom()', hvml.toMom() );
+        expect( MOM ).toBeInstanceOf( HVML );
+        expect( MOM ).toMatchObject( {
+          // <hvml>
+          // property: value, × n
+          "children": [
+            {
+              // <video>
+              "language": "_",
+              "region": "_",
+              "id": "ep-23",
+              "title": "Overnight Dance Party at the Museum of Fine Arts Boston",
+              "description": {
+                "xhtml": "<p>Full Facebook Live stream: https://www.facebook.com/hugh.guiney/videos/10100195051457860/</p><p>#mfaNOW #mfaLateNites</p>",
+              },
+              "children": [
+                {
+                  // <presentation>
+                },
+                {
+                  // <showing>
+                },
+              ],
+            },
+          ],
+        } );
+        done();
+      } );
+    } );
   } );
 } );
 

@@ -25,6 +25,12 @@ try {
   // eslint-disable-line no-empty
 }
 
+// const elements = {
+//   Series,
+//   Group,
+//   Video,
+// };
+
 class HVML extends HVMLElement {
   constructor( path, config = {} ) {
     super();
@@ -384,4 +390,9 @@ module.exports = {
   Series,
   Group,
   Video,
+};
+
+global.HVML = {
+  ...global.HVML,
+  HVML,
 };

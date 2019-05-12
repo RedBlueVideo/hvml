@@ -16,8 +16,6 @@ class HVMLElement {
     }
 
     this.children = [];
-    this.instance = {};
-    this.instance[this.constructor.name] = this.constructor;
   }
 
   get _baseErrorData() {
@@ -405,11 +403,11 @@ class HVMLElement {
   _momifyChild( key, value, target = this.children ) {
     if ( key === '@type' ) {
       const className = ucFirst( value );
-      const instance = this.instance[className]();
-      target.push( instance );
+      this.children.push( new global.HVML[className]() );
     } else {
+      const className = ucFirst( key );
       const lastChild = target[target.length - 1];
-      // console.log( 'lastChild', lastChild );
+      const setMethod = `set${ucFirst( key )}`;
 
       switch ( typeof value ) {
         case 'string':
@@ -419,11 +417,18 @@ class HVMLElement {
               break;
 
             case 'title':
+              lastChild.title = value;
+              break;
+
             case 'episode':
             case 'description':
             // case 'type':
             // case 'recorded':
-              lastChild[`set${ucFirst( key )}`]( value );
+              if ( hasProperty( lastChild, setMethod ) ) {
+                lastChild[setMethod]( value );
+              } else {
+                lastChild[key] = value;
+              }
               break;
 
             case '@context':
@@ -436,10 +441,6 @@ class HVMLElement {
           break;
 
         case 'object':
-          // set( this.children,  )
-          // for ( const [subKey, subValue] of Object.entries( this.json ) ) {
-          //   this._momifyChild( subKey, subValue, target );
-          // }
           switch ( key ) {
             case 'description':
               switch ( value.type ) {
@@ -454,11 +455,10 @@ class HVMLElement {
               break;
 
             default:
-              console.log( 'ucFirst( key )', ucFirst( key ) );
               try {
-                target.push( new this.instance[ucFirst( key )]() );
+                lastChild.children.push( new global.HVML[className]() );
               } catch ( error ) {
-                // eslint-disable-line no-empty
+                lastChild.children.push( className );
               }
           }
           break;
@@ -477,7 +477,13 @@ class HVMLElement {
       }
     }
 
-    return this.children;
+    if ( this.constructor.name !== 'HVML' ) {
+      const hvml = new global.HVML.HVML();
+      hvml.children = this.children;
+      return hvml;
+    }
+
+    return this;
   }
 
   appendChild( child ) {
