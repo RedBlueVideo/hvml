@@ -1,5 +1,5 @@
 # hvml
-[HVML](https://hypervideo.tech) Parser for Node.js
+[HVML](https://hvml.redblue.video) Parser for Node.js
 
 [![Build Status](https://api.travis-ci.com/RedBlueVideo/hvml.svg?branch=master)](https://travis-ci.com/RedBlueVideo/hvml) [![Code Coverage](https://img.shields.io/codecov/c/github/RedBlueVideo/hvml/master.svg)](https://codecov.io/gh/RedBlueVideo/hvml/) [![Downloads per month (NPM)](https://img.shields.io/npm/dm/hvml.svg)](https://www.npmjs.com/package/hvml)
 
@@ -46,7 +46,7 @@ console.log( video.isVlogEpisode() ); // true
 
 ### HVML
 
-A Class representing the [`hvml` root element](https://hypervideo.tech/elements/hvml/).
+A Class representing the [`hvml` root element](https://hvml.redblue.video/elements/hvml/).
 
 #### Constructor: `new HVML(path, [config])`
 
@@ -120,7 +120,7 @@ We realize this is a pain but we’d rather ship the feature than be blocked by 
 
 ### Video
 
-A Class representing a [`video` element](https://hypervideo.tech/elements/video/).
+A Class representing a [`video` element](https://hvml.redblue.video/elements/video/).
 
 #### Constructor: `new Video([config])`
 
