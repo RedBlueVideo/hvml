@@ -12,4 +12,7 @@ module.exports = {
     ".eslintrc.js",
     "jest.config.js",
   ],
+  "modulePathIgnorePatterns": [
+    "dist/",
+  ],
 };

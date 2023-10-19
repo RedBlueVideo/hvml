@@ -1,3 +1,4 @@
 [submodule "jing-trang"]
 	path = jing-trang
 	url = https://github.com/relaxng/jing-trang.git
+	ignore = all

@@ -25,7 +25,10 @@
   "keywords": [
     "hvml",
     "hypervideo",
-    "hypermedia"
+    "hypermedia",
+    "video",
+    "semantic web",
+    "annotations"
   ],
   "author": "Hugh Guiney",
   "license": "LGPL-3.0-or-later",

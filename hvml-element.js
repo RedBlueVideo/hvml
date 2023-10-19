@@ -424,7 +424,8 @@ class HVMLElement {
             case 'description':
             // case 'type':
             // case 'recorded':
-              if ( hasProperty( lastChild, setMethod ) ) {
+              /* istanbul ignore else: edge case */
+              if ( typeof lastChild[setMethod] === 'function' ) {
                 lastChild[setMethod]( value );
               } else {
                 lastChild[key] = value;
@@ -449,6 +450,7 @@ class HVMLElement {
                   break;
 
                 default:
+                  lastChild.setDescription( value );
                   break;
               }
 
@@ -479,7 +481,7 @@ class HVMLElement {
 
     if ( this.constructor.name !== 'HVML' ) {
       const hvml = new global.HVML.HVML();
-      hvml.children = this.children;
+      hvml.appendChild( this );
       return hvml;
     }
 

@@ -2,9 +2,17 @@ const HVMLElement = require( './hvml-element' );
 const { HVML, Video, Series } = require( './hvml' );
 
 describe( 'HVMLElement', () => {
+  let hvml;
+  let hvmlElement;
+
   describe( 'MOM Manipulation', () => {
+    beforeEach( () => {
+      hvml = undefined;
+      hvmlElement = undefined;
+    } );
+
     it( 'sets its own ID if specified in the constructor', () => {
-      const hvmlElement = new HVMLElement( {
+      hvmlElement = new HVMLElement( {
         "id": "anonymous-element",
       } );
 
@@ -12,7 +20,7 @@ describe( 'HVMLElement', () => {
     } );
 
     it( 'appends children', () => {
-      const hvmlElement = new HVMLElement();
+      hvmlElement = new HVMLElement();
       const channel = new Video();
       const secondChannel = new Video();
 
@@ -26,7 +34,7 @@ describe( 'HVMLElement', () => {
     } );
 
     it( 'registers named indices when appending children with IDs', () => {
-      const hvmlElement = new HVMLElement();
+      hvmlElement = new HVMLElement();
       const channel = new Video( {
         "id": "welcome-to-my-channel",
       } );
@@ -42,7 +50,7 @@ describe( 'HVMLElement', () => {
     } );
 
     it( 'removes children', () => {
-      const hvmlElement = new HVMLElement();
+      hvmlElement = new HVMLElement();
       const channel = new Video();
       const secondChannel = new Video();
 
@@ -55,7 +63,7 @@ describe( 'HVMLElement', () => {
     } );
 
     it( 'deregisters named indices when removing children with IDs', () => {
-      const hvmlElement = new HVMLElement();
+      hvmlElement = new HVMLElement();
       const channel = new Video( {
         "id": "welcome-to-my-channel",
       } );
@@ -74,11 +82,66 @@ describe( 'HVMLElement', () => {
     } );
   } );
 
-  // describe( 'toMom', () => {} );
+  describe( 'toMom', () => {
+    beforeEach( () => {
+      hvml = undefined;
+      hvmlElement = undefined;
+    } );
+
+    it( 'works with non-root elements', () => {
+      const video = new Video();
+      const videoMom = video.toMom();
+
+      const series = new Series();
+      const seriesMom = series.toMom();
+
+      expect( videoMom.constructor ).toBe( HVML );
+      expect( videoMom.children[0].constructor ).toBe( Video );
+
+      expect( seriesMom.constructor ).toBe( HVML );
+      expect( seriesMom.children[0].constructor ).toBe( Series );
+    } );
+
+    describe( 'Video', () => {
+      beforeEach( () => {
+        hvml = undefined;
+        hvmlElement = undefined;
+      } );
+
+      it( 'handles text descriptions', () => {
+        hvml = new HVML( './examples/text-description.jsonld' );
+        hvml.ready.then( () => {
+          expect( hvml.toMom().children[0].description.text ).toBe( 'Full Facebook Live stream: https://www.facebook.com/hugh.guiney/videos/10100195051457860/\n\n#mfaNOW #mfaLateNites' );
+        } )
+          .catch( error => console.error( error ) );
+      } );
+
+      it( 'handles object descriptions', () => {
+        hvml = new HVML( './examples/text-description--object.jsonld' );
+        hvml.ready.then( () => {
+          const MOM = hvml.toMom();
+          const firstChild = MOM.children[0];
+          // const { description } = children;
+
+          console.error( 'MOM', MOM );
+          console.error( 'children', MOM.children );
+          console.error( 'firstChild', firstChild );
+          // console.error( 'description', description );
+          // expect( description.text ).toBe( 'Full Facebook Live stream: https://www.facebook.com/hugh.guiney/videos/10100195051457860/\n\n#mfaNOW #mfaLateNites' );
+        } )
+          .catch( ( error ) => { throw new Error( error ); } );
+      } );
+    } );
+  } );
 
   describe( 'toJson', () => {
+    beforeEach( () => {
+      hvml = undefined;
+      hvmlElement = undefined;
+    } );
+
     it( 'converts children', () => {
-      const hvmlElement = new HVMLElement();
+      hvmlElement = new HVMLElement();
       const hughsVlog = new Series( {
         "id": "hughs-vlog",
         "title": "Hugh’s Vlog",
@@ -119,7 +182,7 @@ describe( 'HVMLElement', () => {
     } );
 
     it( 'sets language appropriately', () => {
-      const hvmlElement = new HVMLElement();
+      hvmlElement = new HVMLElement();
       const videoOne = new Video( {
         "id": "video-01",
         "lang": "en-US",
@@ -143,7 +206,7 @@ describe( 'HVMLElement', () => {
     } );
 
     it( 'produces the same output whether converting from children or file', ( done ) => {
-      const hvmlElement = new HVMLElement();
+      hvmlElement = new HVMLElement();
       const hughsVlog = new Series( {
         "id": "hughs-vlog",
         "title": "Hugh’s Vlog",
@@ -169,7 +232,7 @@ describe( 'HVMLElement', () => {
 
       const imperativeToJson = hvmlElement.toJson();
 
-      const hvml = new HVML( './examples/series.xml' );
+      hvml = new HVML( './examples/series.xml' );
       hvml.ready.then( () => {
         const declarativeToJson = hvml.toJson();
 
