@@ -1,4 +1,4 @@
-import { HVMLElement } from './hvml-element';
+import { HVMLElement } from './hvml-element.js';
 
 export class Series extends HVMLElement {
   constructor( data ) {
@@ -13,7 +13,7 @@ export class Series extends HVMLElement {
   }
 }
 
-module.exports = Series;
+// module.exports = Series;
 
 globalThis.HVML = {
   ...globalThis.HVML,

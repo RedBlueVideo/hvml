@@ -3,14 +3,14 @@ import {
   isNumber,
   isString,
   isUndefined,
-} from './util/types';
+} from './util/types.js';
 
-import { HVMLElement } from './hvml-element';
+import { HVMLElement } from './hvml-element.js';
 // const Series = require( './series' );
 
-import { Time} from './util/time';
-import Validation from './util/validation';
-import { Transform } from './util/transform';
+import { Time} from './util/time.js';
+import Validation from './util/validation.js';
+import { Transform } from './util/transform.js';
 
 export class Video extends HVMLElement {
   static isValidType( type ) {
@@ -422,7 +422,7 @@ export class Video extends HVMLElement {
   }
 }
 
-module.exports = Video;
+// module.exports = Video;
 
 globalThis.HVML = {
   ...globalThis.HVML,

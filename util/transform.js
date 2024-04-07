@@ -1,6 +1,10 @@
-const md2jsonml = require( 'md2jsonml' );
+import md2jsonml from 'md2jsonml';
+/**
+ * FIXME:
+ * Deprecation warning: This module is not maintained. Please see slimdom-sax-parser for the DOM parsing, or use the code in src/domToJsonml.js.
+ */
 const xmlTrident = require( 'xml-trident' );
-const { isString, isPlainObject } = require( './types' );
+import { isString, isPlainObject } from './types.js';
 
 const { softTrim } = require( './strings' );
 
@@ -75,4 +79,4 @@ export class Transform {
   }
 }
 
-module.exports = Transform;
+// module.exports = Transform;

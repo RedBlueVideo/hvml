@@ -2,9 +2,9 @@ import set from 'lodash.set';
 
 // const Video = require( './video' );
 
-import Data from './util/data';
-import { hasProperty } from './util/types';
-import { ucFirst } from './util/strings';
+import Data from './util/data.js';
+import { hasProperty } from './util/types.js';
+import { ucFirst } from './util/strings.js';
 
 export class HVMLElement {
   constructor( data ) {
@@ -526,4 +526,4 @@ export class HVMLElement {
   }
 }
 
-module.exports = HVMLElement;
+// module.exports = HVMLElement;

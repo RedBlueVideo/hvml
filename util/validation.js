@@ -1,4 +1,4 @@
-import { ucFirst } from './strings';
+import { ucFirst } from './strings.js';
 
 // https://rclayton.silvrback.com/custom-errors-in-node-js
 export class HVMLDomainError extends Error {
@@ -236,11 +236,11 @@ export default {
   "OptionalDependencyNotInstalled": HVMLOptionalDependencyNotInstalled,
 }
 
-module.exports = {
-  "DomainError": HVMLDomainError,
-  "EnumError": HVMLEnumError,
-  "TypeError": HVMLTypeError,
-  "RangeError": HVMLRangeError,
-  "NotIntegerError": HVMLNotIntegerError,
-  "OptionalDependencyNotInstalled": HVMLOptionalDependencyNotInstalled,
-};
+// module.exports = {
+//   "DomainError": HVMLDomainError,
+//   "EnumError": HVMLEnumError,
+//   "TypeError": HVMLTypeError,
+//   "RangeError": HVMLRangeError,
+//   "NotIntegerError": HVMLNotIntegerError,
+//   "OptionalDependencyNotInstalled": HVMLOptionalDependencyNotInstalled,
+// };

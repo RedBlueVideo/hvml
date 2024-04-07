@@ -2,15 +2,15 @@ import { readFile } from 'fs';
 import { extname } from 'path';
 import { exec } from 'child_process';
 
-import { HVMLElement } from './hvml-element';
+import { HVMLElement } from './hvml-element.js';
 
-import { Video } from './video';
-import { Series } from './series';
-import { Group } from './group';
+import { Video } from './video.js';
+import { Series } from './series.js';
+import { Group } from './group.js';
 
-import Validation from './util/validation';
-import { hasProperty } from './util/types';
-import Data from './util/data';
+import Validation from './util/validation.js';
+import { hasProperty } from './util/types.js';
+import Data from './util/data.js';
 
 // const elements = {
 //   Series,
@@ -18,7 +18,7 @@ import Data from './util/data';
 //   Video,
 // };
 
-class HVML extends HVMLElement {
+export class HVML extends HVMLElement {
   constructor( path, config = {} ) {
     super();
 
