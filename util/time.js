@@ -1,4 +1,4 @@
-class Time {
+export class Time {
   static get isoDurationRegex() {
     // https://rgxdb.com/r/MD2234J
     /*

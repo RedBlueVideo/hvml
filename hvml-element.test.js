@@ -1,5 +1,12 @@
-const HVMLElement = require( './hvml-element' );
-const { HVML, Video, Series } = require( './hvml' );
+import HVMLElement from './hvml-element';
+import hvmlJs from './hvml';
+
+const {
+  HVML,
+  Series,
+  // Group,
+  Video,
+} = hvmlJs;
 
 describe( 'HVMLElement', () => {
   let hvml;

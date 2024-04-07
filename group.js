@@ -1,5 +1,5 @@
-const HVMLElement = require( './hvml-element' );
+import { HVMLElement } from './hvml-element';
 
-class Group extends HVMLElement {}
+export class Group extends HVMLElement {}
 
 module.exports = Group;

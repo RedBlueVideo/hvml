@@ -4,7 +4,7 @@ const { isString, isPlainObject } = require( './types' );
 
 const { softTrim } = require( './strings' );
 
-class Transform {
+export class Transform {
   static markdownToJsonMl( input ) {
     const jsonML = md2jsonml( input );
     // md2jsonml wraps contents in an <article>,

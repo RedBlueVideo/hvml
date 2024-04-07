@@ -1,29 +1,16 @@
-const fs = require( 'fs' );
-const { extname } = require( 'path' );
-const { exec } = require( 'child_process' );
+import { readFile } from 'fs';
+import { extname } from 'path';
+import { exec } from 'child_process';
 
-const HVMLElement = require( './hvml-element' );
+import { HVMLElement } from './hvml-element';
 
-const Video = require( './video' );
-const Series = require( './series' );
-const Group = require( './group' );
+import { Video } from './video';
+import { Series } from './series';
+import { Group } from './group';
 
-const Validation = require( './util/validation' );
-const { hasProperty } = require( './util/types.js' );
-const Data = require( './util/data' );
-
-let xml;
-let canParseXml = false;
-
-try {
-  xml = require( 'libxmljs' ); /* eslint-disable-line global-require */ /* eslint-disable-line import/no-extraneous-dependencies */
-  /* istanbul ignore next */
-  if ( hasProperty( xml, 'parseXmlString' ) ) {
-    canParseXml = true;
-  }
-} catch ( error ) {
-  // eslint-disable-line no-empty
-}
+import Validation from './util/validation';
+import { hasProperty } from './util/types';
+import Data from './util/data';
 
 // const elements = {
 //   Series,
@@ -34,6 +21,28 @@ try {
 class HVML extends HVMLElement {
   constructor( path, config = {} ) {
     super();
+
+    this.libxml = undefined;
+    this.canParseXml = false;
+    this.parseXml = '';
+
+    (async () => {
+      try {
+        this.libxml = await import( 'libxmljs' );
+
+        if ( hasProperty( this.libxml, 'parseXml' ) ) {
+          this.canParseXml = true;
+          this.parseXml = 'parseXml';
+        } else
+        /* istanbul ignore next */
+        if ( hasProperty( this.libxml, 'parseXmlString' ) ) {
+          this.canParseXml = true;
+          this.parseXml = 'parseXml';
+        }
+      } catch ( error ) {
+        // eslint-disable-line no-empty
+      }
+    })();
     /*
       fs.readFile(path[, options], callback)
       - path <string> | <Buffer> | <URL> | <integer> filename or file descriptor
@@ -87,7 +96,7 @@ class HVML extends HVMLElement {
 
     if ( path ) {
       const fileReady = ( new Promise( ( resolve, reject ) => {
-        fs.readFile( path, config.encoding, ( error, data ) => {
+        readFile( path, config.encoding, ( error, data ) => {
           if ( error ) {
             // throw new Error( error );
             reject( error );
@@ -97,7 +106,7 @@ class HVML extends HVMLElement {
       } ) );
 
       const schemaReady = ( new Promise( ( resolve, reject ) => {
-        fs.readFile( this.schemaPath, 'utf8', ( error, data ) => {
+        readFile( this.schemaPath, 'utf8', ( error, data ) => {
           if ( error ) {
             reject( error );
           }
@@ -112,7 +121,7 @@ class HVML extends HVMLElement {
         const isJson = ( this.fileExtensions.json.indexOf( extension ) !== -1 );
 
         if ( isXml ) {
-          if ( !canParseXml ) {
+          if ( !this.canParseXml ) {
             throw new Validation.OptionalDependencyNotInstalled( {
               "className": "HVML",
               "fieldName": "ready",
@@ -120,7 +129,7 @@ class HVML extends HVMLElement {
             } );
           }
 
-          this.xml = xml.parseXmlString( fileContents );
+          this.xml = this.libxml?.[this.parseXml]( fileContents );
           this.json = null;
           this.hvmlPath = path;
           this.children = [];
@@ -180,6 +189,10 @@ class HVML extends HVMLElement {
             return;
           }
 
+          /**
+           * FIXME:
+           * @type {any}
+           */
           let validationErrors = error.toString().trim().split( '\n' );
           validationErrors.shift();
           validationErrors.pop();
@@ -385,14 +398,14 @@ class HVML extends HVMLElement {
 
 // toJson
 
-module.exports = {
+export default {
   HVML,
   Series,
   Group,
   Video,
 };
 
-global.HVML = {
-  ...global.HVML,
+globalThis.HVML = {
+  ...globalThis.HVML,
   HVML,
 };

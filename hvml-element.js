@@ -1,13 +1,15 @@
-const set = require( 'lodash.set' ); // eslint-disable-line lodash/import-scope
+import set from 'lodash.set';
 
 // const Video = require( './video' );
 
-const Data = require( './util/data' );
-const { hasProperty } = require( './util/types' );
-const { ucFirst } = require( './util/strings' );
+import Data from './util/data';
+import { hasProperty } from './util/types';
+import { ucFirst } from './util/strings';
 
-class HVMLElement {
+export class HVMLElement {
   constructor( data ) {
+    // super();
+
     if ( data ) {
       /* istanbul ignore else */
       if ( data.id ) {
@@ -240,7 +242,13 @@ class HVMLElement {
   }
 
   /* istanbul ignore next: internals of toJson(), which is already tested */
-  _setJsonChild( child, path = [], root = false, atIndex = null ) {
+  _setJsonChild(
+    child,
+    path = [],
+    /** @type {boolean | null} */
+    root = false,
+    atIndex = null,
+  ) {
     const nodeName = child.constructor.name.toLowerCase();
     // const attributes = { ...child };
     let attributes = {};
@@ -375,7 +383,7 @@ class HVMLElement {
       } );
     }
 
-    if ( this.xml ) {
+    if ( 'xml' in this ) {
       this.xml.root().childNodes().forEach( ( node ) => {
         if ( node.type() === 'element' ) {
           const attributes = node.attrs();
@@ -403,7 +411,7 @@ class HVMLElement {
   _momifyChild( key, value, target = this.children ) {
     if ( key === '@type' ) {
       const className = ucFirst( value );
-      this.children.push( new global.HVML[className]() );
+      this.children.push( new globalThis.HVML[className]() );
     } else {
       const className = ucFirst( key );
       const lastChild = target[target.length - 1];
@@ -458,7 +466,7 @@ class HVMLElement {
 
             default:
               try {
-                lastChild.children.push( new global.HVML[className]() );
+                lastChild.children.push( new globalThis.HVML[className]() );
               } catch ( error ) {
                 lastChild.children.push( className );
               }
@@ -480,7 +488,7 @@ class HVMLElement {
     }
 
     if ( this.constructor.name !== 'HVML' ) {
-      const hvml = new global.HVML.HVML();
+      const hvml = new globalThis.HVML.HVML();
       hvml.appendChild( this );
       return hvml;
     }

@@ -1,7 +1,7 @@
-const { ucFirst } = require( './strings' );
+import { ucFirst } from './strings';
 
 // https://rclayton.silvrback.com/custom-errors-in-node-js
-class HVMLDomainError extends Error {
+export class HVMLDomainError extends Error {
   constructor( message ) {
     super( message );
     // Ensure the name of this error is the same as the class name
@@ -13,7 +13,7 @@ class HVMLDomainError extends Error {
   }
 }
 
-class HVMLTypeError extends HVMLDomainError {
+export class HVMLTypeError extends HVMLDomainError {
   /* className, field, expected, extraInfo = '' */
   static getGot( data ) {
     let gotType;
@@ -122,7 +122,7 @@ class HVMLTypeError extends HVMLDomainError {
   }
 }
 
-class HVMLEnumError extends HVMLDomainError {
+export class HVMLEnumError extends HVMLDomainError {
   /* className, field, badValues */
   constructor( data ) {
     let forField = '';
@@ -164,7 +164,7 @@ class HVMLEnumError extends HVMLDomainError {
   }
 }
 
-class HVMLRangeError extends HVMLTypeError {
+export class HVMLRangeError extends HVMLTypeError {
   /* className, field, expected, lowerBound, upperBound, exclusivity = 'inclusive' */
   constructor( data ) {
     const lowerBoundDefault = Number.NEGATIVE_INFINITY;
@@ -211,7 +211,7 @@ class HVMLRangeError extends HVMLTypeError {
   }
 }
 
-class HVMLNotIntegerError extends HVMLTypeError {
+export class HVMLNotIntegerError extends HVMLTypeError {
   constructor( data ) {
     super( {
       ...data,
@@ -220,11 +220,20 @@ class HVMLNotIntegerError extends HVMLTypeError {
   }
 }
 
-class HVMLOptionalDependencyNotInstalled extends HVMLDomainError {
+export class HVMLOptionalDependencyNotInstalled extends HVMLDomainError {
   constructor( data ) {
     super( `Optional dependency ${data.dependency} is not installed, so ${HVMLTypeError.getFieldOrParameter( data )} can not be used` );
     this.data = data;
   }
+}
+
+export default {
+  "DomainError": HVMLDomainError,
+  "EnumError": HVMLEnumError,
+  "TypeError": HVMLTypeError,
+  "RangeError": HVMLRangeError,
+  "NotIntegerError": HVMLNotIntegerError,
+  "OptionalDependencyNotInstalled": HVMLOptionalDependencyNotInstalled,
 }
 
 module.exports = {

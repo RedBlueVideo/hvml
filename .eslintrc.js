@@ -4,9 +4,13 @@ module.exports = {
     "you-dont-need-lodash-underscore"
   ],
   "extends": [
-    "eslint-config-hughx",
+    "eslint-config-hughx/node",
     "plugin:you-dont-need-lodash-underscore/all",
   ],
+  "parser": "@babel/eslint-parser",
+  "parserOptions": {
+    "sourceType": "module",
+  },
   "rules": {
     "lodash/callback-binding": 2,
     "lodash/chain-style": [2, "as-needed"],

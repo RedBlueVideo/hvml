@@ -2,7 +2,7 @@
   "name": "hvml",
   "version": "0.0.3",
   "description": "HVML Parser for JavaScript",
-  "main": "hvml.js",
+  "module": "hvml.js",
   "scripts": {
     "test": "jest --verbose",
     "test-dev": "jest --watch --verbose",
@@ -42,6 +42,7 @@
     "xml-trident": "^1.0.2"
   },
   "devDependencies": {
+    "@types/jest": "^29.5.12",
     "codecov": "^3.3.0",
     "eslint": "5.16.0",
     "eslint-config-airbnb-base": "^13.1.0",

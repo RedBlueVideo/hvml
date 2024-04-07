@@ -1,18 +1,18 @@
-const {
+import {
   isPlainObject,
   isNumber,
   isString,
   isUndefined,
-} = require( './util/types' );
+} from './util/types';
 
-const HVMLElement = require( './hvml-element' );
+import { HVMLElement } from './hvml-element';
 // const Series = require( './series' );
 
-const Time = require( './util/time' );
-const Validation = require( './util/validation' );
-const Transform = require( './util/transform' );
+import { Time} from './util/time';
+import Validation from './util/validation';
+import { Transform } from './util/transform';
 
-class Video extends HVMLElement {
+export class Video extends HVMLElement {
   static isValidType( type ) {
     switch ( type ) {
       case 'narrative':
@@ -334,9 +334,11 @@ class Video extends HVMLElement {
                   delete attributes['@type'];
                   delete attributes.textContent;
 
-                  this.description.xhtml += Transform.jsonMlToXmlString(
-                    [childNode['@type'], attributes, childNode.textContent],
-                  );
+                  if ( this.description ) {
+                    this.description.xhtml += Transform.jsonMlToXmlString(
+                      [childNode['@type'], attributes, childNode.textContent],
+                    );
+                  }
                 }
               } );
             }
@@ -422,7 +424,7 @@ class Video extends HVMLElement {
 
 module.exports = Video;
 
-global.HVML = {
-  ...global.HVML,
+globalThis.HVML = {
+  ...globalThis.HVML,
   Video,
 };
