@@ -1,5 +1,5 @@
 import { HVMLElement } from './hvml-element.js';
-import { HVML, Series, Video } from './hvml.js';
+import { HVML, HVMLSeriesElement, HVMLVideoElement } from './hvml.js';
 
 describe( 'HVMLElement', () => {
   let hvml;
@@ -21,8 +21,8 @@ describe( 'HVMLElement', () => {
 
     it( 'appends children', () => {
       hvmlElement = new HVMLElement();
-      const channel = new Video();
-      const secondChannel = new Video();
+      const channel = new HVMLVideoElement();
+      const secondChannel = new HVMLVideoElement();
 
       hvmlElement.appendChild( channel );
       hvmlElement.appendChild( secondChannel );
@@ -35,10 +35,10 @@ describe( 'HVMLElement', () => {
 
     it( 'registers named indices when appending children with IDs', () => {
       hvmlElement = new HVMLElement();
-      const channel = new Video( {
+      const channel = new HVMLVideoElement( {
         "id": "welcome-to-my-channel",
       } );
-      const secondChannel = new Video( {
+      const secondChannel = new HVMLVideoElement( {
         "id": "welcome-to-my-second-channel",
       } );
 
@@ -51,8 +51,8 @@ describe( 'HVMLElement', () => {
 
     it( 'removes children', () => {
       hvmlElement = new HVMLElement();
-      const channel = new Video();
-      const secondChannel = new Video();
+      const channel = new HVMLVideoElement();
+      const secondChannel = new HVMLVideoElement();
 
       hvmlElement.appendChild( channel );
       hvmlElement.appendChild( secondChannel );
@@ -64,10 +64,10 @@ describe( 'HVMLElement', () => {
 
     it( 'deregisters named indices when removing children with IDs', () => {
       hvmlElement = new HVMLElement();
-      const channel = new Video( {
+      const channel = new HVMLVideoElement( {
         "id": "welcome-to-my-channel",
       } );
-      const secondChannel = new Video( {
+      const secondChannel = new HVMLVideoElement( {
         "id": "welcome-to-my-second-channel",
       } );
 
@@ -89,17 +89,17 @@ describe( 'HVMLElement', () => {
     } );
 
     it( 'works with non-root elements', () => {
-      const video = new Video();
+      const video = new HVMLVideoElement();
       const videoMom = video.toMom();
 
-      const series = new Series();
+      const series = new HVMLSeriesElement();
       const seriesMom = series.toMom();
 
       expect( videoMom.constructor ).toBe( HVML );
-      expect( videoMom.children[0].constructor ).toBe( Video );
+      expect( videoMom.children[0].constructor ).toBe( HVMLVideoElement );
 
       expect( seriesMom.constructor ).toBe( HVML );
-      expect( seriesMom.children[0].constructor ).toBe( Series );
+      expect( seriesMom.children[0].constructor ).toBe( HVMLSeriesElement );
     } );
 
     describe( 'Video', () => {
@@ -142,20 +142,20 @@ describe( 'HVMLElement', () => {
 
     it( 'converts children', () => {
       hvmlElement = new HVMLElement();
-      const hughsVlog = new Series( {
+      const hughsVlog = new HVMLSeriesElement( {
         "id": "hughs-vlog",
         "title": "Hugh’s Vlog",
       } );
-      const seasonOne = new Series( {
+      const seasonOne = new HVMLSeriesElement( {
         "id": "season-01",
       } );
-      const episodeOne = new Video( {
+      const episodeOne = new HVMLVideoElement( {
         "id": "episode-01",
       } );
-      const episodeTwo = new Video( {
+      const episodeTwo = new HVMLVideoElement( {
         "id": "episode-02",
       } );
-      const episodeThree = new Video( {
+      const episodeThree = new HVMLVideoElement( {
         "id": "episode-03",
       } );
 
@@ -183,11 +183,11 @@ describe( 'HVMLElement', () => {
 
     it( 'sets language appropriately', () => {
       hvmlElement = new HVMLElement();
-      const videoOne = new Video( {
+      const videoOne = new HVMLVideoElement( {
         "id": "video-01",
         "lang": "en-US",
       } );
-      const videoTwo = new Video( {
+      const videoTwo = new HVMLVideoElement( {
         "id": "video-02",
         "lang": "en",
       } );
@@ -207,20 +207,20 @@ describe( 'HVMLElement', () => {
 
     it( 'produces the same output whether converting from children or file', ( done ) => {
       hvmlElement = new HVMLElement();
-      const hughsVlog = new Series( {
+      const hughsVlog = new HVMLSeriesElement( {
         "id": "hughs-vlog",
         "title": "Hugh’s Vlog",
       } );
-      const seasonOne = new Series( {
+      const seasonOne = new HVMLSeriesElement( {
         "id": "season-01",
       } );
-      const episodeOne = new Video( {
+      const episodeOne = new HVMLVideoElement( {
         "id": "episode-01",
       } );
-      const episodeTwo = new Video( {
+      const episodeTwo = new HVMLVideoElement( {
         "id": "episode-02",
       } );
-      const episodeThree = new Video( {
+      const episodeThree = new HVMLVideoElement( {
         "id": "episode-03",
       } );
 

@@ -1,12 +1,13 @@
 import skipIf from 'skip-if';
 import { execSync } from 'child_process';
 import { readFileSync } from 'fs';
-import { HVML, Video } from './hvml.js';
+import { HVML, HVMLVideoElement } from './hvml.js';
+import { XMLDocument } from 'libxmljs';
 
 // test( 'opens files successfully', () => {} );
 
 const JSON_LD = JSON.parse( readFileSync( './examples/hvml.jsonld', 'utf8' ) );
-import { HVMLEnumError as EnumError } from './util/validation';
+import { HVMLEnumError as EnumError } from './util/validation.js';
 
 // skipIf(condition, name, test)
 
@@ -65,7 +66,7 @@ describe( 'HVML', () => {
 
       expect( hvml.ready ).resolves.toEqual( expect.anything() );
       hvml.ready.then( ( xml ) => {
-        expect( xml.constructor.name ).toBe( 'Document' );
+        expect( xml.constructor ).toBe( XMLDocument );
         done();
       } );
     } );
@@ -333,10 +334,10 @@ describe( 'HVML', () => {
   describe( 'MOM Manipulation', () => {
     it( 'appends children', () => {
       const hvml = new HVML();
-      const channel = new Video( {
+      const channel = new HVMLVideoElement( {
         "id": "welcome-to-my-channel",
       } );
-      const secondChannel = new Video( {
+      const secondChannel = new HVMLVideoElement( {
         "id": "welcome-to-my-second-channel",
       } );
 

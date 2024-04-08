@@ -2,15 +2,12 @@ import { readFile } from 'fs';
 import { extname } from 'path';
 import { exec } from 'child_process';
 
-import { HVMLElement } from './hvml-element.js';
+import { HVMLElement, JSON } from './hvml-element.js';
 
-import { Group as GroupJs } from './group.js';
-import { Series as SeriesJs } from './series.js';
-import { Video as VideoJs } from './video.js';
-
-import Validation from './util/validation.js';
+import { HVMLDomainError, HVMLEnumError, HVMLOptionalDependencyNotInstalled, HVMLTypeError } from './util/validation.js';
 import { hasProperty } from './util/types.js';
 import Data from './util/data.js';
+import { XMLDocument } from 'libxmljs/dist/lib/document.js';
 
 // const elements = {
 //   Series,
@@ -18,26 +15,43 @@ import Data from './util/data.js';
 //   Video,
 // };
 
+export interface HvmlConfig {
+  schemaPath: string;
+  schemaType: 'rng';
+  encoding: 'utf8';
+}
+
+export const defaultConfig: HvmlConfig = {
+  schemaPath: 'rng/hvml.rng',
+  schemaType: 'rng',
+  encoding: 'utf8',
+};
+
 export class HVML extends HVMLElement {
-  constructor( path, config = {} ) {
+  canParseXml: boolean;
+  fileExtensions: { xml: string[]; json: string[]; }
+  hvmlPath: string | null;
+  libxml?: typeof import("./node_modules/libxmljs/dist/index");
+  namespaces: Record<string, string>;
+  prefixes: Record<string, string>;
+  ready: Promise<XMLDocument | JSON>;
+  schemaPath: string;
+  schemaType: string;
+  xml?: XMLDocument | null;
+
+  constructor( path?: string, userConfig: Partial<HvmlConfig> = defaultConfig ) {
     super();
 
     this.libxml = undefined;
     this.canParseXml = false;
-    this.parseXml = '';
 
     (async () => {
       try {
         this.libxml = await import( 'libxmljs' );
 
+        /* istanbul ignore next */
         if ( hasProperty( this.libxml, 'parseXml' ) ) {
           this.canParseXml = true;
-          this.parseXml = 'parseXml';
-        } else
-        /* istanbul ignore next */
-        if ( hasProperty( this.libxml, 'parseXmlString' ) ) {
-          this.canParseXml = true;
-          this.parseXml = 'parseXml';
         }
       } catch ( error ) {
         // eslint-disable-line no-empty
@@ -53,15 +67,10 @@ export class HVML extends HVMLElement {
         - err <Error>
         - data <string> | <Buffer>
     */
-    const defaultConfig = {
-      "schemaPath": "rng/hvml.rng",
-      "schemaType": "rng",
-      "encoding": "utf8",
-    };
 
-    config = {
+    const config = {
       ...defaultConfig,
-      ...config,
+      ...userConfig,
     };
 
     this.namespaces = {
@@ -95,7 +104,7 @@ export class HVML extends HVMLElement {
     this.schemaType = config.schemaType;
 
     if ( path ) {
-      const fileReady = ( new Promise( ( resolve, reject ) => {
+      const fileReady = ( new Promise<string>( ( resolve, reject ) => {
         readFile( path, config.encoding, ( error, data ) => {
           if ( error ) {
             // throw new Error( error );
@@ -105,7 +114,7 @@ export class HVML extends HVMLElement {
         } );
       } ) );
 
-      const schemaReady = ( new Promise( ( resolve, reject ) => {
+      const schemaReady = ( new Promise<string>( ( resolve, reject ) => {
         readFile( this.schemaPath, 'utf8', ( error, data ) => {
           if ( error ) {
             reject( error );
@@ -122,31 +131,36 @@ export class HVML extends HVMLElement {
 
         if ( isXml ) {
           if ( !this.canParseXml ) {
-            throw new Validation.OptionalDependencyNotInstalled( {
+            throw new HVMLOptionalDependencyNotInstalled( {
               "className": "HVML",
               "fieldName": "ready",
               "dependency": "libxmljs",
             } );
           }
 
-          this.xml = this.libxml?.[this.parseXml]( fileContents );
+          this.xml = this.libxml!.parseXml( fileContents );
           this.json = null;
           this.hvmlPath = path;
           this.children = [];
           // this.xsd = xml.parseXmlString( data[1] );
-          return this.xml;
+          return this.xml!;
         }
-
+        
         if ( isJson ) {
           this.xml = null;
-          this.json = JSON.parse( fileContents );
+
+          try {
+            this.json = JSON.parse( fileContents );
+          } catch ( jsonError ) {
+            throw new Error( jsonError );
+          }
           this.hvmlPath = path;
           this.children = [];
           // throw new Error( 'JSON Parsing not implemented yet' );
-          return this.json;
+          return this.json!;
         }
 
-        throw new Error( 'Unsupported file type' );
+        throw new HVMLTypeError( 'Unsupported file type' );
       } );
     } else {
       // Instantiate with empty JSON data if no file path is specified
@@ -181,7 +195,7 @@ export class HVML extends HVMLElement {
           );
 
           if ( xmllintNotFound ) {
-            reject( new Validation.OptionalDependencyNotInstalled( {
+            reject( new HVMLOptionalDependencyNotInstalled( {
               "className": "HVML",
               "fieldName": "validate",
               "dependency": "xmllint",
@@ -189,10 +203,6 @@ export class HVML extends HVMLElement {
             return;
           }
 
-          /**
-           * FIXME:
-           * @type {any}
-           */
           let validationErrors = error.toString().trim().split( '\n' );
           validationErrors.shift();
           validationErrors.pop();
@@ -353,7 +363,7 @@ export class HVML extends HVMLElement {
             }
 
             /* istanbul ignore next: defensive */
-            throw new Validation.DomainError( currentValue );
+            throw new HVMLDomainError( currentValue );
           } );
 
           reject( validationErrors );
@@ -370,20 +380,20 @@ export class HVML extends HVMLElement {
     } ) );
   }
 
-  appendChild( child ) {
+  appendChild( child: HVMLElement ) {
     const errorData = {
       ...this._baseErrorData,
       "methodName": "appendChild",
     };
 
-    switch ( child.constructor ) {
-      case Video:
-      case Series:
+    switch ( child.constructor.name ) {
+      case 'Video':
+      case 'Series':
         super.appendChild( child );
         break;
 
       default:
-        throw new Validation.EnumError( {
+        throw new HVMLEnumError( {
           ...errorData,
           // "message": `${child.constructor.name} can not be a child of ${this.constructor.name}`,
           "fieldName": "child",
@@ -398,9 +408,9 @@ export class HVML extends HVMLElement {
 
 // toJson
 
-export const Group = GroupJs;
-export const Series = SeriesJs;
-export const Video = VideoJs;
+export * from './group.js';
+export * from './series.js';
+export * from './video.js';
 
 globalThis.HVML = {
   ...globalThis.HVML,

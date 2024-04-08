@@ -1,7 +1,9 @@
 import { HVMLElement } from './hvml-element.js';
 
-export class Series extends HVMLElement {
-  constructor( data ) {
+export class HVMLSeriesElement extends HVMLElement {
+  title?: string;
+
+  constructor( data?: Record<string, any> ) {
     super( data );
 
     /* istanbul ignore next */
@@ -15,5 +17,5 @@ export class Series extends HVMLElement {
 
 globalThis.HVML = {
   ...globalThis.HVML,
-  Series,
+  HVMLSeriesElement,
 };

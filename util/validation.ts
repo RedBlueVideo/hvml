@@ -13,29 +13,80 @@ export class HVMLDomainError extends Error {
   }
 }
 
+export type JavaScriptTypeName = 
+  | 'Array'
+  | 'Integer'
+  | 'Null'
+  | 'Object'
+  | 'String'
+;
+
+export type HvmlTypeName =
+  | 'Video'
+  | 'Group'
+  | 'Series'
+;
+
+export type TypeName = JavaScriptTypeName | HvmlTypeName;
+
+export type ExpectedGot = TypeName | TypeName[];
+
+export interface HVMLRangeErrorData {
+  className?: string;
+  exclusivity?: 'inclusive' | 'exclusive';
+  expected?: ExpectedGot;
+  fieldName?: string;
+  lowerBound?: number;
+  upperBound?: number;
+}
+
+export interface HVMLTypeErrorData {
+  className: string;
+  expected: ExpectedGot;
+  fieldName: string;
+  input?: unknown,
+  methodName?: string;
+}
+
+export interface HVMLEnumErrorData {
+  badValues: any[];
+  className?: string;
+  expected?: ExpectedGot;
+  fieldName?: string;
+  methodName?: string;
+}
+
+export interface HVMLOptionalDependencyNotInstalledData {
+  className: string;
+  dependency: string;
+  fieldName: string;
+}
+
 export class HVMLTypeError extends HVMLDomainError {
+  data: HVMLTypeErrorData;
+
   /* className, field, expected, extraInfo = '' */
-  static getGot( data ) {
-    let gotType;
+  static getGot( data: HVMLTypeErrorData ) {
+    let gotType: TypeName;
     const inputTypeIsNull = ( data.input === null );
     const inputTypeIsNotNull = !inputTypeIsNull;
 
     if ( data.input && inputTypeIsNotNull ) {
-      gotType = data.input.constructor.name;
+      gotType = data.input.constructor.name as TypeName;
     } else if ( inputTypeIsNull ) {
       gotType = 'Null';
     } else {
-      gotType = ucFirst( typeof data.input );
+      gotType = ucFirst( typeof data.input ) as TypeName;
     }
 
     return gotType;
   }
 
-  static getExpected( data ) {
-    let expected;
+  static getExpected( data: HVMLTypeErrorData ) {
+    let expected: ExpectedGot;
 
     if ( Array.isArray( data.expected ) ) {
-      expected = data.expected.join( '|' );
+      expected = data.expected.join( '|' ) as ExpectedGot;
     } else {
       ( { expected } = data );
     }
@@ -123,8 +174,10 @@ export class HVMLTypeError extends HVMLDomainError {
 }
 
 export class HVMLEnumError extends HVMLDomainError {
+  data: HVMLEnumErrorData;
+
   /* className, field, badValues */
-  constructor( data ) {
+  constructor( data?: HVMLEnumErrorData ) {
     let forField = '';
 
     if ( !data ) {
@@ -134,16 +187,6 @@ export class HVMLEnumError extends HVMLDomainError {
         "input": data,
         "methodName": "constructor",
         "fieldName": "data",
-      } );
-
-      throw new TypeError( error.message );
-    } else if ( !( 'badValues' in data ) ) {
-      const error = new HVMLTypeError( {
-        "className": "HVMLEnumError",
-        "expected": "Array",
-        "input": data.badValues,
-        "methodName": "constructor",
-        "fieldName": "data.badValues",
       } );
 
       throw new TypeError( error.message );
@@ -165,12 +208,11 @@ export class HVMLEnumError extends HVMLDomainError {
 }
 
 export class HVMLRangeError extends HVMLTypeError {
-  /* className, field, expected, lowerBound, upperBound, exclusivity = 'inclusive' */
-  constructor( data ) {
+  constructor( data: HVMLRangeErrorData ) {
     const lowerBoundDefault = Number.NEGATIVE_INFINITY;
     const upperBoundDefault = Number.POSITIVE_INFINITY;
-    let lowerBoundDefined;
-    let upperBoundDefined;
+    let lowerBoundDefined = false;
+    let upperBoundDefined = false;
     let extraInfo;
 
     if ( data ) {
@@ -186,20 +228,21 @@ export class HVMLRangeError extends HVMLTypeError {
         data.upperBound = upperBoundDefault;
       }
     } else {
+      // @ts-ignore
       data = {};
-      data.lowerBound = lowerBoundDefault;
-      data.upperBound = upperBoundDefault;
+      data!.lowerBound = lowerBoundDefault;
+      data!.upperBound = upperBoundDefault;
     }
 
-    data.expected = ( data.expected || 'Number' );
-    data.exclusivity = ( data.exclusivity || 'inclusive' );
+    data!.expected = ( data!.expected || 'Number' );
+    data!.exclusivity = ( data!.exclusivity || 'inclusive' );
 
     if ( lowerBoundDefined && !upperBoundDefined ) {
-      extraInfo = ` with a value greater than or equal to ${data.lowerBound}`;
+      extraInfo = ` with a value greater than or equal to ${data!.lowerBound}`;
     } else if ( !lowerBoundDefined && upperBoundDefined ) {
-      extraInfo = ` with a value less than or equal to ${data.upperBound}`;
+      extraInfo = ` with a value less than or equal to ${data!.upperBound}`;
     } else {
-      extraInfo = ` with a value between ${data.lowerBound} and ${data.upperBound} (${data.exclusivity})`;
+      extraInfo = ` with a value between ${data!.lowerBound} and ${data!.upperBound} (${data.exclusivity})`;
     }
 
     super( {
@@ -221,7 +264,9 @@ export class HVMLNotIntegerError extends HVMLTypeError {
 }
 
 export class HVMLOptionalDependencyNotInstalled extends HVMLDomainError {
-  constructor( data ) {
+  data: HVMLOptionalDependencyNotInstalledData;
+
+  constructor( data: HVMLOptionalDependencyNotInstalledData ) {
     super( `Optional dependency ${data.dependency} is not installed, so ${HVMLTypeError.getFieldOrParameter( data )} can not be used` );
     this.data = data;
   }

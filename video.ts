@@ -11,9 +11,16 @@ import { HVMLElement } from './hvml-element.js';
 import { Time} from './util/time.js';
 import Validation from './util/validation.js';
 import { Transform } from './util/transform.js';
+import type { XOR } from 'ts-xor'
 
-export class Video extends HVMLElement {
-  static isValidType( type ) {
+export type HVMLDescriptionObject = { childNodes: any[] } & XOR<{ xhtml: string; }, { text: string; }>;
+export type HVMLDescription = HVMLDescriptionObject | string;
+
+export class HVMLVideoElement extends HVMLElement {
+  language: string;
+  description: HVMLDescriptionObject;
+
+  static isValidType( type: string ) {
     switch ( type ) {
       case 'narrative':
       case 'documentary':
@@ -26,11 +33,11 @@ export class Video extends HVMLElement {
     }
   }
 
-  _validateTypes( types, fieldName = 'type' ) {
-    const badTypes = [];
+  _validateTypes( types: string[], fieldName = 'type' ) {
+    const badTypes: string[] = [];
 
     types.forEach( ( type ) => {
-      if ( !Video.isValidType( type ) ) {
+      if ( !HVMLVideoElement.isValidType( type ) ) {
         badTypes.push( type );
       }
     } );
@@ -213,9 +220,9 @@ export class Video extends HVMLElement {
     this.title[language][region] = title;
   }
 
-  getTitle( lang ) {
-    let language;
-    let region;
+  getTitle( lang?: string ) {
+    let language: string;
+    let region: string;
 
     if ( lang ) {
       ( { language, region } = this._getLanguageAndRegion( lang, () => this._getRegion( lang ) ) );
@@ -298,7 +305,7 @@ export class Video extends HVMLElement {
   }
 
   /* type = text|xhtml */
-  setDescription( description, type = 'text' ) {
+  setDescription( description: HVMLDescription, type = 'text' ) {
     const errorData = {
       ...this._baseErrorData,
       "methodName": "setDescription",
@@ -311,6 +318,7 @@ export class Video extends HVMLElement {
       throw new Validation.TypeError( errorData );
     }
 
+    // @ts-ignore - Init
     this.description = {};
 
     switch ( type ) {
@@ -424,5 +432,5 @@ export class Video extends HVMLElement {
 
 globalThis.HVML = {
   ...globalThis.HVML,
-  Video,
+  HVMLVideoElement,
 };

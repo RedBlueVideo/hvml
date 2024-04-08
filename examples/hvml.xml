@@ -5,7 +5,7 @@
   xmlns:xlink="http://www.w3.org/1999/xlink"
   xmlns:css="https://www.w3.org/TR/CSS/"
   xmlns:html="http://www.w3.org/1999/xhtml"
-  xsi:schemaLocation="https://raw.githubusercontent.com/RedBlueVideo/hvml/wip/hvml.xsd"
+  xsi:schemaLocation="https://hypervideo.tech/hvml# https://raw.githubusercontent.com/RedBlueVideo/hvml/23c2369db099e1a7e4804ee586b0733ecb3d7e60/xsd/hvml.xsd"
   xml:lang="en-US"
   hidden="hidden"
 >

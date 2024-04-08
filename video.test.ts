@@ -1,17 +1,17 @@
-import { Video } from './video.js';
-import Validation from './util/validation';
+import { HVMLVideoElement } from './video.js';
+import Validation from './util/validation.js';
 
 const { TypeError, EnumError, NotIntegerError } = Validation;
 
-describe( 'Video', () => {
+describe( 'HVMLVideoElement', () => {
   /* --- Instantiation --- */
 
   it( 'instantiates', () => {
-    expect( new Video() ).toBeInstanceOf( Video );
+    expect( new HVMLVideoElement() ).toBeInstanceOf( HVMLVideoElement );
   } );
 
   it( 'accepts a config object', () => {
-    const video = new Video( {
+    const video = new HVMLVideoElement( {
       "type": ['narrative', 'ad'],
       "lang": "en-US",
       "id": "foo",
@@ -31,17 +31,17 @@ describe( 'Video', () => {
 
     expect.assertions( 2 );
 
-    expect( () => new Video( badConfig ) ).toThrowError( TypeError );
+    expect( () => new HVMLVideoElement( badConfig ) ).toThrowError( TypeError );
 
     try {
-      new Video( badConfig ); // eslint-disable-line no-new
+      new HVMLVideoElement( badConfig ); // eslint-disable-line no-new
     } catch ( error ) {
       thrownError = error;
     }
 
     expect( thrownError.data ).toEqual(
       expect.objectContaining( {
-        "className": "Video",
+        "className": "HVMLVideoElement",
         "methodName": "constructor",
         "fieldName": "config",
         "expected": "Object",
@@ -59,16 +59,16 @@ describe( 'Video', () => {
 
     expect.assertions( 2 );
 
-    expect( () => new Video( badTypes ) ).toThrowError( EnumError );
+    expect( () => new HVMLVideoElement( badTypes ) ).toThrowError( EnumError );
 
     try {
-      new Video( badTypes ); // eslint-disable-line no-new
+      new HVMLVideoElement( badTypes ); // eslint-disable-line no-new
     } catch ( error ) {
       thrownError = error;
     }
 
     expect( thrownError.data ).toEqual( {
-      "className": "Video",
+      "className": "HVMLVideoElement",
       "fieldName": "config.type",
       "badValues": ["bad", "evil"],
     } );
@@ -82,17 +82,17 @@ describe( 'Video', () => {
 
     expect.assertions( 2 );
 
-    expect( () => new Video( badType ) ).toThrowError( TypeError );
+    expect( () => new HVMLVideoElement( badType ) ).toThrowError( TypeError );
 
     try {
-      new Video( badType ); // eslint-disable-line no-new
+      new HVMLVideoElement( badType ); // eslint-disable-line no-new
     } catch ( error ) {
       thrownError = error;
     }
 
     expect( thrownError.data ).toEqual(
       expect.objectContaining( {
-        "className": "Video",
+        "className": "HVMLVideoElement",
         "fieldName": "config.type",
         "expected": ["String", "Array"],
         "got": "Number",
@@ -112,17 +112,17 @@ describe( 'Video', () => {
 
     expect.assertions( 2 );
 
-    expect( () => new Video( configWithBadId ) ).toThrowError( TypeError );
+    expect( () => new HVMLVideoElement( configWithBadId ) ).toThrowError( TypeError );
 
     try {
-      new Video( configWithBadId ); // eslint-disable-line no-new
+      new HVMLVideoElement( configWithBadId ); // eslint-disable-line no-new
     } catch ( error ) {
       thrownError = error;
     }
 
     expect( thrownError.data ).toEqual(
       expect.objectContaining( {
-        "className": "Video",
+        "className": "HVMLVideoElement",
         "methodName": "constructor",
         "fieldName": "id",
         "expected": "String",
@@ -145,7 +145,7 @@ describe( 'Video', () => {
       'seahorse',
       'big-chungus',
     ];
-    const video = new Video();
+    const video = new HVMLVideoElement();
     let thrownError;
 
     try {
@@ -156,7 +156,7 @@ describe( 'Video', () => {
 
     expect( thrownError.data ).toEqual(
       expect.objectContaining( {
-        "className": "Video",
+        "className": "HVMLVideoElement",
         "fieldName": "type",
         "badValues": ["monkey", "seahorse", "big-chungus"],
       } ),
@@ -164,8 +164,8 @@ describe( 'Video', () => {
   } );
 
   test( '_getRegion', () => {
-    const videoOne = new Video();
-    const videoTwo = new Video( {
+    const videoOne = new HVMLVideoElement();
+    const videoTwo = new HVMLVideoElement( {
       "lang": "ja-JP",
     } );
 
@@ -176,7 +176,7 @@ describe( 'Video', () => {
   } );
 
   test( '_langHasRegion', () => {
-    const video = new Video();
+    const video = new HVMLVideoElement();
 
     expect.assertions( 2 );
 
@@ -186,7 +186,7 @@ describe( 'Video', () => {
 
   test( '_getLanguageAndRegion', () => {
     // lang, regionFallback
-    const video = new Video();
+    const video = new HVMLVideoElement();
 
     expect.assertions( 3 );
 
@@ -224,17 +224,17 @@ describe( 'Video', () => {
     expect.assertions( knownValidTypes.length + knownInvalidTypes.length );
 
     knownValidTypes.forEach( ( validType ) => {
-      expect( Video.isValidType( validType ) ).toBe( true );
+      expect( HVMLVideoElement.isValidType( validType ) ).toBe( true );
     } );
 
     knownInvalidTypes.forEach( ( invalidType ) => {
-      expect( Video.isValidType( invalidType ) ).toBe( false );
+      expect( HVMLVideoElement.isValidType( invalidType ) ).toBe( false );
     } );
   } );
 
   describe( 'hasType()', () => {
     it( 'returns `true` for types that are present', () => {
-      const video = new Video( {
+      const video = new HVMLVideoElement( {
         "type": ["narrative", "documentary"],
       } );
 
@@ -245,7 +245,7 @@ describe( 'Video', () => {
     } );
 
     it( 'returns `false` for types that are absent', () => {
-      const video = new Video( {
+      const video = new HVMLVideoElement( {
         "type": ["narrative", "documentary"],
       } );
 
@@ -257,7 +257,7 @@ describe( 'Video', () => {
     } );
 
     it( 'handles space-separated input values', () => {
-      const video = new Video( {
+      const video = new HVMLVideoElement( {
         "type": ["narrative", "documentary"],
       } );
 
@@ -271,7 +271,7 @@ describe( 'Video', () => {
     } );
 
     it( 'disregards the order of parameters', () => {
-      const video = new Video( {
+      const video = new HVMLVideoElement( {
         "type": ["narrative", "documentary"],
       } );
 
@@ -279,7 +279,7 @@ describe( 'Video', () => {
     } );
 
     it( 'works with single-item arrays', () => {
-      const video = new Video( {
+      const video = new HVMLVideoElement( {
         "type": ["narrative", "documentary"],
       } );
 
@@ -287,13 +287,13 @@ describe( 'Video', () => {
     } );
 
     it( 'returns `false` if no type has been set yet', () => {
-      const video = new Video();
+      const video = new HVMLVideoElement();
 
       expect( video.hasType( 'documentary' ) ).toBe( false );
     } );
 
     it( 'throws an error for invalid parameters', () => {
-      const video = new Video( {
+      const video = new HVMLVideoElement( {
         "type": ["narrative", "documentary"],
       } );
       const badInput = 0;
@@ -311,7 +311,7 @@ describe( 'Video', () => {
 
       expect( thrownError.data ).toEqual(
         expect.objectContaining( {
-          "className": "Video",
+          "className": "HVMLVideoElement",
           "got": "Number",
           "input": badInput,
           "methodName": "hasType",
@@ -322,10 +322,10 @@ describe( 'Video', () => {
 
   describe( 'isVlogEpisode()', () => {
     it( 'reports the presence of the types `personal` and `documentary`', () => {
-      const vlogEpisode = new Video( {
+      const vlogEpisode = new HVMLVideoElement( {
         "type": ["personal", "documentary"],
       } );
-      const nonVlogEpisode = new Video( {
+      const nonVlogEpisode = new HVMLVideoElement( {
         "type": "personal",
       } );
 
@@ -338,10 +338,10 @@ describe( 'Video', () => {
 
   describe( 'isArchived()', () => {
     it( 'reports the presence of the types `historical` and `personal`', () => {
-      const archivedEpisode = new Video( {
+      const archivedEpisode = new HVMLVideoElement( {
         "type": ["personal", "historical"],
       } );
-      const nonArchivedEpisode = new Video( {
+      const nonArchivedEpisode = new HVMLVideoElement( {
         "type": "personal",
       } );
 
@@ -356,7 +356,7 @@ describe( 'Video', () => {
 
   describe( 'title', () => {
     it( 'handles regional variants', () => {
-      const video = new Video( {
+      const video = new HVMLVideoElement( {
         "lang": "en-US",
       } );
 
@@ -377,7 +377,7 @@ describe( 'Video', () => {
     } );
 
     it( 'handles inherited language/region', () => {
-      const video = new Video( {
+      const video = new HVMLVideoElement( {
         "lang": "en-US",
       } );
 
@@ -387,7 +387,7 @@ describe( 'Video', () => {
     } );
 
     it( 'throws an error for invalid inputs', () => {
-      const video = new Video( {
+      const video = new HVMLVideoElement( {
         "lang": "en-US",
       } );
       let thrownError;
@@ -403,7 +403,7 @@ describe( 'Video', () => {
       expect( thrownError.constructor.name ).toBe( 'HVMLTypeError' );
       expect( thrownError.data ).toEqual(
         expect.objectContaining( {
-          "className": "Video",
+          "className": "HVMLVideoElement",
           "expected": "String",
           "fieldName": "title",
           "got": "Null",
@@ -415,8 +415,8 @@ describe( 'Video', () => {
 
   describe( 'episode', () => {
     it( 'gets and sets the same value', () => {
-      const videoOne = new Video();
-      const videoTwo = new Video();
+      const videoOne = new HVMLVideoElement();
+      const videoTwo = new HVMLVideoElement();
 
       expect.assertions( 2 );
 
@@ -429,7 +429,7 @@ describe( 'Video', () => {
 
     it( 'throws an error for non-integer values', () => {
       expect( () => {
-        const video = new Video();
+        const video = new HVMLVideoElement();
         video.setEpisode( NaN );
       } ).toThrowError( NotIntegerError );
     } );
@@ -437,7 +437,7 @@ describe( 'Video', () => {
 
   describe( 'description', () => {
     it( 'sets and gets `text` by default', () => {
-      const video = new Video();
+      const video = new HVMLVideoElement();
       const text = [`Nope`, `Dope`, `**Pope**`].join( '\n\n' );
 
       video.setDescription( text );
@@ -446,7 +446,7 @@ describe( 'Video', () => {
     } );
 
     it( 'sets and gets `text` explicitly', () => {
-      const video = new Video();
+      const video = new HVMLVideoElement();
       const text = [`Nope`, `Dope`, `**Pope**`].join( '\n\n' );
 
       video.setDescription( text, 'text' );
@@ -455,7 +455,7 @@ describe( 'Video', () => {
     } );
 
     it( 'sets and gets `xhtml`', () => {
-      const video = new Video();
+      const video = new HVMLVideoElement();
       const xhtml = `<p>Nope</p><p>Dope</p><p><strong>Pope</strong></p>`;
 
       video.setDescription( xhtml, 'xhtml' );
@@ -464,7 +464,7 @@ describe( 'Video', () => {
     } );
 
     it( 'sets and gets `jsonml`', () => {
-      const video = new Video();
+      const video = new HVMLVideoElement();
       const jsonMl = [
         [
           "p", "Nope",
@@ -496,7 +496,7 @@ describe( 'Video', () => {
     } );
 
     it( 'sets `text`, gets `jsonml`', () => {
-      const video = new Video();
+      const video = new HVMLVideoElement();
       const xhtml = [`Nope`, `Dope`, `**Pope**`].join( '\n\n' );
 
       video.setDescription( xhtml, 'text' );
@@ -518,7 +518,7 @@ describe( 'Video', () => {
     } );
 
     it( 'sets `xhtml`, gets `jsonml`', () => {
-      const video = new Video();
+      const video = new HVMLVideoElement();
       const xhtml = `<p>Nope</p><p>Dope</p><p><strong>Pope</strong></p>`;
 
       video.setDescription( xhtml, 'xhtml' );
@@ -542,7 +542,7 @@ describe( 'Video', () => {
     } );
 
     it( 'returns null if description was never set', () => {
-      const video = new Video();
+      const video = new HVMLVideoElement();
 
       expect.assertions( 4 );
 
@@ -553,7 +553,7 @@ describe( 'Video', () => {
     } );
 
     it( 'throws an error when setting type `text` with a non-string description', () => {
-      const video = new Video();
+      const video = new HVMLVideoElement();
       const text = null;
       let thrownError;
 
@@ -565,7 +565,7 @@ describe( 'Video', () => {
 
       expect( thrownError.data ).toEqual(
         expect.objectContaining( {
-          "className": "Video",
+          "className": "HVMLVideoElement",
           "methodName": "setDescription",
           "expected": ["String", "Object"],
           "fieldName": "description",
@@ -576,7 +576,7 @@ describe( 'Video', () => {
     } );
 
     // it( 'throws an error when setting type `xhtml` with a non-string description', () => {
-    //   const video = new Video();
+    //   const video = new HVMLVideoElement();
     //   const xhtml = null;
     //   let thrownError;
 
@@ -588,7 +588,7 @@ describe( 'Video', () => {
 
     //   expect( thrownError.data ).toEqual(
     //     expect.objectContaining( {
-    //       "className": "Video",
+    //       "className": "HVMLVideoElement",
     //       "expected": ["String", "Object"],
     //       "fieldName": "description",
     //       "got": "Null",
@@ -599,7 +599,7 @@ describe( 'Video', () => {
 
     describe( 'sets `text`, gets `xhtml`', () => {
       test( '+ Markdown, + Newlines → br', () => {
-        const video = new Video();
+        const video = new HVMLVideoElement();
         const text = [`Nope`, `Dope`, `**Pope**`].join( '\n\n' );
         const xhtml = `<p>Nope</p><p>Dope</p><p><strong>Pope</strong></p>`;
 
@@ -609,7 +609,7 @@ describe( 'Video', () => {
       } );
 
       test( '+ Markdown, - Newlines → br', () => {
-        const video = new Video();
+        const video = new HVMLVideoElement();
         const text = [`Nope`, `Dope`, `**Pope**`].join( '\n\n' );
         const xhtml = `<p>Nope</p><p>Dope</p><p><strong>Pope</strong></p>`;
 
@@ -619,7 +619,7 @@ describe( 'Video', () => {
       } );
 
       test( '- Markdown, + Newlines → br', () => {
-        const video = new Video();
+        const video = new HVMLVideoElement();
         const text = [`Nope`, `Dope`, `**Pope**`].join( '\n\n' );
         const xhtml = `<p>Nope<br /><br />Dope<br /><br />**Pope**</p>`;
 
@@ -629,7 +629,7 @@ describe( 'Video', () => {
       } );
 
       test( '- Markdown, - Newlines → br', () => {
-        const video = new Video();
+        const video = new HVMLVideoElement();
         const text = [`Nope`, `Dope`, `**Pope**`].join( '\n\n' );
         const xhtml = [`<p>Nope`, `Dope`, `**Pope**</p>`].join( '\n\n' );
 
@@ -640,7 +640,7 @@ describe( 'Video', () => {
     } );
 
     it( 'sets `xhtml`, gets `text`', () => {
-      const video = new Video();
+      const video = new HVMLVideoElement();
       const xhtml = `<p>Nope</p><p>Dope</p><p><strong>Pope</strong></p>`;
 
       video.setDescription( xhtml, 'xhtml' );
@@ -657,7 +657,7 @@ describe( 'Video', () => {
     };
 
     it( 'throws an error for incorrect input values', () => {
-      const video = new Video();
+      const video = new HVMLVideoElement();
       const nullValue = null;
       const subZeroValue = -90;
       let thrownErrorOne;
@@ -676,7 +676,7 @@ describe( 'Video', () => {
       expect( thrownErrorOne.constructor.name ).toBe( 'HVMLTypeError' );
       expect( thrownErrorOne.data ).toEqual(
         expect.objectContaining( {
-          "className": "Video",
+          "className": "HVMLVideoElement",
           "fieldName": "runtime",
           "expected": [
             "Number",
@@ -696,7 +696,7 @@ describe( 'Video', () => {
       expect( thrownErrorTwo.constructor.name ).toBe( 'HVMLRangeError' );
       expect( thrownErrorTwo.data ).toEqual(
         expect.objectContaining( {
-          "className": "Video",
+          "className": "HVMLVideoElement",
           "fieldName": "runtime",
           "expected": [
             "Number",
@@ -711,8 +711,8 @@ describe( 'Video', () => {
 
     describe( 'sets and gets the same value', () => {
       test( 'minutes', () => {
-        const videoOne = new Video();
-        const videoTwo = new Video();
+        const videoOne = new HVMLVideoElement();
+        const videoTwo = new HVMLVideoElement();
 
         expect.assertions( 2 );
 
@@ -724,7 +724,7 @@ describe( 'Video', () => {
       } );
 
       test( 'ISO 8601 duration', () => {
-        const video = new Video();
+        const video = new HVMLVideoElement();
         video.setRuntime( sampleRuntime.iso8601 );
         expect( video.getRuntime( 'iso8601' ) ).toBe( sampleRuntime.iso8601 );
       } );
@@ -732,25 +732,25 @@ describe( 'Video', () => {
 
     describe( 'sets a value and gets back another equivalent value', () => {
       test( 'minutes → hours', () => {
-        const video = new Video();
+        const video = new HVMLVideoElement();
         video.setRuntime( sampleRuntime.minutes );
         expect( video.getRuntime( 'hours' ) ).toBe( sampleRuntime.hours );
       } );
 
       test( 'minutes → ISO 8601 duration', () => {
-        const video = new Video();
+        const video = new HVMLVideoElement();
         video.setRuntime( sampleRuntime.minutes );
         expect( video.getRuntime( 'iso8601' ) ).toBe( sampleRuntime.iso8601 );
       } );
 
       test( 'ISO 8601 duration → minutes', () => {
-        const video = new Video();
+        const video = new HVMLVideoElement();
         video.setRuntime( sampleRuntime.iso8601 );
         expect( video.getRuntime( 'minutes' ) ).toBe( sampleRuntime.minutes );
       } );
 
       test( 'ISO 8601 duration → hours', () => {
-        const video = new Video();
+        const video = new HVMLVideoElement();
         video.setRuntime( sampleRuntime.iso8601 );
         expect( video.getRuntime( 'hours' ) ).toBe( sampleRuntime.hours );
       } );

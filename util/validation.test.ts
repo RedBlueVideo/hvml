@@ -1,6 +1,9 @@
-import Validation from './validation';
-
-const { DomainError, EnumError, RangeError, TypeError } = Validation;
+import {
+  HVMLDomainError,
+  HVMLEnumError,
+  HVMLRangeError,
+  HVMLTypeError,
+} from './validation.js';
 
 describe( 'Validation', () => {
   describe( 'HVMLDomainError', () => {
@@ -8,7 +11,7 @@ describe( 'Validation', () => {
       let thrownError;
 
       try {
-        throw new DomainError( 'Hello' );
+        throw new HVMLDomainError( 'Hello' );
       } catch ( error ) {
         thrownError = error;
       }
@@ -22,7 +25,7 @@ describe( 'Validation', () => {
       let thrownError;
 
       try {
-        throw new EnumError( {
+        throw new HVMLEnumError( {
           "badValues": ["Hello", "Goodbye"],
         } );
       } catch ( error ) {
@@ -36,7 +39,7 @@ describe( 'Validation', () => {
       let thrownError;
 
       try {
-        throw new EnumError( {
+        throw new HVMLEnumError( {
           "badValues": ["Hello", "Goodbye"],
         } );
       } catch ( error ) {
@@ -51,7 +54,7 @@ describe( 'Validation', () => {
       let thrownErrorTwo;
 
       try {
-        throw new EnumError( {
+        throw new HVMLEnumError( {
           "className": "Foo",
           "badValues": ["Hello", "Goodbye"],
         } );
@@ -60,7 +63,7 @@ describe( 'Validation', () => {
       }
 
       try {
-        throw new EnumError( {
+        throw new HVMLEnumError( {
           "className": "Foo",
           "fieldName": "bar",
           "badValues": ["Hello", "Goodbye"],
@@ -80,7 +83,7 @@ describe( 'Validation', () => {
         let thrownError;
 
         try {
-          throw new EnumError( {} );
+          throw new HVMLEnumError();
         } catch ( error ) {
           thrownError = error;
         }
@@ -93,7 +96,7 @@ describe( 'Validation', () => {
         let thrownError;
 
         try {
-          throw new EnumError();
+          throw new HVMLEnumError();
         } catch ( error ) {
           thrownError = error;
         }
@@ -134,7 +137,7 @@ describe( 'Validation', () => {
         let thrownError;
 
         try {
-          throw new RangeError( {
+          throw new HVMLRangeError( {
             "className": "Foo",
             "fieldName": "bar",
           } );
@@ -149,7 +152,7 @@ describe( 'Validation', () => {
         let thrownError;
 
         try {
-          throw new RangeError( {
+          throw new HVMLRangeError( {
             "upperBound": 100,
           } );
         } catch ( error ) {
@@ -163,7 +166,7 @@ describe( 'Validation', () => {
         let thrownError;
 
         try {
-          throw new RangeError( {
+          throw new HVMLRangeError( {
             "lowerBound": 0,
           } );
         } catch ( error ) {
@@ -177,7 +180,7 @@ describe( 'Validation', () => {
         let thrownError;
 
         try {
-          throw new RangeError( {
+          throw new HVMLRangeError( {
             "lowerBound": 0,
             "upperBound": 100,
           } );
@@ -195,7 +198,7 @@ describe( 'Validation', () => {
       let thrownError;
 
       try {
-        throw new TypeError( {
+        throw new HVMLTypeError( {
           "className": "Foo",
           "methodName": "bar",
           "fieldName": "baz",
@@ -214,7 +217,7 @@ describe( 'Validation', () => {
         let thrownError;
 
         try {
-          throw new TypeError( {
+          throw new HVMLTypeError( {
             // "className": "Foo",
             // "methodName": "bar",
             // "fieldName": "baz",
@@ -232,7 +235,7 @@ describe( 'Validation', () => {
         let thrownError;
 
         try {
-          throw new TypeError( {
+          throw new HVMLTypeError( {
             // "className": "Foo",
             // "methodName": "bar",
             "fieldName": "baz",
@@ -252,7 +255,7 @@ describe( 'Validation', () => {
         let thrownError;
 
         try {
-          throw new TypeError( {
+          throw new HVMLTypeError( {
             "className": "Foo",
             // "methodName": "bar",
             "fieldName": "baz",
@@ -270,7 +273,7 @@ describe( 'Validation', () => {
         let thrownError;
 
         try {
-          throw new TypeError( {
+          throw new HVMLTypeError( {
             "className": "Foo",
             "methodName": "bar",
             "fieldName": "baz",
@@ -288,7 +291,7 @@ describe( 'Validation', () => {
         let thrownError;
 
         try {
-          throw new TypeError( {
+          throw new HVMLTypeError( {
             // "className": "Foo",
             "methodName": "bar",
             "fieldName": "baz",
@@ -325,7 +328,7 @@ describe( 'Validation', () => {
         let thrownError;
 
         try {
-          throw new TypeError( {
+          throw new HVMLTypeError( {
             "className": "Foo",
             // "methodName": "bar",
             "fieldName": "baz",
@@ -344,7 +347,7 @@ describe( 'Validation', () => {
         let thrownError;
 
         try {
-          throw new TypeError( {
+          throw new HVMLTypeError( {
             "className": "Foo",
             // "methodName": "bar",
             // "fieldName": "baz",

@@ -3,11 +3,35 @@ import set from 'lodash.set';
 // const Video = require( './video' );
 
 import Data from './util/data.js';
-import { hasProperty } from './util/types.js';
+import { hasProperty, isXmlElement } from './util/types.js';
 import { ucFirst } from './util/strings.js';
+import { HVML, HVMLVideoElement } from './hvml.js';
+import { XMLElement, XMLNamespace, XMLDocument } from 'libxmljs';
+// import { HVMLDescriptionElement } from './description.js';
 
+export type HVMLNodePath = ( number | string | symbol )[];
+
+export interface HVMLGlobalAttributes {
+  id?: string;
+  children?: HVMLElement[];
+  language?: string;
+  region?: string;
+  instance?: Object;
+}
+
+export type JSON = Record<string, any>;
+
+// implements HVMLGlobalAttributes?
 export class HVMLElement {
-  constructor( data ) {
+  children: HVMLElement[];
+  id: string;
+  json: JSON | null;
+  prefixes: typeof HVML['prototype']['prefixes'];
+  title?: string;
+  type?: string;
+  xml?:  XMLDocument | null;
+
+  constructor( data?: JSON ) {
     // super();
 
     if ( data ) {
@@ -27,9 +51,9 @@ export class HVMLElement {
   }
 
   /* istanbul ignore next: internals of toJson(), which is already tested */
-  _jsonifyAttribute( attribute, attributePath = [] ) {
+  _jsonifyAttribute( attribute, attributePath: HVMLNodePath = [] ) {
     const namespace = attribute.namespace();
-    let property = attribute.name();
+    let property: string = attribute.name();
 
     if ( namespace ) {
       property = `${namespace.prefix()}:${property}`;
@@ -67,20 +91,25 @@ export class HVMLElement {
 
     attributePath.push( property );
     // }
-    set( this.json, attributePath, attribute.value() );
+    set( this.json!, attributePath, attribute.value() );
     attributePath.pop();
   }
 
   /* istanbul ignore next: internals of toJson(), which is already tested */
-  _jsonifyChild( child, path = [], domNode = false, childIndex ) {
+  _jsonifyChild(
+    child: XMLElement,
+    path: HVMLNodePath = [],
+    domNode = false,
+    childIndex?: number,
+  ) {
     const type = child.type();
     const attributes = child.attrs();
     // let path;
-    let name;
-    let namespace;
-    let prefix;
-    let text;
-    let grandchildren;
+    let name: string;
+    let namespace: XMLNamespace | null;
+    let prefix: string | null = '';
+    let text: string;
+    let grandchildren: XMLElement[];
 
     switch ( type ) {
       case 'comment':
@@ -107,7 +136,7 @@ export class HVMLElement {
           path.push( name );
         }
 
-        if ( Number.isInteger( childIndex ) ) {
+        if ( typeof childIndex !== 'undefined' ) {
           path.push( childIndex );
         }
 
@@ -122,6 +151,7 @@ export class HVMLElement {
             if ( prefix === 'html' ) {
               let i = -1;
               path.push( 'childNodes' );
+              // @ts-ignore
               path.push( null );
               grandchildren.forEach( ( grandchild ) => {
                 path.pop();
@@ -179,41 +209,52 @@ export class HVMLElement {
           const dupePath = Object.assign( [], path );
 
           if ( domNode ) {
-            set( this.json, path, {
+            set( this.json!, path, {
               "textContent": child.text(),
             } );
           } else {
             const upone = path[path.length - 1];
-            const htmlPos = upone.indexOf( 'html:' );
 
-            if ( htmlPos !== -1 ) {
-              dupePath.pop();
-              const attrs = child.parent().attrs();
-              const obj = {
-                "@type": upone.substring( 5 ),
-              };
+            if ( typeof upone === 'string' ) {
+              const htmlPos = upone.indexOf( 'html:' );
 
-              attrs.forEach( ( attr ) => {
-                obj[attr.name()] = attr.value();
-              } );
+              if ( htmlPos !== -1 ) {
+                dupePath.pop();
 
-              obj.textContent = text;
+                const parent = child.parent()!;
 
-              set( this.json, dupePath, obj );
-            } else {
-              const attrs = child.parent().attrs();
+                if ( isXmlElement( parent ) ) {
+                  const attrs = parent.attrs();
+                  const obj: Record<string, any> = {
+                    "@type": upone.substring( 5 ),
+                  };
 
-              if ( attrs.length ) {
-                const value = [];
-                const keyValue = {};
-                attrs.forEach( ( attr ) => {
-                  keyValue[attr.name()] = attr.value();
-                } );
-                value.push( keyValue );
-                value.push( text );
-                set( this.json, dupePath, value );
+                  attrs.forEach( ( attr ) => {
+                    obj[attr.name()] = attr.value();
+                  } );
+
+                  obj.textContent = text;
+
+                  set( this.json!, dupePath, obj );
+                }
               } else {
-                set( this.json, dupePath, text );
+                const parent = child.parent();
+
+                if ( isXmlElement( parent ) ) {
+                  const attrs = parent.attrs();
+
+                  if ( attrs.length ) {
+                    const keyValue = {};
+                    attrs.forEach( ( attr ) => {
+                      keyValue[attr.name()] = attr.value();
+                    } );
+                    const value = [keyValue, text];
+
+                    set( this.json!, dupePath, value );
+                  } else {
+                    set( this.json!, dupePath, text );
+                  }
+                }
               }
             }
           }
@@ -244,14 +285,14 @@ export class HVMLElement {
   /* istanbul ignore next: internals of toJson(), which is already tested */
   _setJsonChild(
     child,
-    path = [],
-    /** @type {boolean | null} */
-    root = false,
+    path: HVMLNodePath = [],
+    root: boolean | null = false,
     atIndex = null,
   ) {
     const nodeName = child.constructor.name.toLowerCase();
     // const attributes = { ...child };
-    let attributes = {};
+    // @ts-ignore - Init
+    let attributes: HVMLGlobalAttributes = {};
 
     if ( child.id ) {
       attributes['xml:id'] = child.id;
@@ -300,11 +341,11 @@ export class HVMLElement {
 
       if ( atIndex !== null ) {
         path.push( atIndex );
-        set( this.json, path, attributes );
+        set( this.json!, path, attributes );
         path.pop();
         path.pop();
       } else {
-        set( this.json, path, attributes );
+        set( this.json!, path, attributes );
       }
     }
 
@@ -345,8 +386,8 @@ export class HVMLElement {
       this.json = Data.getJsonBoilerplate();
     }
 
-    if ( this.children.length ) {
-      const path = [];
+    if ( Array.isArray( this.children ) && this.children.length ) {
+      const path: HVMLNodePath = [];
       // path.push( nodeName );
 
       // this.children.forEach( ( child ) => {
@@ -383,13 +424,13 @@ export class HVMLElement {
       } );
     }
 
-    if ( 'xml' in this ) {
-      this.xml.root().childNodes().forEach( ( node ) => {
-        if ( node.type() === 'element' ) {
+    if ( this.xml ) {
+      this.xml.root()!.childNodes().forEach( ( node ) => {
+        if ( isXmlElement( node ) ) {
           const attributes = node.attrs();
           const children = node.childNodes();
 
-          this.json['@type'] = node.name();
+          this.json!['@type'] = node.name();
 
           attributes.forEach( ( attribute ) => {
             this._jsonifyAttribute( attribute );
@@ -408,7 +449,11 @@ export class HVMLElement {
     return this.json;
   }
 
-  _momifyChild( key, value, target = this.children ) {
+  _momifyChild(
+    key: string,
+    value: any,
+    target = this.children,
+  ) {
     if ( key === '@type' ) {
       const className = ucFirst( value );
       this.children.push( new globalThis.HVML[className]() );
@@ -454,11 +499,11 @@ export class HVMLElement {
             case 'description':
               switch ( value.type ) {
                 case 'xhtml':
-                  lastChild.setDescription( value['html:div'], 'xhtml' );
+                  ( lastChild as HVMLVideoElement ).setDescription( value['html:div'], 'xhtml' );
                   break;
 
                 default:
-                  lastChild.setDescription( value );
+                  ( lastChild as HVMLVideoElement ).setDescription( value );
                   break;
               }
 
@@ -468,6 +513,7 @@ export class HVMLElement {
               try {
                 lastChild.children.push( new globalThis.HVML[className]() );
               } catch ( error ) {
+                // @ts-ignore
                 lastChild.children.push( className );
               }
           }
@@ -509,7 +555,7 @@ export class HVMLElement {
     }
   }
 
-  removeChild( child ) {
+  removeChild( child: HVMLElement ) {
     let i = this.children.length;
 
     while ( i-- ) {
