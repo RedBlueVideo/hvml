@@ -1,12 +1,5 @@
-import HVMLElement from './hvml-element';
-import hvmlJs from './hvml';
-
-const {
-  HVML,
-  Series,
-  // Group,
-  Video,
-} = hvmlJs;
+import { HVMLElement } from './hvml-element.js';
+import { HVML, Series, Video } from './hvml.js';
 
 describe( 'HVMLElement', () => {
   let hvml;

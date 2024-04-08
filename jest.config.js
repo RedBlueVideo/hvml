@@ -1,4 +1,6 @@
-module.exports = {
+export default {
+  "testEnvironment": "jest-environment-node",
+  "transform": {},
   "collectCoverage": true,
   "coverageReporters": [
     "json-summary",

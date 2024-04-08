@@ -1,5 +1,7 @@
-const Video = require( './video' );
-const Validation = require( './util/validation' );
+import { Video } from './video.js';
+import Validation from './util/validation';
+
+const { TypeError, EnumError, NotIntegerError } = Validation;
 
 describe( 'Video', () => {
   /* --- Instantiation --- */
@@ -29,7 +31,7 @@ describe( 'Video', () => {
 
     expect.assertions( 2 );
 
-    expect( () => new Video( badConfig ) ).toThrowError( Validation.TypeError );
+    expect( () => new Video( badConfig ) ).toThrowError( TypeError );
 
     try {
       new Video( badConfig ); // eslint-disable-line no-new
@@ -57,7 +59,7 @@ describe( 'Video', () => {
 
     expect.assertions( 2 );
 
-    expect( () => new Video( badTypes ) ).toThrowError( Validation.EnumError );
+    expect( () => new Video( badTypes ) ).toThrowError( EnumError );
 
     try {
       new Video( badTypes ); // eslint-disable-line no-new
@@ -80,7 +82,7 @@ describe( 'Video', () => {
 
     expect.assertions( 2 );
 
-    expect( () => new Video( badType ) ).toThrowError( Validation.TypeError );
+    expect( () => new Video( badType ) ).toThrowError( TypeError );
 
     try {
       new Video( badType ); // eslint-disable-line no-new
@@ -110,7 +112,7 @@ describe( 'Video', () => {
 
     expect.assertions( 2 );
 
-    expect( () => new Video( configWithBadId ) ).toThrowError( Validation.TypeError );
+    expect( () => new Video( configWithBadId ) ).toThrowError( TypeError );
 
     try {
       new Video( configWithBadId ); // eslint-disable-line no-new
@@ -299,7 +301,7 @@ describe( 'Video', () => {
 
       expect.assertions( 2 );
 
-      expect( () => video.hasType( badInput ) ).toThrowError( Validation.TypeError );
+      expect( () => video.hasType( badInput ) ).toThrowError( TypeError );
 
       try {
         video.hasType( badInput );
@@ -429,7 +431,7 @@ describe( 'Video', () => {
       expect( () => {
         const video = new Video();
         video.setEpisode( NaN );
-      } ).toThrowError( Validation.NotIntegerError );
+      } ).toThrowError( NotIntegerError );
     } );
   } );
 
@@ -663,7 +665,7 @@ describe( 'Video', () => {
 
       expect.assertions( 5 );
 
-      expect( () => video.setRuntime( nullValue ) ).toThrowError( Validation.TypeError );
+      expect( () => video.setRuntime( nullValue ) ).toThrowError( TypeError );
 
       try {
         video.setRuntime( nullValue );

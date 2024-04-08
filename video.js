@@ -422,8 +422,6 @@ export class Video extends HVMLElement {
   }
 }
 
-// module.exports = Video;
-
 globalThis.HVML = {
   ...globalThis.HVML,
   Video,

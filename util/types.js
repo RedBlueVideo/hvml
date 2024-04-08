@@ -20,11 +20,3 @@ export function isUndefined( object ) {
 export function hasProperty( object, property ) {
   return Object.prototype.hasOwnProperty.call( object, property );
 }
-
-// module.exports = {
-//   isNumber,
-//   isPlainObject,
-//   isString,
-//   isUndefined,
-//   hasProperty,
-// };

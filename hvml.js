@@ -4,9 +4,9 @@ import { exec } from 'child_process';
 
 import { HVMLElement } from './hvml-element.js';
 
-import { Video } from './video.js';
-import { Series } from './series.js';
-import { Group } from './group.js';
+import { Group as GroupJs } from './group.js';
+import { Series as SeriesJs } from './series.js';
+import { Video as VideoJs } from './video.js';
 
 import Validation from './util/validation.js';
 import { hasProperty } from './util/types.js';
@@ -398,12 +398,9 @@ export class HVML extends HVMLElement {
 
 // toJson
 
-export default {
-  HVML,
-  Series,
-  Group,
-  Video,
-};
+export const Group = GroupJs;
+export const Series = SeriesJs;
+export const Video = VideoJs;
 
 globalThis.HVML = {
   ...globalThis.HVML,

@@ -3,7 +3,7 @@ import md2jsonml from 'md2jsonml';
  * FIXME:
  * Deprecation warning: This module is not maintained. Please see slimdom-sax-parser for the DOM parsing, or use the code in src/domToJsonml.js.
  */
-const xmlTrident = require( 'xml-trident' );
+import * as xmlTrident from 'xml-trident';
 import { isString, isPlainObject } from './types.js';
 
 const { softTrim } = require( './strings' );

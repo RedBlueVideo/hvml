@@ -235,12 +235,3 @@ export default {
   "NotIntegerError": HVMLNotIntegerError,
   "OptionalDependencyNotInstalled": HVMLOptionalDependencyNotInstalled,
 }
-
-// module.exports = {
-//   "DomainError": HVMLDomainError,
-//   "EnumError": HVMLEnumError,
-//   "TypeError": HVMLTypeError,
-//   "RangeError": HVMLRangeError,
-//   "NotIntegerError": HVMLNotIntegerError,
-//   "OptionalDependencyNotInstalled": HVMLOptionalDependencyNotInstalled,
-// };

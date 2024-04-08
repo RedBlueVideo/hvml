@@ -5,12 +5,12 @@
   "type": "module",
   "module": "hvml.js",
   "scripts": {
-    "test": "jest --verbose",
-    "test-dev": "jest --watch --verbose",
-    "test-hvml": "jest --watch -t '\\bHVML\\b' --verbose",
-    "test-xsd": "jest --watch -t 'HVML Schema Definition' --verbose",
-    "test-video": "jest --watch --verbose -t 'Video'",
-    "coverage": "jest --coverage",
+    "test": "dotenv -- jest --verbose",
+    "test-dev": "dotenv -- jest --watch --verbose",
+    "test-hvml": "dotenv -- jest --watch -t '\\bHVML\\b' --verbose",
+    "test-xsd": "dotenv -- jest --watch -t 'HVML Schema Definition' --verbose",
+    "test-video": "dotenv -- jest --watch --verbose -t 'Video'",
+    "coverage": "dotenv -- jest --coverage",
     "codecov": "./node_modules/.bin/codecov",
     "xsd": "xmllint --nowarning --noout --schema xsd/hvml.xsd examples/hvml.xml",
     "rng": "xmllint --nowarning --noout --relaxng rng/hvml.rng examples/hvml.xml",
@@ -38,6 +38,7 @@
   },
   "homepage": "https://github.com/RedBlueVideo/hvml#readme",
   "dependencies": {
+    "dotenv-cli": "^7.4.1",
     "lodash.set": "^4.3.2",
     "md2jsonml": "^2.0.0",
     "xml-trident": "^1.0.2"

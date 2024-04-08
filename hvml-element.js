@@ -525,5 +525,3 @@ export class HVMLElement {
     }
   }
 }
-
-// module.exports = HVMLElement;

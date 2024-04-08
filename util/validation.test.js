@@ -1,4 +1,6 @@
-const Validation = require( './validation' );
+import Validation from './validation';
+
+const { DomainError, EnumError, RangeError, TypeError } = Validation;
 
 describe( 'Validation', () => {
   describe( 'HVMLDomainError', () => {
@@ -6,7 +8,7 @@ describe( 'Validation', () => {
       let thrownError;
 
       try {
-        throw new Validation.DomainError( 'Hello' );
+        throw new DomainError( 'Hello' );
       } catch ( error ) {
         thrownError = error;
       }
@@ -20,7 +22,7 @@ describe( 'Validation', () => {
       let thrownError;
 
       try {
-        throw new Validation.EnumError( {
+        throw new EnumError( {
           "badValues": ["Hello", "Goodbye"],
         } );
       } catch ( error ) {
@@ -34,7 +36,7 @@ describe( 'Validation', () => {
       let thrownError;
 
       try {
-        throw new Validation.EnumError( {
+        throw new EnumError( {
           "badValues": ["Hello", "Goodbye"],
         } );
       } catch ( error ) {
@@ -49,7 +51,7 @@ describe( 'Validation', () => {
       let thrownErrorTwo;
 
       try {
-        throw new Validation.EnumError( {
+        throw new EnumError( {
           "className": "Foo",
           "badValues": ["Hello", "Goodbye"],
         } );
@@ -58,7 +60,7 @@ describe( 'Validation', () => {
       }
 
       try {
-        throw new Validation.EnumError( {
+        throw new EnumError( {
           "className": "Foo",
           "fieldName": "bar",
           "badValues": ["Hello", "Goodbye"],
@@ -78,7 +80,7 @@ describe( 'Validation', () => {
         let thrownError;
 
         try {
-          throw new Validation.EnumError( {} );
+          throw new EnumError( {} );
         } catch ( error ) {
           thrownError = error;
         }
@@ -91,7 +93,7 @@ describe( 'Validation', () => {
         let thrownError;
 
         try {
-          throw new Validation.EnumError();
+          throw new EnumError();
         } catch ( error ) {
           thrownError = error;
         }
@@ -107,7 +109,7 @@ describe( 'Validation', () => {
       let thrownError;
 
       try {
-        throw new Validation.RangeError();
+        throw new RangeError();
       } catch ( error ) {
         thrownError = error;
       }
@@ -120,7 +122,7 @@ describe( 'Validation', () => {
         let thrownError;
 
         try {
-          throw new Validation.RangeError();
+          throw new RangeError();
         } catch ( error ) {
           thrownError = error;
         }
@@ -132,7 +134,7 @@ describe( 'Validation', () => {
         let thrownError;
 
         try {
-          throw new Validation.RangeError( {
+          throw new RangeError( {
             "className": "Foo",
             "fieldName": "bar",
           } );
@@ -147,7 +149,7 @@ describe( 'Validation', () => {
         let thrownError;
 
         try {
-          throw new Validation.RangeError( {
+          throw new RangeError( {
             "upperBound": 100,
           } );
         } catch ( error ) {
@@ -161,7 +163,7 @@ describe( 'Validation', () => {
         let thrownError;
 
         try {
-          throw new Validation.RangeError( {
+          throw new RangeError( {
             "lowerBound": 0,
           } );
         } catch ( error ) {
@@ -175,7 +177,7 @@ describe( 'Validation', () => {
         let thrownError;
 
         try {
-          throw new Validation.RangeError( {
+          throw new RangeError( {
             "lowerBound": 0,
             "upperBound": 100,
           } );
@@ -193,7 +195,7 @@ describe( 'Validation', () => {
       let thrownError;
 
       try {
-        throw new Validation.TypeError( {
+        throw new TypeError( {
           "className": "Foo",
           "methodName": "bar",
           "fieldName": "baz",
@@ -212,7 +214,7 @@ describe( 'Validation', () => {
         let thrownError;
 
         try {
-          throw new Validation.TypeError( {
+          throw new TypeError( {
             // "className": "Foo",
             // "methodName": "bar",
             // "fieldName": "baz",
@@ -230,7 +232,7 @@ describe( 'Validation', () => {
         let thrownError;
 
         try {
-          throw new Validation.TypeError( {
+          throw new TypeError( {
             // "className": "Foo",
             // "methodName": "bar",
             "fieldName": "baz",
@@ -250,7 +252,7 @@ describe( 'Validation', () => {
         let thrownError;
 
         try {
-          throw new Validation.TypeError( {
+          throw new TypeError( {
             "className": "Foo",
             // "methodName": "bar",
             "fieldName": "baz",
@@ -268,7 +270,7 @@ describe( 'Validation', () => {
         let thrownError;
 
         try {
-          throw new Validation.TypeError( {
+          throw new TypeError( {
             "className": "Foo",
             "methodName": "bar",
             "fieldName": "baz",
@@ -286,7 +288,7 @@ describe( 'Validation', () => {
         let thrownError;
 
         try {
-          throw new Validation.TypeError( {
+          throw new TypeError( {
             // "className": "Foo",
             "methodName": "bar",
             "fieldName": "baz",
@@ -310,7 +312,7 @@ describe( 'Validation', () => {
         let thrownError;
 
         try {
-          throw new Validation.TypeError();
+          throw new TypeError();
         } catch ( error ) {
           thrownError = error;
         }
@@ -323,7 +325,7 @@ describe( 'Validation', () => {
         let thrownError;
 
         try {
-          throw new Validation.TypeError( {
+          throw new TypeError( {
             "className": "Foo",
             // "methodName": "bar",
             "fieldName": "baz",
@@ -342,7 +344,7 @@ describe( 'Validation', () => {
         let thrownError;
 
         try {
-          throw new Validation.TypeError( {
+          throw new TypeError( {
             "className": "Foo",
             // "methodName": "bar",
             // "fieldName": "baz",

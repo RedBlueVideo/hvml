@@ -13,8 +13,6 @@ export class Series extends HVMLElement {
   }
 }
 
-// module.exports = Series;
-
 globalThis.HVML = {
   ...globalThis.HVML,
   Series,
