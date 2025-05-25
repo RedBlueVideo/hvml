@@ -1,12 +1,27 @@
 import set from 'lodash.set';
 // import Video from './video';
+import { Element as ILibxmljsXMLElement } from 'libxmljs';
 
 import Data from './util/data';
 import { hasProperty } from './util/types';
 import { ucFirst } from './util/strings';
+import { IHVMLElement } from './types/elements';
 
 class HVMLElement {
-  constructor( data ) {
+  id?: string;
+
+  children: Array<IHVMLElement>;
+
+  json: IHVMLElement;
+
+  xml: ILibxmljsXMLElement
+
+  /**
+   * Mapping of URIs to XML namespaces
+   */
+  prefixes: { [key: string]: string };
+
+  constructor( data: IHVMLElement) {
     if ( data ) {
       /* istanbul ignore else */
       if ( data.id ) {
@@ -69,7 +84,7 @@ class HVMLElement {
   }
 
   /* istanbul ignore next: internals of toJson(), which is already tested */
-  _jsonifyChild( child, path = [], domNode = false, childIndex ) {
+  _jsonifyChild( child, path: (string | number)[] = [], domNode = false, childIndex?: number ) {
     const type = child.type();
     const attributes = child.attrs();
     // let path;
@@ -181,36 +196,39 @@ class HVMLElement {
             } );
           } else {
             const upone = path[path.length - 1];
-            const htmlPos = upone.indexOf( 'html:' );
 
-            if ( htmlPos !== -1 ) {
-              dupePath.pop();
-              const attrs = child.parent().attrs();
-              const obj = {
-                "@type": upone.substring( 5 ),
-              };
+            if (typeof upone === 'string') {
+              const htmlPos = upone.indexOf( 'html:' );
 
-              attrs.forEach( ( attr ) => {
-                obj[attr.name()] = attr.value();
-              } );
+              if ( htmlPos !== -1 ) {
+                dupePath.pop();
+                const attrs = child.parent().attrs();
+                const obj: JSONLDSerializedHTMLElement = {
+                  "@type": upone.substring( 5 ),
+                };
 
-              obj.textContent = text;
-
-              set( this.json, dupePath, obj );
-            } else {
-              const attrs = child.parent().attrs();
-
-              if ( attrs.length ) {
-                const value = [];
-                const keyValue = {};
                 attrs.forEach( ( attr ) => {
-                  keyValue[attr.name()] = attr.value();
+                  obj[attr.name()] = attr.value();
                 } );
-                value.push( keyValue );
-                value.push( text );
-                set( this.json, dupePath, value );
+
+                obj.textContent = text;
+
+                set( this.json, dupePath, obj );
               } else {
-                set( this.json, dupePath, text );
+                const attrs = child.parent().attrs();
+
+                if ( attrs.length ) {
+                  const value = [];
+                  const keyValue = {};
+                  attrs.forEach( ( attr ) => {
+                    keyValue[attr.name()] = attr.value();
+                  } );
+                  value.push( keyValue );
+                  value.push( text );
+                  set( this.json, dupePath, value );
+                } else {
+                  set( this.json, dupePath, text );
+                }
               }
             }
           }

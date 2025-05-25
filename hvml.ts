@@ -1,4 +1,4 @@
-import fs from 'fs';
+import { readFile } from 'fs';
 import { extname } from 'path';
 import { exec } from 'child_process';
 
@@ -30,11 +30,28 @@ try {
 //   Video,
 // };
 
+interface HVMLConfig {
+  schemaPath: string;
+  schemaType: string;
+  encoding: string;
+}
+
 class HVML extends HVMLElement {
-  constructor( path, config = {} ) {
+  fileExtensions: { xml: string[]; json: string[] };
+
+  /**
+   * Mapping of XML namespaces to URIs
+   */
+  namespaces: { [key: string]: string };
+
+  schemaPath: string;
+
+  schemaType: string;
+
+  constructor( path: string, config: HVMLConfig ) {
     super();
     /*
-      fs.readFile(path[, options], callback)
+      readFile(path[, options], callback)
       - path <string> | <Buffer> | <URL> | <integer> filename or file descriptor
       - options <Object> | <string>
         - encoding <string> | <null> Default: null
@@ -86,7 +103,7 @@ class HVML extends HVMLElement {
 
     if ( path ) {
       const fileReady = ( new Promise( ( resolve, reject ) => {
-        fs.readFile( path, config.encoding, ( error, data ) => {
+        readFile( path, config.encoding, ( error, data ) => {
           if ( error ) {
             // throw new Error( error );
             reject( error );
@@ -96,7 +113,7 @@ class HVML extends HVMLElement {
       } ) );
 
       const schemaReady = ( new Promise( ( resolve, reject ) => {
-        fs.readFile( this.schemaPath, 'utf8', ( error, data ) => {
+        readFile( this.schemaPath, 'utf8', ( error, data ) => {
           if ( error ) {
             reject( error );
           }

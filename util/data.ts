@@ -1,5 +1,7 @@
+import { IHVMLElement } from "../types/elements";
+
 class Data {
-  static getJsonBoilerplate() {
+  static getJsonBoilerplate(): Partial<IHVMLElement> {
     return {
       "@context": "https://redblue.video/guide/hvml.context.jsonld",
     };

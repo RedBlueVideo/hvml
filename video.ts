@@ -11,8 +11,11 @@ import HVMLElement from './hvml-element';
 import Time from './util/time';
 import Validation from './util/validation';
 import Transform from './util/transform';
+import { DescriptionType } from './types/elements';
 
 class Video extends HVMLElement {
+  description: { [key in DescriptionType]: unknown }
+
   static isValidType( type ) {
     switch ( type ) {
       case 'narrative':
@@ -353,7 +356,7 @@ class Video extends HVMLElement {
     }
   }
 
-  getDescription( type, parseMarkdown = true, newlinesToBRs = true ) { // eslint-disable-line consistent-return
+  getDescription( type?: DescriptionType, parseMarkdown = true, newlinesToBRs = true ) { // eslint-disable-line consistent-return
     if ( !this.description ) {
       return null;
     }
