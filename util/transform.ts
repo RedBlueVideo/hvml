@@ -1,8 +1,7 @@
-const md2jsonml = require( 'md2jsonml' );
-const xmlTrident = require( 'xml-trident' );
-const { isString, isPlainObject } = require( './types' );
-
-const { softTrim } = require( './strings' );
+import md2jsonml from 'md2jsonml';
+import { toJsonml, toString } from 'xml-trident';
+import { isString, isPlainObject } from './types';
+import { softTrim } from './strings';
 
 class Transform {
   static markdownToJsonMl( input ) {
@@ -14,11 +13,11 @@ class Transform {
   }
 
   static xmlStringToJsonMl( input ) {
-    return xmlTrident.toJsonml( input );
+    return toJsonml( input );
   }
 
   static jsonMlToXmlString( input ) {
-    return xmlTrident.toString( input );
+    return toString( input );
   }
 
   static get jsonMlWrapper() {
@@ -75,4 +74,4 @@ class Transform {
   }
 }
 
-module.exports = Transform;
+export default Transform;

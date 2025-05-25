@@ -1,5 +1,5 @@
-const HVMLElement = require( './hvml-element' );
-const { HVML, Video, Series } = require( './hvml' );
+import HVMLElement from './hvml-element';
+import { HVML, Video, Series } from './hvml';
 
 describe( 'HVMLElement', () => {
   let hvml;
@@ -108,25 +108,34 @@ describe( 'HVMLElement', () => {
         hvmlElement = undefined;
       } );
 
-      it( 'handles text descriptions', () => {
+      it( 'handles text descriptions', ( done ) => {
         hvml = new HVML( './examples/text-description.jsonld' );
         hvml.ready.then( () => {
-          expect( hvml.toMom().children[0].description.text ).toBe( 'Full Facebook Live stream: https://www.facebook.com/hugh.guiney/videos/10100195051457860/\n\n#mfaNOW #mfaLateNites' );
+          const MOM = hvml.toMom();
+          const firstChild = MOM.children[0];
+
+          console.debug();
+
+          expect( firstChild.description.text ).toBe( 'Full Facebook Live stream: https://www.facebook.com/hugh.guiney/videos/10100195051457860/\n\n#mfaNOW #mfaLateNites' );
+          done();
         } )
-          .catch( error => console.error( error ) );
+          .catch( error => {
+            console.error( error );
+            done( error );
+          } );
       } );
 
-      it( 'handles object descriptions', () => {
+      it( 'handles object descriptions', async () => {
         hvml = new HVML( './examples/text-description--object.jsonld' );
         hvml.ready.then( () => {
           const MOM = hvml.toMom();
           const firstChild = MOM.children[0];
           // const { description } = children;
 
-          console.error( 'MOM', MOM );
-          console.error( 'children', MOM.children );
-          console.error( 'firstChild', firstChild );
-          // console.error( 'description', description );
+          console.debug( 'MOM', MOM );
+          console.debug( 'children', MOM.children );
+          console.debug( 'firstChild', firstChild );
+          // console.debug( 'description', description );
           // expect( description.text ).toBe( 'Full Facebook Live stream: https://www.facebook.com/hugh.guiney/videos/10100195051457860/\n\n#mfaNOW #mfaLateNites' );
         } )
           .catch( ( error ) => { throw new Error( error ); } );

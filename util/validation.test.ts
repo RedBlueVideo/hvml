@@ -1,4 +1,4 @@
-const Validation = require( './validation' );
+import Validation from './validation';
 
 describe( 'Validation', () => {
   describe( 'HVMLDomainError', () => {

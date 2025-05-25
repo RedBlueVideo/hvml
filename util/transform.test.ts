@@ -1,4 +1,4 @@
-const Transform = require( './transform' );
+import Transform from './transform';
 
 describe( 'Transform', () => {
   test( 'markdownToJsonMl', () => {

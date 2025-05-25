@@ -2,7 +2,8 @@
   "name": "hvml",
   "version": "0.0.3",
   "description": "HVML Parser for JavaScript",
-  "main": "hvml.js",
+  "type": "module",
+  "module": "hvml.ts",
   "scripts": {
     "test": "jest --verbose",
     "test-dev": "jest --watch --verbose",
@@ -42,6 +43,12 @@
     "xml-trident": "^1.0.2"
   },
   "devDependencies": {
+    "@babel/core": "^7.27.1",
+    "@babel/preset-env": "^7.27.2",
+    "@babel/preset-typescript": "^7.27.1",
+    "@types/jest": "^29.5.14",
+    "babel-jest": "^29.7.0",
+    "babel-plugin-transform-import-meta": "^2.3.2",
     "codecov": "^3.3.0",
     "eslint": "5.16.0",
     "eslint-config-airbnb-base": "^13.1.0",
@@ -49,11 +56,14 @@
     "eslint-plugin-import": "^2.17.2",
     "eslint-plugin-lodash": "^5.1.0",
     "eslint-plugin-you-dont-need-lodash-underscore": "^6.4.0",
-    "jest": "^24.7.1",
+    "jest": "^29.7.0",
     "npm-minify": "^0.0.2",
     "recursive-copy": "^2.0.10",
     "rimraf": "^2.6.3",
-    "skip-if": "^1.1.1"
+    "skip-if": "^1.1.1",
+    "ts-jest": "^29.3.4",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.8.3"
   },
   "optionalDependencies": {
     "libxmljs": "^0.19.5"

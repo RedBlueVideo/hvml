@@ -1,10 +1,9 @@
-const set = require( 'lodash.set' ); // eslint-disable-line lodash/import-scope
+import set from 'lodash.set';
+// import Video from './video';
 
-// const Video = require( './video' );
-
-const Data = require( './util/data' );
-const { hasProperty } = require( './util/types' );
-const { ucFirst } = require( './util/strings' );
+import Data from './util/data';
+import { hasProperty } from './util/types';
+import { ucFirst } from './util/strings';
 
 class HVMLElement {
   constructor( data ) {
@@ -518,4 +517,4 @@ class HVMLElement {
   }
 }
 
-module.exports = HVMLElement;
+export default HVMLElement;

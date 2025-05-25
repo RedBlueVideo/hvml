@@ -1,4 +1,4 @@
-const HVMLElement = require( './hvml-element' );
+import HVMLElement from './hvml-element';
 
 class Series extends HVMLElement {
   constructor( data ) {
@@ -13,9 +13,4 @@ class Series extends HVMLElement {
   }
 }
 
-module.exports = Series;
-
-global.HVML = {
-  ...global.HVML,
-  Series,
-};
+export default Series;

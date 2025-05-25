@@ -1,4 +1,4 @@
-const Time = require( './time' );
+import Time from './time';
 
 describe( 'Time', () => {
   it( 'parses ISO 8601 durations', () => {

@@ -1,16 +1,15 @@
-const fs = require( 'fs' );
-const { extname } = require( 'path' );
-const { exec } = require( 'child_process' );
+import fs from 'fs';
+import { extname } from 'path';
+import { exec } from 'child_process';
 
-const HVMLElement = require( './hvml-element' );
+import HVMLElement from './hvml-element';
+import Video from './video';
+import Series from './series';
+import Group from './group';
 
-const Video = require( './video' );
-const Series = require( './series' );
-const Group = require( './group' );
-
-const Validation = require( './util/validation' );
-const { hasProperty } = require( './util/types.js' );
-const Data = require( './util/data' );
+import Validation from './util/validation';
+import { hasProperty } from './util/types';
+import Data from './util/data';
 
 let xml;
 let canParseXml = false;
@@ -385,12 +384,7 @@ class HVML extends HVMLElement {
 
 // toJson
 
-module.exports = {
-  HVML,
-  Series,
-  Group,
-  Video,
-};
+export { HVML, Series, Group, Video };
 
 global.HVML = {
   ...global.HVML,

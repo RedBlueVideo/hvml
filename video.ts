@@ -1,16 +1,16 @@
-const {
+import {
   isPlainObject,
   isNumber,
   isString,
   isUndefined,
-} = require( './util/types' );
+} from './util/types';
 
-const HVMLElement = require( './hvml-element' );
-// const Series = require( './series' );
+import HVMLElement from './hvml-element';
+// import Series from './series';
 
-const Time = require( './util/time' );
-const Validation = require( './util/validation' );
-const Transform = require( './util/transform' );
+import Time from './util/time';
+import Validation from './util/validation';
+import Transform from './util/transform';
 
 class Video extends HVMLElement {
   static isValidType( type ) {
@@ -420,7 +420,7 @@ class Video extends HVMLElement {
   }
 }
 
-module.exports = Video;
+export default Video;
 
 global.HVML = {
   ...global.HVML,

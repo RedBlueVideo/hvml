@@ -1,12 +1,12 @@
 /* eslint-disable global-require */
-const skipIf = require( 'skip-if' );
-const { execSync } = require( 'child_process' );
-const { readFileSync } = require( 'fs' );
+import skipIf from 'skip-if';
+import { execSync } from 'child_process';
+import { readFileSync } from 'fs';
+import Validation from './util/validation';
 
 // test( 'opens files successfully', () => {} );
 
 const JSON_LD = JSON.parse( readFileSync( './examples/hvml.jsonld', 'utf8' ) );
-const Validation = require( './util/validation' );
 
 // skipIf(condition, name, test)
 
@@ -115,7 +115,7 @@ describe( 'HVML', () => {
 
     skipIfLibxmljsUnavailable( 'from XML', () => {
       const hvml = new HVML( './examples/hvml.xml' );
-      return hvml.ready
+      hvml.ready
         .then( () => {
           expect( hvml.toJson() ).toStrictEqual( JSON_LD );
         } )
@@ -126,7 +126,7 @@ describe( 'HVML', () => {
 
     it( 'from JSON-LD', () => {
       const hvml = new HVML( './examples/hvml.jsonld' );
-      return hvml.ready
+      hvml.ready
         .then( () => {
           expect( hvml.toJson() ).toStrictEqual( JSON_LD );
         } )
@@ -163,7 +163,7 @@ describe( 'HVML', () => {
     skipIfXmllintUnavailable( 'validates good HVML', ( done ) => {
       const goodHvml = new HVML( './examples/hvml.xml' );
 
-      goodHvml.ready
+      return goodHvml.ready
         .then( () => goodHvml.validate() )
         .then( ( goodValidationResult ) => {
           expect( goodValidationResult ).toStrictEqual( true );
@@ -180,7 +180,7 @@ describe( 'HVML', () => {
         const badHvmlPath = './examples/legacy/redblue.ovml.xml';
         const badHvml = new HVML( badHvmlPath );
 
-        badHvml.ready
+        return badHvml.ready
           .then( () => badHvml.validate() )
           .then( ( badValidationResult ) => {
             expect( badValidationResult ).toBeUndefined();
@@ -204,7 +204,7 @@ describe( 'HVML', () => {
         const badHvmlPath = './examples/legacy/vlog.hvml';
         const badHvml = new HVML( badHvmlPath );
 
-        badHvml.ready
+        return badHvml.ready
           .then( () => badHvml.validate() )
           .then( ( badValidationResult ) => {
             expect( badValidationResult ).toBeUndefined();
@@ -221,7 +221,7 @@ describe( 'HVML', () => {
               "message": `${badHvmlPath}:2: element hvml: Relax-NG validity error : Element hvml has wrong namespace: expecting https://hypervideo.tech/hvml#`,
               "type": "validity error",
             }] );
-            done();
+            done(error);
           } );
       } );
 
@@ -229,7 +229,7 @@ describe( 'HVML', () => {
         const badHvmlPath = './examples/bad/missing-namespace.hvml';
         const badHvml = new HVML( badHvmlPath );
 
-        badHvml.ready
+        return badHvml.ready
           .then( () => badHvml.validate() )
           .then( ( badValidationResult ) => {
             expect( badValidationResult ).toBeUndefined();
@@ -254,7 +254,7 @@ describe( 'HVML', () => {
         const badHvmlPath = './examples/bad/unexpected-text-children.hvml';
         const badHvml = new HVML( badHvmlPath );
 
-        badHvml.ready
+        return badHvml.ready
           .then( () => badHvml.validate() )
           .then( ( badValidationResult ) => {
             expect( badValidationResult ).toBeUndefined();
@@ -278,7 +278,7 @@ describe( 'HVML', () => {
         const badHvmlPath = './examples/bad/invalid-attribute.hvml';
         const badHvml = new HVML( badHvmlPath );
 
-        badHvml.ready
+        return badHvml.ready
           .then( () => badHvml.validate() )
           .then( ( badValidationResult ) => {
             expect( badValidationResult ).toBeUndefined();
@@ -302,7 +302,7 @@ describe( 'HVML', () => {
         const badHvmlPath = './examples/bad/unexpected-element.hvml';
         const badHvml = new HVML( badHvmlPath );
 
-        badHvml.ready
+        return badHvml.ready
           .then( () => badHvml.validate() )
           .then( ( badValidationResult ) => {
           //   expect( badValidationResult ).toBeUndefined();
@@ -377,7 +377,7 @@ describe( 'HVML', () => {
       const hvml = new HVML( './examples/hvml.jsonld' );
       hvml.ready.then( () => {
         const MOM = hvml.toMom();
-        // console.error( 'hvml.toMom()', hvml.toMom() );
+        // console.debug( 'hvml.toMom()', hvml.toMom() );
         expect( MOM ).toBeInstanceOf( HVML );
         expect( MOM ).toMatchObject( {
           // <hvml>
