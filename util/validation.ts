@@ -1,7 +1,26 @@
 import { ucFirst } from './strings';
 
+export interface IHVMLDomainError {
+  className?: string;
+  expected?: string | string[];
+  got?: string;
+  input?: unknown;
+  methodName?: string;
+  fieldName?: string;
+  extraInfo?: string;
+  badValues?: string[];
+}
+
+export interface IHVMLRangeError extends IHVMLDomainError {
+  lowerBound?: number;
+  upperBound?: number;
+  exclusivity?: 'inclusive' | 'exclusive';
+}
+
 // https://rclayton.silvrback.com/custom-errors-in-node-js
 class HVMLDomainError extends Error {
+  data: unknown;
+
   constructor( message ) {
     super( message );
     // Ensure the name of this error is the same as the class name
@@ -15,7 +34,7 @@ class HVMLDomainError extends Error {
 
 class HVMLTypeError extends HVMLDomainError {
   /* className, field, expected, extraInfo = '' */
-  static getGot( data ) {
+  static getGot( data: IHVMLDomainError ) {
     let gotType;
     const inputTypeIsNull = ( data.input === null );
     const inputTypeIsNotNull = !inputTypeIsNull;
@@ -31,7 +50,7 @@ class HVMLTypeError extends HVMLDomainError {
     return gotType;
   }
 
-  static getExpected( data ) {
+  static getExpected( data: IHVMLDomainError ) {
     let expected;
 
     if ( Array.isArray( data.expected ) ) {
@@ -97,7 +116,7 @@ class HVMLTypeError extends HVMLDomainError {
     return fieldOrParameter;
   }
 
-  constructor( data ) {
+  constructor( data?: IHVMLDomainError ) {
     if ( !data ) {
       const error = new HVMLTypeError( {
         "className": "HVMLTypeError",
@@ -122,9 +141,13 @@ class HVMLTypeError extends HVMLDomainError {
   }
 }
 
+// // "message": `${child.constructor.name} can not be a child of ${this.constructor.name}`,
+// "fieldName": "child",
+// "expected": ["Video"],
+// "badValues": [child],
 class HVMLEnumError extends HVMLDomainError {
   /* className, field, badValues */
-  constructor( data ) {
+  constructor( data?: IHVMLDomainError ) {
     let forField = '';
 
     if ( !data ) {
@@ -166,7 +189,7 @@ class HVMLEnumError extends HVMLDomainError {
 
 class HVMLRangeError extends HVMLTypeError {
   /* className, field, expected, lowerBound, upperBound, exclusivity = 'inclusive' */
-  constructor( data ) {
+  constructor( data?: IHVMLRangeError ) {
     const lowerBoundDefault = Number.NEGATIVE_INFINITY;
     const upperBoundDefault = Number.POSITIVE_INFINITY;
     let lowerBoundDefined;

@@ -29,9 +29,11 @@ describe( 'Video', () => {
 
     expect.assertions( 2 );
 
+    // @ts-expect-error
     expect( () => new Video( badConfig ) ).toThrowError( Validation.TypeError );
 
     try {
+      // @ts-expect-error
       new Video( badConfig ); // eslint-disable-line no-new
     } catch ( error ) {
       thrownError = error;
@@ -80,9 +82,11 @@ describe( 'Video', () => {
 
     expect.assertions( 2 );
 
+    // @ts-expect-error
     expect( () => new Video( badType ) ).toThrowError( Validation.TypeError );
 
     try {
+      // @ts-expect-error
       new Video( badType ); // eslint-disable-line no-new
     } catch ( error ) {
       thrownError = error;

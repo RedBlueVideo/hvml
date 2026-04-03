@@ -210,7 +210,7 @@ class Video extends HVMLElement {
     return this.hasType( ['historical', 'personal'] );
   }
 
-  setTitle( title: string, lang?: ISO639LanguageCode ) {
+  setTitle( title: string, lang?: string ) {
     const errorData = {
       ...this._baseErrorData,
       "fieldName": "title",
@@ -236,7 +236,7 @@ class Video extends HVMLElement {
     this.title[language][region] = title;
   }
 
-  getTitle( lang ) {
+  getTitle( lang?: string ) {
     let language;
     let region;
 
