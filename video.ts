@@ -12,8 +12,10 @@ import Time from './util/time';
 import Validation from './util/validation';
 import Transform from './util/transform';
 import { DescriptionType } from './types/elements';
+import { ISO639LanguageCode } from './types/language';
 
 class Video extends HVMLElement {
+  language: ISO639LanguageCode;
   description: { [key in DescriptionType]: unknown }
 
   static isValidType( type ) {

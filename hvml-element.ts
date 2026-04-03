@@ -1,20 +1,24 @@
 import set from 'lodash.set';
 // import Video from './video';
-import { Element as ILibxmljsXMLElement } from 'libxmljs';
+import {
+  XMLDocument as ILibxmljsXMLDocument,
+  XMLElement as ILibxmljsXMLElement,
+} from 'libxmljs';
 
 import Data from './util/data';
 import { hasProperty } from './util/types';
 import { ucFirst } from './util/strings';
-import { IHVMLElement } from './types/elements';
+import { HVMLElementTagName, HVMLGlobalAttributeName, IHVMLElement, JSONLDSerializedHTMLElement } from './types/elements';
+import { HVMLGlobalAttributes } from './types/elements';
 
 class HVMLElement {
   id?: string;
 
   children: Array<IHVMLElement>;
 
-  json: IHVMLElement;
+  json: Partial<IHVMLElement>;
 
-  xml: ILibxmljsXMLElement
+  xml: ILibxmljsXMLDocument & ILibxmljsXMLElement
 
   /**
    * Mapping of URIs to XML namespaces
@@ -204,7 +208,8 @@ class HVMLElement {
                 dupePath.pop();
                 const attrs = child.parent().attrs();
                 const obj: JSONLDSerializedHTMLElement = {
-                  "@type": upone.substring( 5 ),
+                  // Necessary coercion
+                  "@type": upone.substring( 5 ) as keyof HTMLElementTagNameMap,
                 };
 
                 attrs.forEach( ( attr ) => {
@@ -260,7 +265,7 @@ class HVMLElement {
   _setJsonChild( child, path = [], root = false, atIndex = null ) {
     const nodeName = child.constructor.name.toLowerCase();
     // const attributes = { ...child };
-    let attributes = {};
+    let attributes: HVMLGlobalAttributes = {};
 
     if ( child.id ) {
       attributes['xml:id'] = child.id;
@@ -398,7 +403,8 @@ class HVMLElement {
           const attributes = node.attrs();
           const children = node.childNodes();
 
-          this.json['@type'] = node.name();
+          // Necessary coercion
+          this.json['@type'] = node.name() as HVMLElementTagName;
 
           attributes.forEach( ( attribute ) => {
             this._jsonifyAttribute( attribute );

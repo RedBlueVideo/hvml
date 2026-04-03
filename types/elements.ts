@@ -1,3 +1,5 @@
+import { ISO639LanguageCode } from "./language";
+
 export interface JSONLDSerializedHTMLElement {
   "@type"?: keyof HTMLElementTagNameMap;
   "textContent"?: string;
@@ -32,14 +34,37 @@ export type HVMLElementTagName =
   | 'video'
   | 'width';
 
-export interface IHVMLElement {
+export type HVMLDescriptionType =
+  | 'jsonml'
+  | 'jsonml'
+  | 'xhtml'
+;
+
+export interface HVMLGlobalAttributes {
+  id?: string;
+  language?: ISO639LanguageCode;
+  region?: string;
+  instance?: unknown;
+  children?: Array<IHVMLElement | string>;
+}
+
+export interface IHVMLElement extends HVMLGlobalAttributes {
   '@context'?: string;
   '@type': HVMLElementTagName;
-  id?: string;
-  setDescription: (description: string) => void;
+  title?: string;
+  setDescription: (description: string, type?: HVMLDescriptionType) => void;
 }
 
 export type DescriptionType =
   | 'jsonml'
   | 'text'
-  | 'xhtml';
+  | 'xhtml'
+;
+
+export type HVMLGlobalAttributeName =
+ | 'children'
+ | 'id'
+ | 'instance'
+ | 'language'
+ | 'region'
+;
