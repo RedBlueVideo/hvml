@@ -6,7 +6,7 @@ export function isPlainObject(object) {
   return (Object.prototype.toString.call(object) === '[object Object]');
 }
 
-export function isString(string) {
+export function isString(string): string is string {
   return (
     (typeof string === 'string')
     || (Object.prototype.toString.call(string) === '[object String]')

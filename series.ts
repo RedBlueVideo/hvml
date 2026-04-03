@@ -1,7 +1,10 @@
 import HVMLElement from './hvml-element';
+import { IHVMLElement } from './types/elements';
 
 class Series extends HVMLElement {
-  constructor( data ) {
+  title: IHVMLElement['title'];
+
+  constructor( data?: Partial<IHVMLElement> ) {
     super( data );
 
     /* istanbul ignore next */

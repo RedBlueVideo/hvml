@@ -40,7 +40,7 @@ export type HVMLDescriptionType =
   | 'xhtml'
 ;
 
-export interface HVMLGlobalAttributes {
+export class HVMLNode {
   id?: string;
   language?: ISO639LanguageCode;
   region?: string;
@@ -48,7 +48,7 @@ export interface HVMLGlobalAttributes {
   children?: Array<IHVMLElement | string>;
 }
 
-export interface IHVMLElement extends HVMLGlobalAttributes {
+export interface IHVMLElement extends HVMLNode {
   '@context'?: string;
   '@type': HVMLElementTagName;
   title?: string;

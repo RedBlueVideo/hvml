@@ -10,6 +10,8 @@ import Group from './group';
 import Validation from './util/validation';
 import { hasProperty } from './util/types';
 import Data from './util/data';
+import { XMLElement } from 'libxmljs';
+import { IHVMLElement } from './types/elements';
 
 let xml;
 let canParseXml = false;
@@ -33,7 +35,7 @@ try {
 interface HVMLConfig {
   schemaPath: string;
   schemaType: string;
-  encoding: string;
+  encoding: BufferEncoding;
 }
 
 class HVML extends HVMLElement {
@@ -48,7 +50,9 @@ class HVML extends HVMLElement {
 
   schemaType: string;
 
-  constructor( path: string, config: HVMLConfig ) {
+  ready: Promise<HVMLElement['json'] | HVMLElement['xml']>;
+
+  constructor( path: string, config: Partial<HVMLConfig> = {} ) {
     super();
     /*
       readFile(path[, options], callback)
@@ -60,7 +64,7 @@ class HVML extends HVMLElement {
         - err <Error>
         - data <string> | <Buffer>
     */
-    const defaultConfig = {
+    const defaultConfig: HVMLConfig = {
       "schemaPath": "rng/hvml.rng",
       "schemaType": "rng",
       "encoding": "utf8",
@@ -102,7 +106,7 @@ class HVML extends HVMLElement {
     this.schemaType = config.schemaType;
 
     if ( path ) {
-      const fileReady = ( new Promise( ( resolve, reject ) => {
+      const fileReady: Promise<string> = ( new Promise( ( resolve, reject ) => {
         readFile( path, config.encoding, ( error, data ) => {
           if ( error ) {
             // throw new Error( error );
@@ -196,15 +200,25 @@ class HVML extends HVMLElement {
             return;
           }
 
-          let validationErrors = error.toString().trim().split( '\n' );
-          validationErrors.shift();
-          validationErrors.pop();
+          interface ValidationError {
+            message: string;
+            file: string;
+            line: string;
+            type: string;
+            error: string;
+            expecting?: string;
+            got?: string;
+          }
+
+          let _validationErrors: string[] = error.toString().trim().split( '\n' );
+          _validationErrors.shift();
+          _validationErrors.pop();
 
           /* Array [
             "./examples/redblue.ovml.xml:3: element ovml: Relax-NG validity error : Expecting element hvml, got ovml",
             "./examples/redblue.ovml.xml fails to validate",
           ] */
-          validationErrors = validationErrors.map( ( currentValue ) => {
+          const validationErrors: ValidationError[] = _validationErrors.map( ( currentValue ) => {
             const validationErrorRegexPattern = `(?:(${this.hvmlPath}):(\\d+)):\\s+`
               + `(?:element .+):\\s+(Relax-NG validity error)\\s+:\\s+`
               + `(Expecting element (.+), got (.+))`;

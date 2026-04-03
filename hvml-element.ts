@@ -8,24 +8,32 @@ import {
 import Data from './util/data';
 import { hasProperty } from './util/types';
 import { ucFirst } from './util/strings';
-import { HVMLElementTagName, HVMLGlobalAttributeName, IHVMLElement, JSONLDSerializedHTMLElement } from './types/elements';
-import { HVMLGlobalAttributes } from './types/elements';
+import {
+  HVMLElementTagName,
+  HVMLNode,
+  IHVMLElement,
+  JSONLDSerializedHTMLElement,
+} from './types/elements';
 
-class HVMLElement {
+class HVMLElement extends HVMLNode {
   id?: string;
 
   children: Array<IHVMLElement>;
 
   json: Partial<IHVMLElement>;
 
-  xml: ILibxmljsXMLDocument & ILibxmljsXMLElement
+  xml: ILibxmljsXMLDocument & ILibxmljsXMLElement;
+
+  hvmlPath: string;
 
   /**
    * Mapping of URIs to XML namespaces
    */
   prefixes: { [key: string]: string };
 
-  constructor( data: IHVMLElement) {
+  constructor( data?: Partial<IHVMLElement>) {
+    super();
+
     if ( data ) {
       /* istanbul ignore else */
       if ( data.id ) {
@@ -265,7 +273,7 @@ class HVMLElement {
   _setJsonChild( child, path = [], root = false, atIndex = null ) {
     const nodeName = child.constructor.name.toLowerCase();
     // const attributes = { ...child };
-    let attributes: HVMLGlobalAttributes = {};
+    let attributes: HVMLNode = {};
 
     if ( child.id ) {
       attributes['xml:id'] = child.id;

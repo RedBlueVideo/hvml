@@ -14,9 +14,27 @@ import Transform from './util/transform';
 import { DescriptionType } from './types/elements';
 import { ISO639LanguageCode } from './types/language';
 
+export type VideoTitle = {
+  [Language in ISO639LanguageCode]?: {
+    [key: string]: string;
+  }
+}
+
 class Video extends HVMLElement {
-  language: ISO639LanguageCode;
-  description: { [key in DescriptionType]: unknown }
+  /**
+   * TODO: Make explicit allowed values
+   */
+  type: string | string[];
+
+  lang?: string;
+
+  title: VideoTitle;
+
+  episode?: number;
+
+  runtime?: string;
+
+  description: Partial<{ [key in DescriptionType]: unknown }>;
 
   static isValidType( type ) {
     switch ( type ) {
@@ -51,7 +69,7 @@ class Video extends HVMLElement {
     return true;
   }
 
-  _getRegion( lang ) {
+  _getRegion( lang: string ) {
     let region;
 
     if ( lang === this.language ) {
@@ -63,13 +81,13 @@ class Video extends HVMLElement {
     return region;
   }
 
-  _langHasRegion( lang ) {
+  _langHasRegion( lang: string ) {
     return ( lang.indexOf( '-' ) !== -1 );
   }
 
-  _getLanguageAndRegion( lang, regionFallback = () => '_' ) {
-    let language;
-    let region;
+  _getLanguageAndRegion( lang: string, regionFallback = () => '_' ) {
+    let language: string;
+    let region: string;
 
     if ( this._langHasRegion( lang ) ) {
       ( [language, region] = lang.split( '-' ) );
@@ -81,7 +99,7 @@ class Video extends HVMLElement {
     return { language, region };
   }
 
-  constructor( config = {} ) {
+  constructor( config: Partial<Video> = {} ) {
     super();
 
     let language;
@@ -192,7 +210,7 @@ class Video extends HVMLElement {
     return this.hasType( ['historical', 'personal'] );
   }
 
-  setTitle( title, lang ) {
+  setTitle( title: string, lang?: ISO639LanguageCode ) {
     const errorData = {
       ...this._baseErrorData,
       "fieldName": "title",
@@ -231,7 +249,7 @@ class Video extends HVMLElement {
     return this.title[language][region];
   }
 
-  setEpisode( number ) {
+  setEpisode( number: string | number ) {
     const errorData = {
       ...this._baseErrorData,
       "fieldName": "episode",
