@@ -14,8 +14,8 @@ class Time {
     return /^(-?)P(?=\d|T\d)(?:(\d+)Y)?(?:(\d+)M)?(?:(\d+)([DW]))?(?:T(?:(\d+)H)?(?:(\d+)M)?(?:(\d+(?:\.\d+)?)S)?)?$/;
   }
 
-  static isoDurationToHours( duration ) {
-    const matches = duration.match( Time.isoDurationRegex );
+  static isoDurationToHours( duration: string | undefined ) {
+    const matches = duration?.match( Time.isoDurationRegex ) || null;
 
     if ( matches ) {
       let hours = 0;
@@ -64,8 +64,8 @@ class Time {
     throw new Error( `Invalid duration` );
   }
 
-  static isoDurationToMinutes( duration ) {
-    const matches = duration.match( Time.isoDurationRegex );
+  static isoDurationToMinutes( duration: string | undefined ) {
+    const matches = duration?.match( Time.isoDurationRegex ) || null;
 
     if ( matches ) {
       let minutes = 0;

@@ -42,7 +42,7 @@ export type HVMLDescriptionType =
 
 export class HVMLNode {
   id?: string;
-  language?: ISO639LanguageCode;
+  language: ISO639LanguageCode = '_';
   region?: string;
   instance?: unknown;
   children?: Array<IHVMLElement | string>;

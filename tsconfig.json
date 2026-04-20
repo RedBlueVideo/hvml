@@ -1,5 +1,6 @@
 {
   "compilerOptions": {
     "outDir": "compiled",
+    "types": ["jest"]
   }
 }

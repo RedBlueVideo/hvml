@@ -17,43 +17,43 @@ describe( 'Time', () => {
     const testOne = 'P1Y6M3WT1H15M8S'.match( Time.isoDurationRegex );
 
     expect( testOne ).not.toBe( null );
-    expect( testOne[0] ).toBe( 'P1Y6M3WT1H15M8S' ); // Input
-    expect( testOne[1] ).toBe( '' ); // Negative indicator
-    expect( testOne[2] ).toBe( '1' ); // Years
-    expect( testOne[3] ).toBe( '6' ); // Months
-    expect( testOne[4] ).toBe( '3' ); // Days/Weeks
-    expect( testOne[5] ).toBe( 'W' ); // Days/Weeks indicator
-    expect( testOne[6] ).toBe( '1' ); // Hours
-    expect( testOne[7] ).toBe( '15' ); // Minutes
-    expect( testOne[8] ).toBe( '8' ); // Seconds
+    expect( testOne![0] ).toBe( 'P1Y6M3WT1H15M8S' ); // Input
+    expect( testOne![1] ).toBe( '' ); // Negative indicator
+    expect( testOne![2] ).toBe( '1' ); // Years
+    expect( testOne![3] ).toBe( '6' ); // Months
+    expect( testOne![4] ).toBe( '3' ); // Days/Weeks
+    expect( testOne![5] ).toBe( 'W' ); // Days/Weeks indicator
+    expect( testOne![6] ).toBe( '1' ); // Hours
+    expect( testOne![7] ).toBe( '15' ); // Minutes
+    expect( testOne![8] ).toBe( '8' ); // Seconds
 
     // 1 year, 6 months, 21 days, 1 hour, 15 minutes, 8 seconds
     const testTwo = 'P1Y6M21DT1H15M8S'.match( Time.isoDurationRegex );
 
     expect( testTwo ).not.toBe( null );
-    expect( testTwo[0] ).toBe( 'P1Y6M21DT1H15M8S' ); // Input
-    expect( testTwo[1] ).toBe( '' ); // Negative indicator
-    expect( testTwo[2] ).toBe( '1' ); // Years
-    expect( testTwo[3] ).toBe( '6' ); // Months
-    expect( testTwo[4] ).toBe( '21' ); // Days/Weeks
-    expect( testTwo[5] ).toBe( 'D' ); // Days/Weeks indicator
-    expect( testTwo[6] ).toBe( '1' ); // Hours
-    expect( testTwo[7] ).toBe( '15' ); // Minutes
-    expect( testTwo[8] ).toBe( '8' ); // Seconds
+    expect( testTwo![0] ).toBe( 'P1Y6M21DT1H15M8S' ); // Input
+    expect( testTwo![1] ).toBe( '' ); // Negative indicator
+    expect( testTwo![2] ).toBe( '1' ); // Years
+    expect( testTwo![3] ).toBe( '6' ); // Months
+    expect( testTwo![4] ).toBe( '21' ); // Days/Weeks
+    expect( testTwo![5] ).toBe( 'D' ); // Days/Weeks indicator
+    expect( testTwo![6] ).toBe( '1' ); // Hours
+    expect( testTwo![7] ).toBe( '15' ); // Minutes
+    expect( testTwo![8] ).toBe( '8' ); // Seconds
 
     // 3 minutes
     const testThree = 'PT3M'.match( Time.isoDurationRegex );
 
     expect( testThree ).not.toBe( null );
-    expect( testThree[0] ).toBe( 'PT3M' ); // Input
-    expect( testThree[1] ).toBe( '' ); // Negative indicator
-    expect( testThree[2] ).toBeUndefined(); // Years
-    expect( testThree[3] ).toBeUndefined(); // Months
-    expect( testThree[4] ).toBeUndefined(); // Days/Weeks
-    expect( testThree[5] ).toBeUndefined(); // Days/Weeks indicator
-    expect( testThree[6] ).toBeUndefined(); // Hours
-    expect( testThree[7] ).toBe( '3' ); // Minutes
-    expect( testThree[8] ).toBeUndefined(); // Seconds
+    expect( testThree![0] ).toBe( 'PT3M' ); // Input
+    expect( testThree![1] ).toBe( '' ); // Negative indicator
+    expect( testThree![2] ).toBeUndefined(); // Years
+    expect( testThree![3] ).toBeUndefined(); // Months
+    expect( testThree![4] ).toBeUndefined(); // Days/Weeks
+    expect( testThree![5] ).toBeUndefined(); // Days/Weeks indicator
+    expect( testThree![6] ).toBeUndefined(); // Hours
+    expect( testThree![7] ).toBe( '3' ); // Minutes
+    expect( testThree![8] ).toBeUndefined(); // Seconds
   } );
 
   describe( 'converts time formats', () => {
@@ -99,6 +99,8 @@ describe( 'Time', () => {
         thrownErrorOne = error;
       }
 
+      expect( thrownErrorOne ).toBeInstanceOf( Error );
+      // @ts-ignore
       expect( thrownErrorOne.message ).toBe( 'Invalid duration' );
 
       try {
@@ -107,6 +109,8 @@ describe( 'Time', () => {
         thrownErrorTwo = error;
       }
 
+      expect( thrownErrorTwo ).toBeInstanceOf( Error );
+      // @ts-ignore
       expect( thrownErrorTwo.message ).toBe( 'Invalid duration' );
     } );
   } );
