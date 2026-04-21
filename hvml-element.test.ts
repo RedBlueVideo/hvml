@@ -2,7 +2,7 @@ import HVMLElement from './hvml-element';
 import { HVML, Video, Series } from './hvml';
 
 describe( 'HVMLElement', () => {
-  let hvml;
+  let hvml: HVML | undefined;
   let hvmlElement;
 
   describe( 'MOM Manipulation', () => {
@@ -27,10 +27,10 @@ describe( 'HVMLElement', () => {
       hvmlElement.appendChild( channel );
       hvmlElement.appendChild( secondChannel );
 
-      expect( hvmlElement.children.length ).toBe( 2 );
-      expect( Object.keys( hvmlElement.children ).length ).toBe( 2 );
-      expect( hvmlElement.children[0] ).toStrictEqual( channel );
-      expect( hvmlElement.children[1] ).toStrictEqual( secondChannel );
+      expect( hvmlElement.children?.length ).toBe( 2 );
+      expect( Object.keys( hvmlElement.children! ).length ).toBe( 2 );
+      expect( hvmlElement.children?.[0] ).toStrictEqual( channel );
+      expect( hvmlElement.children?.[1] ).toStrictEqual( secondChannel );
     } );
 
     it( 'registers named indices when appending children with IDs', () => {
@@ -45,8 +45,8 @@ describe( 'HVMLElement', () => {
       hvmlElement.appendChild( channel );
       hvmlElement.appendChild( secondChannel );
 
-      expect( hvmlElement.children['welcome-to-my-channel'] ).toStrictEqual( channel );
-      expect( hvmlElement.children['welcome-to-my-second-channel'] ).toStrictEqual( secondChannel );
+      expect( hvmlElement.children?.['welcome-to-my-channel'] ).toStrictEqual( channel );
+      expect( hvmlElement.children?.['welcome-to-my-second-channel'] ).toStrictEqual( secondChannel );
     } );
 
     it( 'removes children', () => {
@@ -58,8 +58,8 @@ describe( 'HVMLElement', () => {
       hvmlElement.appendChild( secondChannel );
       hvmlElement.removeChild( channel );
 
-      expect( hvmlElement.children.length ).toBe( 1 );
-      expect( Object.keys( hvmlElement.children ).length ).toBe( 1 );
+      expect( hvmlElement.children?.length ).toBe( 1 );
+      expect( Object.keys( hvmlElement.children! ).length ).toBe( 1 );
     } );
 
     it( 'deregisters named indices when removing children with IDs', () => {
@@ -75,10 +75,10 @@ describe( 'HVMLElement', () => {
       hvmlElement.appendChild( secondChannel );
       hvmlElement.removeChild( channel );
 
-      expect( hvmlElement.children.length ).toBe( 1 );
-      expect( Object.keys( hvmlElement.children ).length ).toBe( 2 );
-      expect( hvmlElement.children['welcome-to-my-channel'] ).toBeUndefined();
-      expect( hvmlElement.children['welcome-to-my-second-channel'] ).toStrictEqual( secondChannel );
+      expect( hvmlElement.children?.length ).toBe( 1 );
+      expect( Object.keys( hvmlElement.children! ).length ).toBe( 2 );
+      expect( hvmlElement.children?.['welcome-to-my-channel'] ).toBeUndefined();
+      expect( hvmlElement.children?.['welcome-to-my-second-channel'] ).toStrictEqual( secondChannel );
     } );
   } );
 
@@ -111,7 +111,7 @@ describe( 'HVMLElement', () => {
       it( 'handles text descriptions', ( done ) => {
         hvml = new HVML( './examples/text-description.jsonld' );
         hvml.ready.then( () => {
-          const MOM = hvml.toMom();
+          const MOM = hvml!.toMom();
           const firstChild = MOM.children[0];
 
           console.debug();
@@ -128,7 +128,7 @@ describe( 'HVMLElement', () => {
       it( 'handles object descriptions', async () => {
         hvml = new HVML( './examples/text-description--object.jsonld' );
         hvml.ready.then( () => {
-          const MOM = hvml.toMom();
+          const MOM = hvml!.toMom();
           const firstChild = MOM.children[0];
           // const { description } = children;
 
@@ -243,7 +243,7 @@ describe( 'HVMLElement', () => {
 
       hvml = new HVML( './examples/series.xml' );
       hvml.ready.then( () => {
-        const declarativeToJson = hvml.toJson();
+        const declarativeToJson = hvml!.toJson();
 
         expect( imperativeToJson ).toStrictEqual( declarativeToJson );
         done();

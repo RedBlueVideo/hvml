@@ -7,8 +7,9 @@ export interface IHVMLDomainError {
   input?: unknown;
   methodName?: string;
   fieldName?: string;
-  extraInfo?: string;
+  extraInfo?: string | null;
   badValues?: string[];
+  dependency?: string;
 }
 
 export interface IHVMLRangeError extends IHVMLDomainError {
@@ -18,10 +19,10 @@ export interface IHVMLRangeError extends IHVMLDomainError {
 }
 
 // https://rclayton.silvrback.com/custom-errors-in-node-js
-class HVMLDomainError extends Error {
+export class HVMLDomainError extends Error {
   data: unknown;
 
-  constructor( message ) {
+  constructor( message: string ) {
     super( message );
     // Ensure the name of this error is the same as the class name
     this.name = this.constructor.name;
@@ -32,7 +33,7 @@ class HVMLDomainError extends Error {
   }
 }
 
-class HVMLTypeError extends HVMLDomainError {
+export class HVMLTypeError extends HVMLDomainError {
   /* className, field, expected, extraInfo = '' */
   static getGot( data: IHVMLDomainError ) {
     let gotType;
@@ -74,7 +75,7 @@ class HVMLTypeError extends HVMLDomainError {
     return expected;
   }
 
-  static getFieldOrParameter( data ) {
+  static getFieldOrParameter( data: IHVMLDomainError ) {
     const hasClassName = ( 'className' in data );
     const hasMethodName = ( 'methodName' in data );
     const hasFieldName = ( 'fieldName' in data );
@@ -145,7 +146,7 @@ class HVMLTypeError extends HVMLDomainError {
 // "fieldName": "child",
 // "expected": ["Video"],
 // "badValues": [child],
-class HVMLEnumError extends HVMLDomainError {
+export class HVMLEnumError extends HVMLDomainError {
   /* className, field, badValues */
   constructor( data?: IHVMLDomainError ) {
     let forField = '';
@@ -181,13 +182,13 @@ class HVMLEnumError extends HVMLDomainError {
       }
     }
 
-    super( `The following values are invalid${forField}: ${data.badValues.join( ', ' )}` );
+    super( `The following values are invalid${forField}: ${data.badValues?.join( ', ' )}` );
 
     this.data = data;
   }
 }
 
-class HVMLRangeError extends HVMLTypeError {
+export class HVMLRangeError extends HVMLTypeError {
   /* className, field, expected, lowerBound, upperBound, exclusivity = 'inclusive' */
   constructor( data?: IHVMLRangeError ) {
     const lowerBoundDefault = Number.NEGATIVE_INFINITY;
@@ -234,8 +235,8 @@ class HVMLRangeError extends HVMLTypeError {
   }
 }
 
-class HVMLNotIntegerError extends HVMLTypeError {
-  constructor( data ) {
+export class HVMLNotIntegerError extends HVMLTypeError {
+  constructor( data: IHVMLDomainError ) {
     super( {
       ...data,
       "expected": "Integer",
@@ -243,8 +244,8 @@ class HVMLNotIntegerError extends HVMLTypeError {
   }
 }
 
-class HVMLOptionalDependencyNotInstalled extends HVMLDomainError {
-  constructor( data ) {
+export class HVMLOptionalDependencyNotInstalled extends HVMLDomainError {
+  constructor( data: IHVMLDomainError ) {
     super( `Optional dependency ${data.dependency} is not installed, so ${HVMLTypeError.getFieldOrParameter( data )} can not be used` );
     this.data = data;
   }

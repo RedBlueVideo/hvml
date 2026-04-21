@@ -1,10 +1,15 @@
 import md2jsonml from 'md2jsonml';
+/**
+ * TODO: Deprecated package. Migrate to `slimdom-sax-parser`.
+ */
 import { toJsonml, toString } from 'xml-trident';
 import { isString, isPlainObject } from './types';
 import { softTrim } from './strings';
 
+export type JSONML = ReturnType<typeof toJsonml>;
+
 class Transform {
-  static markdownToJsonMl( input ) {
+  static markdownToJsonMl( input: string ) {
     const jsonML = md2jsonml( input );
     // md2jsonml wraps contents in an <article>,
     // whereas we want a namespaced <div>
@@ -12,15 +17,15 @@ class Transform {
     return Transform.wrapJsonMl( innerHTML );
   }
 
-  static xmlStringToJsonMl( input ) {
+  static xmlStringToJsonMl( input: string ) {
     return toJsonml( input );
   }
 
-  static jsonMlToXmlString( input ) {
+  static jsonMlToXmlString( input: JSONML ) {
     return toString( input );
   }
 
-  static get jsonMlWrapper() {
+  static get jsonMlWrapper(): JSONML {
     return ['div', {
       "xmlns": "http://www.w3.org/1999/xhtml",
     }];
@@ -30,15 +35,15 @@ class Transform {
     return '<div xmlns="http://www.w3.org/1999/xhtml">$innerHTML</div>';
   }
 
-  static wrapXhtml( innerHTML ) {
+  static wrapXhtml( innerHTML: string ) {
     return Transform.xhtmlWrapper.replace( '$innerHTML', innerHTML );
   }
 
-  static wrapJsonMl( innerHTML ) {
+  static wrapJsonMl( innerHTML: JSONML ) {
     return Transform.jsonMlWrapper.concat( innerHTML );
   }
 
-  static getJsonMlTextContent( jsonML, preserveBRs = false, normalizeWhitespace = false ) {
+  static getJsonMlTextContent( jsonML: JSONML, preserveBRs = false, normalizeWhitespace = false ) {
     let string = '';
     let childNodesOrTextContent;
 
