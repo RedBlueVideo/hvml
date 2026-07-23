@@ -2,6 +2,10 @@ import HVMLElement from './hvml-element';
 import { IHVMLElement } from './types/elements';
 
 class Series extends HVMLElement {
+  get nodeName(): string {
+    return 'series';
+  }
+
   title: IHVMLElement['title'];
 
   constructor( data?: Partial<IHVMLElement> ) {

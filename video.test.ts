@@ -41,7 +41,7 @@ describe( 'Video', () => {
 
     expect( thrownError.data ).toEqual(
       expect.objectContaining( {
-        "className": "Video",
+        "className": "HVMLVideoElement",
         "methodName": "constructor",
         "fieldName": "config",
         "expected": "Object",
@@ -68,7 +68,7 @@ describe( 'Video', () => {
     }
 
     expect( thrownError.data ).toEqual( {
-      "className": "Video",
+      "className": "HVMLVideoElement",
       "fieldName": "config.type",
       "badValues": ["bad", "evil"],
     } );
@@ -94,7 +94,7 @@ describe( 'Video', () => {
 
     expect( thrownError.data ).toEqual(
       expect.objectContaining( {
-        "className": "Video",
+        "className": "HVMLVideoElement",
         "fieldName": "config.type",
         "expected": ["String", "Array"],
         "got": "Number",
@@ -124,7 +124,7 @@ describe( 'Video', () => {
 
     expect( thrownError.data ).toEqual(
       expect.objectContaining( {
-        "className": "Video",
+        "className": "HVMLVideoElement",
         "methodName": "constructor",
         "fieldName": "id",
         "expected": "String",
@@ -158,7 +158,7 @@ describe( 'Video', () => {
 
     expect( thrownError.data ).toEqual(
       expect.objectContaining( {
-        "className": "Video",
+        "className": "HVMLVideoElement",
         "fieldName": "type",
         "badValues": ["monkey", "seahorse", "big-chungus"],
       } ),
@@ -313,7 +313,7 @@ describe( 'Video', () => {
 
       expect( thrownError.data ).toEqual(
         expect.objectContaining( {
-          "className": "Video",
+          "className": "HVMLVideoElement",
           "got": "Number",
           "input": badInput,
           "methodName": "hasType",
@@ -405,7 +405,7 @@ describe( 'Video', () => {
       expect( thrownError.constructor.name ).toBe( 'HVMLTypeError' );
       expect( thrownError.data ).toEqual(
         expect.objectContaining( {
-          "className": "Video",
+          "className": "HVMLVideoElement",
           "expected": "String",
           "fieldName": "title",
           "got": "Null",
@@ -567,7 +567,7 @@ describe( 'Video', () => {
 
       expect( thrownError.data ).toEqual(
         expect.objectContaining( {
-          "className": "Video",
+          "className": "HVMLVideoElement",
           "methodName": "setDescription",
           "expected": ["String", "Object"],
           "fieldName": "description",
@@ -590,7 +590,7 @@ describe( 'Video', () => {
 
     //   expect( thrownError.data ).toEqual(
     //     expect.objectContaining( {
-    //       "className": "Video",
+    //       "className": "HVMLVideoElement",
     //       "expected": ["String", "Object"],
     //       "fieldName": "description",
     //       "got": "Null",
@@ -678,7 +678,7 @@ describe( 'Video', () => {
       expect( thrownErrorOne.constructor.name ).toBe( 'HVMLTypeError' );
       expect( thrownErrorOne.data ).toEqual(
         expect.objectContaining( {
-          "className": "Video",
+          "className": "HVMLVideoElement",
           "fieldName": "runtime",
           "expected": [
             "Number",
@@ -698,7 +698,7 @@ describe( 'Video', () => {
       expect( thrownErrorTwo.constructor.name ).toBe( 'HVMLRangeError' );
       expect( thrownErrorTwo.data ).toEqual(
         expect.objectContaining( {
-          "className": "Video",
+          "className": "HVMLVideoElement",
           "fieldName": "runtime",
           "expected": [
             "Number",

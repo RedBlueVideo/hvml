@@ -39,6 +39,10 @@ interface HVMLConfig {
 }
 
 class HVML extends HVMLElement {
+  get nodeName(): string {
+    return 'hvml';
+  }
+
   fileExtensions: { xml: string[]; json: string[] };
 
   /**
@@ -141,7 +145,6 @@ class HVML extends HVMLElement {
           }
 
           this.xml = xml.parseXmlString( fileContents );
-          // @ts-ignore
           this.json = null;
           this.hvmlPath = path;
           // @ts-ignore

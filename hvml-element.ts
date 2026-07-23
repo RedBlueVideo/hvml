@@ -29,8 +29,16 @@ export type HVMLChildCounts = Record<string, HVMLChildCount>;
 
 // export type IHVMLElement = InstanceType<typeof HVMLElement>;
 
+/**
+ * `children` may still contain bare tag-name strings (the unknown-tag
+ * fallback) until `HVMLUnknownElement` lands; strings have no `nodeName`.
+ */
+function getNodeName( node: HVMLNodeOrNodeName ): string {
+  return ( typeof node === 'string' ) ? node.toLowerCase() : node.nodeName;
+}
+
 export class HVMLElement extends HVMLNode {
-  json: Partial<IHVMLElement>; // | null;
+  json: Partial<IHVMLElement> | null;
 
   xml: (ILibxmljsXMLDocument & ILibxmljsXMLElement) | null;
 
@@ -54,9 +62,22 @@ export class HVMLElement extends HVMLNode {
     // @ts-ignore - TS limitation
     this.children = [];
     this.hvmlPath = null;
-    this.json = {};
+    /**
+     * `null`, not `{}`: `toJson()` installs the JSON-LD boilerplate
+     * (`@context`) only when `json` is falsy.
+     */
+    this.json = null;
     this.prefixes = {};
     this.xml = null;
+  }
+
+  /**
+   * Fallback for subclasses that don’t declare their own `nodeName`:
+   * matches the historical `constructor.name.toLowerCase()` serialization
+   * keys. Concrete elements override with a literal tag name.
+   */
+  get nodeName(): string {
+    return this.constructor.name.toLowerCase();
   }
 
   get _baseErrorData() {
@@ -299,9 +320,9 @@ export class HVMLElement extends HVMLNode {
 
   /* istanbul ignore next: internals of toJson(), which is already tested */
   _setJsonChild( child: HVMLNodeOrNodeName, path: LodashPath = [], root = false, atIndex: number | null = null ) {
-    const nodeName = child.constructor.name.toLowerCase();
+    const nodeName = getNodeName( child );
     // const attributes = { ...child };
-    let attributes: Partial<HVMLNode> = {};
+    let attributes: Partial<HVMLElement> = {};
 
     if (typeof child !== 'string') {
       if ( child.id ) {
@@ -325,6 +346,11 @@ export class HVMLElement extends HVMLNode {
       delete attributes.language;
       delete attributes.region;
       delete attributes.instance;
+      // Runtime bookkeeping, not part of the HVML vocabulary
+      delete attributes.hvmlPath;
+      delete attributes.json;
+      delete attributes.prefixes;
+      delete attributes.xml;
     }
 
     // const parentNode = path[path.length - 1 ];
@@ -366,7 +392,7 @@ export class HVMLElement extends HVMLNode {
         const grandchildCounts: HVMLChildCounts = {};
 
         grandchildren.forEach( ( grandchild ) => {
-          const key = grandchild.constructor.name.toLowerCase();
+          const key = getNodeName( grandchild );
 
           if ( hasProperty( grandchildCounts, key ) ) {
             grandchildCounts[key].count += 1;
@@ -379,7 +405,7 @@ export class HVMLElement extends HVMLNode {
         } );
 
         grandchildren.forEach( ( grandchild ) => {
-          const grandchildNodeName = grandchild.constructor.name.toLowerCase();
+          const grandchildNodeName = getNodeName( grandchild );
 
           if ( grandchildCounts[grandchildNodeName].count > 1 ) {
             ++grandchildCounts[grandchildNodeName].i;
@@ -410,7 +436,7 @@ export class HVMLElement extends HVMLNode {
       const childCounts: HVMLChildCounts = {};
 
       children.forEach( ( child ) => {
-        const key = child.constructor.name.toLowerCase();
+        const key = getNodeName( child );
 
         if ( hasProperty( childCounts, key ) ) {
           childCounts[key].count += 1;
@@ -423,7 +449,7 @@ export class HVMLElement extends HVMLNode {
       } );
 
       children.forEach( ( child ) => {
-        const childNodeName = child.constructor.name.toLowerCase();
+        const childNodeName = getNodeName( child );
 
         if ( childCounts[childNodeName].count > 1 ) {
           path.push( '@list' );
@@ -610,7 +636,7 @@ export class HVMLElement extends HVMLNode {
       }
     } 
 
-    if ( this.constructor.name !== 'HVML' ) {
+    if ( this.nodeName !== 'hvml' ) {
       const hvml = new globalThis.HVML.HVML();
       hvml.appendChild( this );
       return hvml;

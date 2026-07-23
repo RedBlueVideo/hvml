@@ -93,6 +93,16 @@ export class HVMLNode {
   language: ISO639LanguageCode = '_';
   region?: string;
   instance?: unknown;
+
+  /**
+   * DOM cue: `Node.nodeName`. Serialization keys on this — never on
+   * `constructor.name`, which changes under minification and class
+   * renames. A getter (not a field) so it stays off the instance:
+   * `_setJsonChild` spreads instances into serialized attributes.
+   */
+  get nodeName(): string {
+    return '#node';
+  }
   /**
    * FIXME: TypeScript doesn’t let you do this and then also
    * set e.g. `this.children = []` because plain arrays lack

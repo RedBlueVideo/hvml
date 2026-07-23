@@ -91,7 +91,7 @@ describe( 'Time', () => {
       let thrownErrorOne;
       let thrownErrorTwo;
 
-      expect.assertions( 2 );
+      expect.assertions( 4 );
 
       try {
         Time.isoDurationToHours( '' );

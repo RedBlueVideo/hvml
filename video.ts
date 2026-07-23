@@ -34,13 +34,26 @@ export interface IHVMLDescription {
   xhtml: string;
 }
 
+/**
+ * Constructor input — distinct from the instance shape: `lang` is
+ * parsed into `language` + `region` and never stored verbatim.
+ */
+export interface HVMLVideoElementConfig {
+  type?: string | string[];
+  /** BCP-47-style language tag, e.g. `en-US`. */
+  lang?: string;
+  id?: string;
+}
+
 class HVMLVideoElement extends HVMLElement {
+  get nodeName(): string {
+    return 'video';
+  }
+
   /**
    * TODO: Make explicit allowed values
    */
   type?: string | string[];
-
-  lang: string = '_';
 
   region: string = '_';
 
@@ -127,7 +140,7 @@ class HVMLVideoElement extends HVMLElement {
     })
   }
 
-  constructor( config: Partial<HVMLVideoElement> = {} ) {
+  constructor( config: HVMLVideoElementConfig = {} ) {
     super();
 
     let language;
