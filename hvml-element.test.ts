@@ -1,5 +1,5 @@
-import HVMLElement from './hvml-element';
-import { HVML, Video, Series } from './hvml';
+import HVMLElement from './hvml-element.js';
+import { HVML, Video, Series } from './hvml.js';
 
 describe( 'HVMLElement', () => {
   let hvml: HVML | undefined;

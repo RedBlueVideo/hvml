@@ -1,14 +1,14 @@
 import set from 'lodash.set';
-// import Video from './video';
+// import Video from './video.js';
 import {
   XMLAttribute,
   XMLDocument as ILibxmljsXMLDocument,
   XMLElement,
 } from 'libxmljs';
 
-import Data, { HVMLPath, LodashPath } from './util/data';
-import { hasMethod, hasProperty } from './util/types';
-import { ucFirst } from './util/strings';
+import Data, { HVMLPath, LodashPath } from './util/data.js';
+import { hasMethod, hasProperty } from './util/types.js';
+import { ucFirst } from './util/strings.js';
 import {
   HVMLElementTagName,
   HVMLGlobalAttributeName,
@@ -17,9 +17,9 @@ import {
   IHVMLElement,
   JSONLDSerializedHTMLElement,
   ValidXMLGlobalAttributeName,
-} from './types/elements';
-import { HVMLTypeError } from './util/validation';
-import { createHVMLElement } from './util/registry';
+} from './types/elements.js';
+import { HVMLTypeError } from './util/validation.js';
+import { createHVMLElement } from './util/registry.js';
 
 export type HVMLChildCount = {
   count: number;

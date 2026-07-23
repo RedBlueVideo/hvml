@@ -1,4 +1,4 @@
-import { ucFirst } from './strings';
+import { ucFirst } from './strings.js';
 
 export interface IHVMLDomainError {
   className?: string;

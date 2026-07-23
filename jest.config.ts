@@ -12,6 +12,13 @@ const config: Config = {
   "transform": {
     '^.+\\.(js|jsx|ts|tsx|mjs)$': 'babel-jest',
   },
+  /**
+   * Source uses NodeNext-style explicit `.js` specifiers; map them back
+   * to the on-disk `.ts` files for jest's resolver.
+   */
+  "moduleNameMapper": {
+    '^(\\.{1,2}/.*)\\.js$': '$1',
+  },
   "coveragePathIgnorePatterns": [
     "node_modules/",
     "dist/",

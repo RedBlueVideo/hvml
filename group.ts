@@ -1,5 +1,5 @@
-import HVMLElement from './hvml-element';
-import { defineHVMLElement } from './util/registry';
+import HVMLElement from './hvml-element.js';
+import { defineHVMLElement } from './util/registry.js';
 
 class Group extends HVMLElement {
   get nodeName(): string {

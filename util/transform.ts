@@ -3,8 +3,8 @@ import md2jsonml from 'md2jsonml';
  * TODO: Deprecated package. Migrate to `slimdom-sax-parser`.
  */
 import { toJsonml, toString } from 'xml-trident';
-import { isString, isPlainObject } from './types';
-import { softTrim } from './strings';
+import { isString, isPlainObject } from './types.js';
+import { softTrim } from './strings.js';
 
 export type JSONML = ReturnType<typeof toJsonml>;
 

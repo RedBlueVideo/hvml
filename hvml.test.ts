@@ -2,7 +2,7 @@
 import skipIf from 'skip-if';
 import { execSync } from 'child_process';
 import { readFileSync } from 'fs';
-import Validation from './util/validation';
+import Validation from './util/validation.js';
 
 // test( 'opens files successfully', () => {} );
 

@@ -1,4 +1,4 @@
-import Validation, { HVMLDomainError, HVMLEnumError } from './validation';
+import Validation, { HVMLDomainError, HVMLEnumError } from './validation.js';
 
 describe( 'Validation', () => {
   describe( 'HVMLDomainError', () => {

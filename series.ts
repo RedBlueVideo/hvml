@@ -1,6 +1,6 @@
-import HVMLElement from './hvml-element';
-import { IHVMLElement } from './types/elements';
-import { defineHVMLElement } from './util/registry';
+import HVMLElement from './hvml-element.js';
+import { IHVMLElement } from './types/elements.js';
+import { defineHVMLElement } from './util/registry.js';
 
 class Series extends HVMLElement {
   get nodeName(): string {

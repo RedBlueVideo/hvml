@@ -1,4 +1,4 @@
-import type { HVMLNode } from '../types/elements';
+import type { HVMLNode } from '../types/elements.js';
 
 /**
  * Any concrete element class. `never[]` is the contravariant-safe

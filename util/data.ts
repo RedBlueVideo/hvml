@@ -1,4 +1,4 @@
-import { IHVMLElement } from "../types/elements";
+import { IHVMLElement } from "../types/elements.js";
 
 class Data {
   static getJsonBoilerplate(): Partial<IHVMLElement> {

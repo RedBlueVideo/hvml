@@ -2,18 +2,18 @@ import { readFile } from 'fs';
 import { extname } from 'path';
 import { exec } from 'child_process';
 
-import HVMLElement from './hvml-element';
-import Video from './video';
-import Series from './series';
-import Group from './group';
+import HVMLElement from './hvml-element.js';
+import Video from './video.js';
+import Series from './series.js';
+import Group from './group.js';
 
 import { createRequire } from 'module';
 
-import Validation from './util/validation';
-import { hasProperty } from './util/types';
-import { defineHVMLElement } from './util/registry';
-import Data from './util/data';
-import { IHVMLElement } from './types/elements';
+import Validation from './util/validation.js';
+import { hasProperty } from './util/types.js';
+import { defineHVMLElement } from './util/registry.js';
+import Data from './util/data.js';
+import { IHVMLElement } from './types/elements.js';
 
 import type { XMLDocument as ILibxmljsXMLDocument } from 'libxmljs';
 

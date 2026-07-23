@@ -1,4 +1,4 @@
-import HVMLElement from "./hvml-element";
+import HVMLElement from "./hvml-element.js";
 
 export class HVMLDescriptionElement extends HVMLElement {
   get nodeName(): string {

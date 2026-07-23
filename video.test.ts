@@ -1,5 +1,5 @@
-import Video from './video';
-import Validation from './util/validation';
+import Video from './video.js';
+import Validation from './util/validation.js';
 
 describe( 'Video', () => {
   /* --- Instantiation --- */

@@ -1,4 +1,4 @@
-import Time from './time';
+import Time from './time.js';
 
 describe( 'Time', () => {
   it( 'parses ISO 8601 durations', () => {

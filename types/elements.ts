@@ -1,4 +1,4 @@
-import { ISO639LanguageCode } from "./language";
+import { ISO639LanguageCode } from "./language.js";
 
 export interface JSONLDSerializedHTMLElement {
   /**

@@ -48,6 +48,7 @@
     "@babel/preset-typescript": "^7.27.1",
     "@types/jest": "^30.0.0",
     "@types/lodash.set": "^4.3.9",
+    "@types/node": "^18",
     "babel-jest": "^29.7.0",
     "babel-plugin-transform-import-meta": "^2.3.2",
     "codecov": "^3.3.0",

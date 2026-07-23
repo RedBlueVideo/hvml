@@ -3,18 +3,18 @@ import {
   isNumber,
   isString,
   isUndefined,
-} from './util/types';
+} from './util/types.js';
 
-import HVMLElement from './hvml-element';
-// import Series from './series';
+import HVMLElement from './hvml-element.js';
+// import Series from './series.js';
 
-import Time from './util/time';
-import Validation, { HVMLTypeError } from './util/validation';
-import Transform from './util/transform';
-import { DescriptionType, HVMLCollection, HVMLDescriptionType } from './types/elements';
-import { ISO639LanguageCode, isValidISO639LanguageCode } from './types/language';
-import { JSONML } from './util/data';
-import { defineHVMLElement } from './util/registry';
+import Time from './util/time.js';
+import Validation, { HVMLTypeError } from './util/validation.js';
+import Transform from './util/transform.js';
+import { DescriptionType, HVMLCollection, HVMLDescriptionType } from './types/elements.js';
+import { ISO639LanguageCode, isValidISO639LanguageCode } from './types/language.js';
+import { JSONML } from './util/data.js';
+import { defineHVMLElement } from './util/registry.js';
 
 // export type VideoTitle = {
 //   [Language in ISO639LanguageCode]?: {
