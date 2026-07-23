@@ -30,7 +30,7 @@ describe( 'Video', () => {
     expect.assertions( 2 );
 
     // @ts-expect-error
-    expect( () => new Video( badConfig ) ).toThrowError( Validation.TypeError );
+    expect( () => new Video( badConfig ) ).toThrow( Validation.TypeError );
 
     try {
       // @ts-expect-error
@@ -59,7 +59,7 @@ describe( 'Video', () => {
 
     expect.assertions( 2 );
 
-    expect( () => new Video( badTypes ) ).toThrowError( Validation.EnumError );
+    expect( () => new Video( badTypes ) ).toThrow( Validation.EnumError );
 
     try {
       new Video( badTypes ); // eslint-disable-line no-new
@@ -83,7 +83,7 @@ describe( 'Video', () => {
     expect.assertions( 2 );
 
     // @ts-expect-error
-    expect( () => new Video( badType ) ).toThrowError( Validation.TypeError );
+    expect( () => new Video( badType ) ).toThrow( Validation.TypeError );
 
     try {
       // @ts-expect-error
@@ -114,7 +114,7 @@ describe( 'Video', () => {
 
     expect.assertions( 2 );
 
-    expect( () => new Video( configWithBadId ) ).toThrowError( Validation.TypeError );
+    expect( () => new Video( configWithBadId ) ).toThrow( Validation.TypeError );
 
     try {
       new Video( configWithBadId ); // eslint-disable-line no-new
@@ -303,9 +303,11 @@ describe( 'Video', () => {
 
       expect.assertions( 2 );
 
-      expect( () => video.hasType( badInput ) ).toThrowError( Validation.TypeError );
+      // @ts-expect-error — deliberately invalid input; the runtime throw is the point
+      expect( () => video.hasType( badInput ) ).toThrow( Validation.TypeError );
 
       try {
+        // @ts-expect-error — deliberately invalid input; the runtime throw is the point
         video.hasType( badInput );
       } catch ( error ) {
         thrownError = error;
@@ -433,7 +435,7 @@ describe( 'Video', () => {
       expect( () => {
         const video = new Video();
         video.setEpisode( NaN );
-      } ).toThrowError( Validation.NotIntegerError );
+      } ).toThrow( Validation.NotIntegerError );
     } );
   } );
 
@@ -667,7 +669,7 @@ describe( 'Video', () => {
 
       expect.assertions( 5 );
 
-      expect( () => video.setRuntime( nullValue ) ).toThrowError( Validation.TypeError );
+      expect( () => video.setRuntime( nullValue ) ).toThrow( Validation.TypeError );
 
       try {
         video.setRuntime( nullValue );
