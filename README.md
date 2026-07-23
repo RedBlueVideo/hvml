@@ -42,6 +42,10 @@ video.setTitle( 'チャンネルへようこそ！', 'ja' );
 console.log( video.isVlogEpisode() ); // true
 ```
 
+## Roadmap
+
+View project progress at the [public Trello board](https://trello.com/b/SJg4TLYz/hvml).
+
 ## API
 
 ### HVML
