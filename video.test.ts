@@ -1,6 +1,8 @@
 import Video from './video.js';
 import Validation from './util/validation.js';
 
+import type { JSONMLNode } from './util/data.js';
+
 describe( 'Video', () => {
   /* --- Instantiation --- */
 
@@ -469,7 +471,7 @@ describe( 'Video', () => {
 
     it( 'sets and gets `jsonml`', () => {
       const video = new Video();
-      const jsonMl = [
+      const jsonMl: JSONMLNode[] = [
         [
           "p", "Nope",
         ], [

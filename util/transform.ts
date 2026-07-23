@@ -6,7 +6,9 @@ import { toJsonml, toString } from 'xml-trident';
 import { isString, isPlainObject } from './types.js';
 import { softTrim } from './strings.js';
 
-export type JSONML = ReturnType<typeof toJsonml>;
+import type { JSONML, JSONMLAttributes, JSONMLNode } from './data.js';
+
+export type { JSONML } from './data.js';
 
 class Transform {
   static markdownToJsonMl( input: string ) {
@@ -39,13 +41,13 @@ class Transform {
     return Transform.xhtmlWrapper.replace( '$innerHTML', innerHTML );
   }
 
-  static wrapJsonMl( innerHTML: JSONML ) {
-    return Transform.jsonMlWrapper.concat( innerHTML );
+  static wrapJsonMl( childNodes: ( JSONMLAttributes | JSONMLNode )[] ): JSONML {
+    return [...Transform.jsonMlWrapper, ...childNodes];
   }
 
   static getJsonMlTextContent( jsonML: JSONML, preserveBRs = false, normalizeWhitespace = false ) {
     let string = '';
-    let childNodesOrTextContent;
+    let childNodesOrTextContent: ( JSONMLAttributes | JSONMLNode )[];
 
     if ( isPlainObject( jsonML[1] ) ) {
       childNodesOrTextContent = jsonML.slice( 2 );

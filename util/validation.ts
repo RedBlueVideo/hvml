@@ -8,7 +8,12 @@ export interface IHVMLDomainError {
   methodName?: string;
   fieldName?: string;
   extraInfo?: string | null;
-  badValues?: string[];
+  /**
+   * Broader than string: values are only ever printed (via join), and
+   * callers legitimately report whole objects — e.g. a rejected child
+   * element in HVML.appendChild.
+   */
+  badValues?: readonly unknown[];
   dependency?: string;
 }
 

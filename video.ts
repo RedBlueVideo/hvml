@@ -11,9 +11,9 @@ import HVMLElement from './hvml-element.js';
 import Time from './util/time.js';
 import Validation, { HVMLTypeError } from './util/validation.js';
 import Transform from './util/transform.js';
-import { DescriptionType, HVMLCollection, HVMLDescriptionType } from './types/elements.js';
+import { DescriptionType, JSONLDSerializedHTMLElement } from './types/elements.js';
 import { ISO639LanguageCode, isValidISO639LanguageCode } from './types/language.js';
-import { JSONML } from './util/data.js';
+import { JSONML, JSONMLNode } from './util/data.js';
 import { defineHVMLElement } from './util/registry.js';
 
 // export type VideoTitle = {
@@ -33,6 +33,15 @@ export interface IHVMLDescription {
   text: string;
   jsonml: JSONML;
   xhtml: string;
+}
+
+/**
+ * The `xhtml`-typed input accepted by `setDescription` when it isn’t a
+ * raw XHTML string: JSON-LD-serialized HTML, as parsed from an HVML
+ * document’s `html:div` content.
+ */
+export interface HVMLXhtmlDescriptionInput {
+  childNodes?: JSONLDSerializedHTMLElement[];
 }
 
 /**
@@ -372,8 +381,13 @@ class HVMLVideoElement extends HVMLElement {
     }
   }
 
-  /* type = text|xhtml */
-  setDescription( description: string | { xhtml?: object; text?: string; childNodes?: HVMLCollection }, type = 'text' ) {
+  setDescription( description: string, type?: 'text' ): void;
+
+  setDescription( description: JSONMLNode[], type: 'jsonml' ): void;
+
+  setDescription( description: string | HVMLXhtmlDescriptionInput, type: 'xhtml' ): void;
+
+  setDescription( description: string | HVMLXhtmlDescriptionInput | JSONMLNode[], type: DescriptionType = 'text' ) {
     const errorData = {
       ...this._baseErrorData,
       "methodName": "setDescription",
@@ -390,6 +404,10 @@ class HVMLVideoElement extends HVMLElement {
 
     switch ( type ) {
       case 'jsonml':
+        if ( !Array.isArray( description ) ) {
+          throw new Validation.TypeError( errorData );
+        }
+
         this.description.xhtml = Transform.jsonMlToXmlString( Transform.wrapJsonMl( description ) );
         break;
 
@@ -400,7 +418,7 @@ class HVMLVideoElement extends HVMLElement {
             break;
 
           case 'object':
-            if ( Array.isArray( description.childNodes ) ) {
+            if ( !Array.isArray( description ) && Array.isArray( description.childNodes ) ) {
               this.description.xhtml = '';
 
               description.childNodes.forEach( ( childNode ) => {
@@ -424,6 +442,14 @@ class HVMLVideoElement extends HVMLElement {
 
       case 'text':
       default:
+        /**
+         * Unknown `type` values arrive here from untyped callers; they
+         * get the same validation 'text' got up top.
+         */
+        if ( !isString( description ) ) {
+          throw new Validation.TypeError( errorData );
+        }
+
         this.description.text = description.trim();
     }
   }
@@ -488,7 +514,13 @@ class HVMLVideoElement extends HVMLElement {
 
         /* istanbul ignore else */
         if ( this.description.xhtml ) {
-          return Transform.getJsonMlTextContent( Transform.xmlStringToJsonMl( this.description.xhtml )[1], true, true );
+          const documentJsonMl = Transform.xmlStringToJsonMl( this.description.xhtml );
+          const rootElement = documentJsonMl[1];
+
+          /* istanbul ignore else: descriptions serialize wrapped in a root div */
+          if ( Array.isArray( rootElement ) ) {
+            return Transform.getJsonMlTextContent( rootElement, true, true );
+          }
         }
         // throw new Validation.DomainError( 'Something broke. Please file a bug.' );
     }

@@ -1,7 +1,5 @@
 declare module 'xml-trident' {
-  // Sync with `/util/data.ts`
-  type JSONMLNode = string | Record<string, string> | {};
-  type JSONML = JSONMLNode[];
+  type JSONML = import('./util/data.js').JSONML;
 
   /**
    * The upstream library also accepts DOM nodes, but this package only
@@ -9,5 +7,5 @@ declare module 'xml-trident' {
    * out of the program.
    */
   export function toJsonml(xmlSource: string): JSONML;
-  export function toString(jsonml: object): string;
+  export function toString(jsonml: JSONML): string;
 }

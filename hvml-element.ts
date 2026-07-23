@@ -613,8 +613,7 @@ export class HVMLElement extends HVMLNode {
       this.children = [];
 
       for ( const [key, value] of Object.entries( this.json ) ) {
-        const valueType = typeof value;
-        if ((valueType === 'string' || valueType === 'object') && value) {
+        if ( ( typeof value === 'string' && value ) || ( typeof value === 'object' && value !== null ) ) {
           this._momifyChild( key, value );
         } else {
           /**

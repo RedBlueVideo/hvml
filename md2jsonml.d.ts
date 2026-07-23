@@ -1,7 +1,5 @@
 declare module 'md2jsonml' {
-  // Sync with `/util/data.ts`
-  type JSONMLNode = string | Record<string, string> | {};
-  type JSONML = JSONMLNode[];
+  type JSONML = import('./util/data.js').JSONML;
 
-export default function md2jsonml(markdown: string): JSONML;
+  export default function md2jsonml(markdown: string): JSONML;
 }

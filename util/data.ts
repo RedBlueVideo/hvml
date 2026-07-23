@@ -10,8 +10,15 @@ class Data {
 
 export default Data;
 
-export type JSONMLNode = string | Record<string, string> | {};
-export type JSONML = JSONMLNode[];
+/**
+ * JSON-ML (https://web.archive.org/web/2021/http://www.jsonml.org/):
+ * an element is a tuple of tag name, optional attribute record, then
+ * children — each a text node or a nested element. This is the single
+ * definition; the `md2jsonml` and `xml-trident` shims import it.
+ */
+export type JSONMLAttributes = Record<string, string>;
+export type JSONMLNode = string | JSONML;
+export type JSONML = [tag: string, ...rest: ( JSONMLAttributes | JSONMLNode )[]];
 
 /**
  * FIXME: `HVMLPath` is being using with `lodash.set`,

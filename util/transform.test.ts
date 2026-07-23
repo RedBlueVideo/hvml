@@ -1,5 +1,7 @@
 import Transform from './transform.js';
 
+import type { JSONML, JSONMLNode } from './data.js';
+
 describe( 'Transform', () => {
   test( 'markdownToJsonMl', () => {
     const input = '**Hey now!**';
@@ -25,7 +27,7 @@ describe( 'Transform', () => {
   } );
 
   test( 'jsonMlToXmlString', () => {
-    const input = ["div", { "xmlns": "http://www.w3.org/1999/xhtml" },
+    const input: JSONML = ["div", { "xmlns": "http://www.w3.org/1999/xhtml" },
       ["p", ["strong", "Hey now!"]]];
     const output = Transform.jsonMlToXmlString( input );
 
@@ -51,7 +53,7 @@ describe( 'Transform', () => {
   test( 'wrapJsonMl', () => {
     // Needs to be wrapped in additional array in order to
     // register as child nodes instead of sibling nodes
-    const input = [
+    const input: JSONMLNode[] = [
       [
         "p", [
           "strong", "Hey now!",
@@ -76,7 +78,7 @@ describe( 'Transform', () => {
         normalizeWhitespace = false
     ) */
     const aBunchOfWhitespace = '                        ';
-    const jsonMl = [
+    const jsonMl: JSONML = [
       "div", { "xmlns": "http://www.w3.org/1999/xhtml" }, [
         "p", [
           "strong", "Hey now!",
