@@ -7,7 +7,7 @@ import {
 } from 'libxmljs';
 
 import Data, { HVMLPath, LodashPath } from './util/data';
-import { hasProperty } from './util/types';
+import { hasMethod, hasProperty } from './util/types';
 import { ucFirst } from './util/strings';
 import {
   HVMLElementTagName,
@@ -20,7 +20,6 @@ import {
 } from './types/elements';
 import { XMLAttribute } from 'libxmljs/dist/lib/node';
 import { HVMLTypeError } from './util/validation';
-import HVMLVideoElement from './video';
 
 export type HVMLChildCount = {
   count: number;
@@ -545,7 +544,14 @@ export class HVMLElement extends HVMLNode {
                * type-safe or do we want to support potentially invalid MOM trees
                * and save conformance checking for the RNG schema parser?
                */
-              if ('type' in value && lastChild instanceof HVMLVideoElement) {
+              /**
+               * Duck-typed rather than `instanceof HVMLVideoElement`:
+               * importing the class here would recreate the
+               * `hvml-element` ⇄ `video` circular import, and the MOM
+               * deliberately tolerates not-yet-conformant trees
+               * (conformance belongs to the RNG validator).
+               */
+              if ('type' in value && hasMethod(lastChild, 'setDescription')) {
                 switch ( value.type ) {
                   case 'xhtml':
                     if ('html:div' in value) {
