@@ -264,8 +264,7 @@ export class HVMLElement extends HVMLNode {
                 const parent = child.parent();
                 const attrs = parent && 'attrs' in parent ? parent.attrs() : [];
                 const obj: JSONLDSerializedHTMLElement = {
-                  // Necessary coercion
-                  "@type": upone.substring( 5 ) as keyof HTMLElementTagNameMap,
+                  "@type": upone.substring( 5 ),
                 };
 
                 attrs.forEach( ( attr ) => {
@@ -638,7 +637,7 @@ export class HVMLElement extends HVMLNode {
       const root = createHVMLElement( 'hvml' );
 
       /* istanbul ignore next: hvml.ts registers 'hvml' on import */
-      if ( !root || !hasMethod( root, 'appendChild' ) ) {
+      if ( !root ) {
         throw new ReferenceError( 'toMom requires the <hvml> element class to be registered — import the package entry point' );
       }
 

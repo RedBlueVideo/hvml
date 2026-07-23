@@ -3,6 +3,11 @@ declare module 'xml-trident' {
   type JSONMLNode = string | Record<string, string> | {};
   type JSONML = JSONMLNode[];
 
-  export function toJsonml(stringOrDom: string | Node): JSONML;
-  export function toString(domOrJsonml: Node | object): string;
+  /**
+   * The upstream library also accepts DOM nodes, but this package only
+   * ever passes strings/JSON-ML — typing that subset keeps the DOM lib
+   * out of the program.
+   */
+  export function toJsonml(xmlSource: string): JSONML;
+  export function toString(jsonml: object): string;
 }
