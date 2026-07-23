@@ -20,6 +20,7 @@ import {
 } from './types/elements';
 import { XMLAttribute } from 'libxmljs/dist/lib/node';
 import { HVMLTypeError } from './util/validation';
+import { createHVMLElement } from './util/registry';
 
 export type HVMLChildCount = {
   count: number;
@@ -500,10 +501,12 @@ export class HVMLElement extends HVMLNode {
     target = this.children,
   ) {
     if ( key === '@type' && typeof value === 'string' ) {
-      const className = ucFirst( value );
-      this.children.push( new globalThis.HVML[className]() );
+      /**
+       * Bare tag name stands in for unregistered elements until
+       * `HVMLUnknownElement` lands.
+       */
+      this.children.push( createHVMLElement( value ) ?? value );
     } else {
-      const className = ucFirst( key );
       const lastChild = target[target.length - 1];
       const setMethod = `set${ucFirst( key )}`;
 
@@ -596,11 +599,7 @@ export class HVMLElement extends HVMLNode {
             default:
               // FIXME: This may be redundant
               if (typeof lastChild !== 'string') {
-                try {
-                  lastChild.children.push( new globalThis.HVML[className]() );
-                } catch ( error ) {
-                  lastChild.children.push( className );
-                }
+                lastChild.children.push( createHVMLElement( key ) ?? key );
               }
           }
           break;
@@ -637,9 +636,15 @@ export class HVMLElement extends HVMLNode {
     } 
 
     if ( this.nodeName !== 'hvml' ) {
-      const hvml = new globalThis.HVML.HVML();
-      hvml.appendChild( this );
-      return hvml;
+      const root = createHVMLElement( 'hvml' );
+
+      /* istanbul ignore next: hvml.ts registers 'hvml' on import */
+      if ( !root || !hasMethod( root, 'appendChild' ) ) {
+        throw new ReferenceError( 'toMom requires the <hvml> element class to be registered — import the package entry point' );
+      }
+
+      root.appendChild( this );
+      return root;
     }
 
     return this;

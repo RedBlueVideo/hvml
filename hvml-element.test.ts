@@ -114,9 +114,12 @@ describe( 'HVMLElement', () => {
           const MOM = hvml!.toMom();
           const firstChild = MOM.children[0];
 
-          console.debug();
+          expect( firstChild ).toBeInstanceOf( Video );
 
-          expect( firstChild.description.text ).toBe( 'Full Facebook Live stream: https://www.facebook.com/hugh.guiney/videos/10100195051457860/\n\n#mfaNOW #mfaLateNites' );
+          if ( firstChild instanceof Video ) {
+            expect( firstChild.description.text ).toBe( 'Full Facebook Live stream: https://www.facebook.com/hugh.guiney/videos/10100195051457860/\n\n#mfaNOW #mfaLateNites' );
+          }
+
           done();
         } )
           .catch( error => {

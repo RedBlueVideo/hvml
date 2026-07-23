@@ -9,6 +9,7 @@ import Group from './group';
 
 import Validation from './util/validation';
 import { hasProperty } from './util/types';
+import { defineHVMLElement } from './util/registry';
 import Data from './util/data';
 import { XMLElement } from 'libxmljs';
 import { IHVMLElement } from './types/elements';
@@ -424,7 +425,4 @@ class HVML extends HVMLElement {
 
 export { HVML, Series, Group, Video };
 
-globalThis.HVML = {
-  ...globalThis.HVML,
-  HVML,
-};
+defineHVMLElement( 'hvml', HVML );

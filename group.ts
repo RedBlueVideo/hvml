@@ -1,4 +1,5 @@
 import HVMLElement from './hvml-element';
+import { defineHVMLElement } from './util/registry';
 
 class Group extends HVMLElement {
   get nodeName(): string {
@@ -7,3 +8,5 @@ class Group extends HVMLElement {
 }
 
 export default Group;
+
+defineHVMLElement( 'group', Group );

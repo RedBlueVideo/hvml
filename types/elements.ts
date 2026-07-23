@@ -1,4 +1,3 @@
-import HVMLElement from "../hvml-element";
 import { ISO639LanguageCode } from "./language";
 
 export interface JSONLDSerializedHTMLElement {

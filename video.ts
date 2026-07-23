@@ -14,6 +14,7 @@ import Transform from './util/transform';
 import { DescriptionType, HVMLCollection, HVMLDescriptionType } from './types/elements';
 import { ISO639LanguageCode, isValidISO639LanguageCode } from './types/language';
 import { JSONML } from './util/data';
+import { defineHVMLElement } from './util/registry';
 
 // export type VideoTitle = {
 //   [Language in ISO639LanguageCode]?: {
@@ -496,7 +497,4 @@ class HVMLVideoElement extends HVMLElement {
 
 export default HVMLVideoElement;
 
-globalThis.HVML = {
-  ...globalThis.HVML,
-  HVMLVideoElement,
-};
+defineHVMLElement( 'video', HVMLVideoElement );

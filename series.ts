@@ -1,5 +1,6 @@
 import HVMLElement from './hvml-element';
 import { IHVMLElement } from './types/elements';
+import { defineHVMLElement } from './util/registry';
 
 class Series extends HVMLElement {
   get nodeName(): string {
@@ -21,3 +22,5 @@ class Series extends HVMLElement {
 }
 
 export default Series;
+
+defineHVMLElement( 'series', Series );
