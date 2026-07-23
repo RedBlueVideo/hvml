@@ -63,17 +63,17 @@ class HVMLVideoElement extends HVMLElement {
   /**
    * TODO: Make explicit allowed values
    */
-  type?: string | string[];
+  declare type?: string | string[];
 
   region: string = '_';
 
-  title?: VideoTitle;
+  declare title?: VideoTitle;
 
-  episode?: number;
+  declare episode?: number;
 
-  runtime?: string;
+  declare runtime?: string;
 
-  description?: Partial<IHVMLDescription>;
+  declare description?: Partial<IHVMLDescription>;
 
   static isValidType( type: string ) {
     switch ( type ) {

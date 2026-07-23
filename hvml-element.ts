@@ -10,10 +10,11 @@ import Data, { HVMLPath, LodashPath } from './util/data.js';
 import { hasMethod, hasProperty } from './util/types.js';
 import { ucFirst } from './util/strings.js';
 import {
+  createHVMLCollection,
   HVMLElementTagName,
   HVMLGlobalAttributeName,
   HVMLNode,
-  HVMLNodeOrNodeName,
+  HVMLTitle,
   IHVMLElement,
   JSONLDSerializedHTMLElement,
   ValidXMLGlobalAttributeName,
@@ -29,15 +30,15 @@ export type HVMLChildCounts = Record<string, HVMLChildCount>;
 
 // export type IHVMLElement = InstanceType<typeof HVMLElement>;
 
-/**
- * `children` may still contain bare tag-name strings (the unknown-tag
- * fallback) until `HVMLUnknownElement` lands; strings have no `nodeName`.
- */
-function getNodeName( node: HVMLNodeOrNodeName ): string {
-  return ( typeof node === 'string' ) ? node.toLowerCase() : node.nodeName;
-}
-
 export class HVMLElement extends HVMLNode {
+  /**
+   * Present on select elements; subclasses narrow to their own shape
+   * (Video: the i18n VideoTitle record). `declare` keeps it type-only —
+   * a real field would leak into serialization via the attribute
+   * spread.
+   */
+  declare title?: HVMLTitle;
+
   json: Partial<IHVMLElement> | null;
 
   xml: ILibxmljsXMLDocument | null;
@@ -59,8 +60,6 @@ export class HVMLElement extends HVMLNode {
       }
     }
 
-    // @ts-ignore - TS limitation
-    this.children = [];
     this.hvmlPath = null;
     /**
      * `null`, not `{}`: `toJson()` installs the JSON-LD boilerplate
@@ -318,39 +317,37 @@ export class HVMLElement extends HVMLNode {
   }
 
   /* istanbul ignore next: internals of toJson(), which is already tested */
-  _setJsonChild( child: HVMLNodeOrNodeName, path: LodashPath = [], root = false, atIndex: number | null = null ) {
-    const nodeName = getNodeName( child );
+  _setJsonChild( child: HVMLElement, path: LodashPath = [], root = false, atIndex: number | null = null ) {
+    const { nodeName } = child;
     // const attributes = { ...child };
     let attributes: Partial<HVMLElement> = {};
 
-    if (typeof child !== 'string') {
-      if ( child.id ) {
-        attributes['xml:id'] = child.id;
-      }
-
-      if ( child.language && ( child.language !== '_' ) ) {
-        if ( child.region && ( child.region !== '_' ) ) {
-          attributes['xml:lang'] = `${child.language}-${child.region}`;
-        } else {
-          attributes['xml:lang'] = child.language;
-        }
-      }
-
-      attributes = {
-        ...attributes,
-        ...child,
-      };
-      delete attributes.id;
-      delete attributes.children;
-      delete attributes.language;
-      delete attributes.region;
-      delete attributes.instance;
-      // Runtime bookkeeping, not part of the HVML vocabulary
-      delete attributes.hvmlPath;
-      delete attributes.json;
-      delete attributes.prefixes;
-      delete attributes.xml;
+    if ( child.id ) {
+      attributes['xml:id'] = child.id;
     }
+
+    if ( child.language && ( child.language !== '_' ) ) {
+      if ( child.region && ( child.region !== '_' ) ) {
+        attributes['xml:lang'] = `${child.language}-${child.region}`;
+      } else {
+        attributes['xml:lang'] = child.language;
+      }
+    }
+
+    attributes = {
+      ...attributes,
+      ...child,
+    };
+    delete attributes.id;
+    delete attributes.children;
+    delete attributes.language;
+    delete attributes.region;
+    delete attributes.instance;
+    // Runtime bookkeeping, not part of the HVML vocabulary
+    delete attributes.hvmlPath;
+    delete attributes.json;
+    delete attributes.prefixes;
+    delete attributes.xml;
 
     // const parentNode = path[path.length - 1 ];
 
@@ -385,36 +382,34 @@ export class HVMLElement extends HVMLNode {
       }
     }
 
-    if (typeof child !== 'string') {
-      if ( child.children.length ) {
-        const grandchildren = child.children;
-        const grandchildCounts: HVMLChildCounts = {};
+    if ( child.children.length ) {
+      const grandchildren = child.children;
+      const grandchildCounts: HVMLChildCounts = {};
 
-        grandchildren.forEach( ( grandchild ) => {
-          const key = getNodeName( grandchild );
+      grandchildren.forEach( ( grandchild ) => {
+        const key = grandchild.nodeName;
 
-          if ( hasProperty( grandchildCounts, key ) ) {
-            grandchildCounts[key].count += 1;
-          } else {
-            grandchildCounts[key] = {
-              "count": 1,
-              "i": -1,
-            };
-          }
-        } );
+        if ( hasProperty( grandchildCounts, key ) ) {
+          grandchildCounts[key].count += 1;
+        } else {
+          grandchildCounts[key] = {
+            "count": 1,
+            "i": -1,
+          };
+        }
+      } );
 
-        grandchildren.forEach( ( grandchild ) => {
-          const grandchildNodeName = getNodeName( grandchild );
+      grandchildren.forEach( ( grandchild ) => {
+        const grandchildNodeName = grandchild.nodeName;
 
-          if ( grandchildCounts[grandchildNodeName].count > 1 ) {
-            ++grandchildCounts[grandchildNodeName].i;
+        if ( grandchildCounts[grandchildNodeName].count > 1 ) {
+          ++grandchildCounts[grandchildNodeName].i;
 
-            this._setJsonChild( grandchild, path, null!, grandchildCounts[grandchildNodeName].i );
-          } else {
-            this._setJsonChild( grandchild, path );
-          }
-        } );
-      }
+          this._setJsonChild( grandchild, path, null!, grandchildCounts[grandchildNodeName].i );
+        } else {
+          this._setJsonChild( grandchild, path );
+        }
+      } );
     }
   }
 
@@ -435,7 +430,7 @@ export class HVMLElement extends HVMLNode {
       const childCounts: HVMLChildCounts = {};
 
       children.forEach( ( child ) => {
-        const key = getNodeName( child );
+        const key = child.nodeName;
 
         if ( hasProperty( childCounts, key ) ) {
           childCounts[key].count += 1;
@@ -448,7 +443,7 @@ export class HVMLElement extends HVMLNode {
       } );
 
       children.forEach( ( child ) => {
-        const childNodeName = getNodeName( child );
+        const childNodeName = child.nodeName;
 
         if ( childCounts[childNodeName].count > 1 ) {
           path.push( '@list' );
@@ -499,11 +494,7 @@ export class HVMLElement extends HVMLNode {
     target = this.children,
   ) {
     if ( key === '@type' && typeof value === 'string' ) {
-      /**
-       * Bare tag name stands in for unregistered elements until
-       * `HVMLUnknownElement` lands.
-       */
-      this.children.push( createHVMLElement( value ) ?? value );
+      this.children.push( createHVMLElement( value ) ?? new HVMLUnknownElement( value ) );
     } else {
       const lastChild = target[target.length - 1];
       const setMethod = `set${ucFirst( key )}`;
@@ -512,26 +503,18 @@ export class HVMLElement extends HVMLNode {
         case 'string':
           switch ( key ) {
             case 'xml:id':
-              if (typeof lastChild !== 'string') {
-                lastChild.id = value;
-              }
+              lastChild.id = value;
               break;
 
             case 'title':
               /**
-               * `title` is only valid on select elements
-               * (currently only `<hvml:video>`) but there
-               * is no way to validate what type we are
-               * working with at this stage since the
-               * element is being built one piece at a
-               * time, and type information isn’t necessarily
-               * in place yet.
-               * 
-               * TODO: Maybe introduce an `HVMLAnyElement`
-               * convenience interface (assuming it doesn’t
-               * just create more TS problems).
+               * `title` is only valid on select elements but there is
+               * no way to validate what type we are working with at
+               * this stage: the element is built one piece at a time,
+               * and type information isn’t necessarily in place yet —
+               * the MOM stays permissive; conformance belongs to the
+               * RNG validator.
                */
-              // @ts-ignore
               lastChild.title = value;
               break;
 
@@ -539,17 +522,16 @@ export class HVMLElement extends HVMLNode {
             case 'description':
             // case 'type':
             // case 'recorded':
-              if (typeof lastChild !== 'string') {
-                /* istanbul ignore else: edge case */
-                // FIXME:
-                // @ts-ignore - TS refuses to narrow this even with `hasOwnProperty` or `in`
-                if ( typeof lastChild[setMethod] === 'function' ) {
-                  // @ts-ignore
-                  lastChild[setMethod]( value );
-                } else {
-                  // @ts-ignore
-                  lastChild[key] = value;
-                }
+              /* istanbul ignore else: edge case */
+              if ( hasMethod( lastChild, setMethod ) ) {
+                lastChild[setMethod]( value );
+              } else {
+                /**
+                 * Expando assignment for not-yet-conformant trees;
+                 * `Object.assign` because HVMLElement (rightly) has no
+                 * string index signature.
+                 */
+                Object.assign( lastChild, { [key]: value } );
               }
               break;
 
@@ -596,9 +578,7 @@ export class HVMLElement extends HVMLNode {
 
             default:
               // FIXME: This may be redundant
-              if (typeof lastChild !== 'string') {
-                lastChild.children.push( createHVMLElement( key ) ?? key );
-              }
+              lastChild.children.push( createHVMLElement( key ) ?? new HVMLUnknownElement( key ) );
           }
           break;
 
@@ -609,8 +589,7 @@ export class HVMLElement extends HVMLNode {
 
   toMom() {
     if ( this.json ) {
-      // @ts-ignore - TS limitation
-      this.children = [];
+      this.children = createHVMLCollection();
 
       for ( const [key, value] of Object.entries( this.json ) ) {
         if ( ( typeof value === 'string' && value ) || ( typeof value === 'object' && value !== null ) ) {
@@ -674,6 +653,27 @@ export class HVMLElement extends HVMLNode {
         }
       }
     }
+  }
+}
+
+/**
+ * DOM cue: `HTMLUnknownElement`. Stands in for tags with no registered
+ * class so `children` always holds real elements — the MOM stays
+ * permissive about not-yet-conformant trees, and conformance checking
+ * remains the RNG validator’s job. A private field backs `nodeName`
+ * (rather than a plain field) so it stays out of the serialization
+ * attribute spread.
+ */
+export class HVMLUnknownElement extends HVMLElement {
+  #nodeName: string;
+
+  get nodeName(): string {
+    return this.#nodeName;
+  }
+
+  constructor( nodeName: string, data?: Partial<IHVMLElement> ) {
+    super( data );
+    this.#nodeName = nodeName;
   }
 }
 

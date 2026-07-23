@@ -7,7 +7,7 @@ class Series extends HVMLElement {
     return 'series';
   }
 
-  title: IHVMLElement['title'];
+  declare title: IHVMLElement['title'];
 
   constructor( data?: Partial<IHVMLElement> ) {
     super( data );

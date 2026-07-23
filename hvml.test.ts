@@ -353,6 +353,20 @@ describe( 'HVML', () => {
       expect( Object.keys( hvml.children ).length ).toBe( 4 );
     } );
 
+    it( 'supports namedItem lookup (DOM cue: HTMLCollection.namedItem)', () => {
+      const hvml = new HVML();
+      const channel = new Video( {
+        "id": "welcome-to-my-channel",
+      } );
+
+      hvml.appendChild( channel );
+
+      expect( hvml.children.namedItem( 'welcome-to-my-channel' ) ).toBe( channel );
+      expect( hvml.children.namedItem( 'nonexistent' ) ).toBeNull();
+      // namedItem is non-enumerable: key counts reflect elements only
+      expect( Object.keys( hvml.children ) ).toEqual( ['0', 'welcome-to-my-channel'] );
+    } );
+
     it( 'throws an error when appending children of unexpected types', () => {
       const hvml = new HVML();
       const channel = {

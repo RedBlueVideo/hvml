@@ -13,7 +13,7 @@ import Validation from './util/validation.js';
 import { hasProperty } from './util/types.js';
 import { defineHVMLElement } from './util/registry.js';
 import Data from './util/data.js';
-import { IHVMLElement } from './types/elements.js';
+import { createHVMLCollection, IHVMLElement } from './types/elements.js';
 
 import type { XMLDocument as ILibxmljsXMLDocument } from 'libxmljs';
 
@@ -167,8 +167,7 @@ class HVML extends HVMLElement {
           this.xml = parseXml( fileContents );
           this.json = null;
           this.hvmlPath = path;
-          // @ts-ignore
-          this.children = [];
+          this.children = createHVMLCollection();
           // this.xsd = xml.parseXmlString( data[1] );
           return this.xml;
         }
@@ -177,8 +176,7 @@ class HVML extends HVMLElement {
           this.xml = null;
           this.json = JSON.parse( fileContents );
           this.hvmlPath = path;
-          // @ts-ignore
-          this.children = [];
+          this.children = createHVMLCollection();
           // throw new Error( 'JSON Parsing not implemented yet' );
           return this.json;
         }
@@ -190,8 +188,7 @@ class HVML extends HVMLElement {
       this.xml = null;
       this.json = Data.getJsonBoilerplate();
       this.hvmlPath = null;
-      // @ts-ignore
-      this.children = [];
+      this.children = createHVMLCollection();
       this.ready = Promise.resolve( this.json );
     }
   }
@@ -443,5 +440,7 @@ class HVML extends HVMLElement {
 // toJson
 
 export { HVML, Series, Group, Video };
+export { HVMLElement, HVMLUnknownElement } from './hvml-element.js';
+export { createHVMLElement, defineHVMLElement, getHVMLElementClass } from './util/registry.js';
 
 defineHVMLElement( 'hvml', HVML );

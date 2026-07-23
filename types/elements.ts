@@ -87,17 +87,68 @@ export type HVMLDescriptionType =
   | 'xhtml'
 ;
 
+/**
+ * @deprecated `children` no longer contains bare tag-name strings —
+ * unknown tags are represented by `HVMLUnknownElement`. Kept exported
+ * for 0.0.x continuity.
+ */
 export type HVMLNodeOrNodeName = HVMLNode | string;
 
-export type HVMLCollection = HVMLNodeOrNodeName[] & { [namedIndex: string]: HVMLNodeOrNodeName };
+/**
+ * The DOM’s live, named `HTMLCollection`, HVML-shaped: an element
+ * array that also supports named lookup by child `id` — via bracket
+ * access (`children['my-id']`, exactly how the HTML DOM behaves in a
+ * real browser) or the typed, null-safe `namedItem()` (the same cue
+ * TypeScript’s own `HTMLCollection` offers, since its arrays can’t
+ * carry a string index signature). Intersections are exempt from
+ * index-signature soundness checks, which is what makes this type
+ * expressible at all; only *construction* needs convincing, and that
+ * lives in `createHVMLCollection()`.
+ */
+export type HVMLCollection = HVMLElement[]
+  & { [namedIndex: string]: HVMLElement | undefined }
+  & { namedItem( name: string ): HVMLElement | null };
+
+export function createHVMLCollection(): HVMLCollection {
+  /**
+   * The codebase’s one collection cast: a plain array satisfies
+   * HVMLCollection at runtime (JS arrays accept string keys), but
+   * TypeScript cannot express “array that will grow named keys”.
+   * Confining the cast here means no call site ever needs a
+   * suppression.
+   */
+  const collection = [] as unknown as HVMLCollection;
+
+  Object.defineProperty( collection, 'namedItem', {
+    /**
+     * Non-enumerable: `Object.keys()` counts must only ever reflect
+     * elements and named indices — tested public behavior.
+     */
+    "enumerable": false,
+    "value": ( name: string ): HVMLElement | null => collection[name] ?? null,
+  } );
+
+  return collection;
+}
 
 export class HVMLNode {
-  id?: string;
-  'xml:id'?: string;
-  'xml:lang'?: string;
+  /**
+   * All optional fields are `declare`: they must exist only when
+   * assigned (serialization spreads instances, and an own
+   * `undefined` would overwrite computed attributes), matching the
+   * pre-TypeScript object shapes.
+   */
+  declare id?: string;
+
+  declare 'xml:id'?: string;
+
+  declare 'xml:lang'?: string;
+
   language: ISO639LanguageCode = '_';
-  region?: string;
-  instance?: unknown;
+
+  declare region?: string;
+
+  declare instance?: unknown;
 
   /**
    * DOM cue: `Node.nodeName`. Serialization keys on this — never on
@@ -108,26 +159,14 @@ export class HVMLNode {
   get nodeName(): string {
     return '#node';
   }
-  /**
-   * FIXME: TypeScript doesn’t let you do this and then also
-   * set e.g. `this.children = []` because plain arrays lack
-   * the string index signature.
-   * 
-   * Currently, the string index is ONLY present if both:
-   * 
-   * A.) The node has children, AND
-   * B.) At least one of the children has an `id`.
-   * 
-   * This is a bit of “magic” inspired by how the HTML DOM
-   * works in a real browser.
-   * 
-   * Notably, TypeScript’s own implementation of `HTMLCollection`
-   * lacks support for string indices as well. It relies on the
-   * `.namedItem` method.
-   */
-  // @ts-ignore - TS limitation
-  children: HVMLCollection = [];
+  children: HVMLCollection = createHVMLCollection();
 }
+
+/**
+ * A serialized title: a plain string (e.g. series) or the i18n
+ * language→region record videos use.
+ */
+export type HVMLTitle = string | Record<string, Record<string, string>>;
 
 /**
  * FIXME:
@@ -145,7 +184,7 @@ export interface IHVMLElement extends HVMLNode {
    * is mixed with foreign data types.
    */
   '@type': string;
-  title?: string;
+  title?: HVMLTitle;
   // /**
   //  * Currently only `HVMLVideoElement` supports the `setDescription`
   //  * method.

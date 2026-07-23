@@ -5,5 +5,5 @@ export class HVMLDescriptionElement extends HVMLElement {
     return 'description';
   }
 
-  type?: 'text' | 'html' | 'xhtml';
+  declare type?: 'text' | 'html' | 'xhtml';
 }
