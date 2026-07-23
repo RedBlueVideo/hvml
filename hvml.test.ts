@@ -158,6 +158,7 @@ describe( 'HVML', () => {
   // } );
 
   describe( 'Validation', () => {
+    // TODO: Convert to ESM if possible
     const { HVML } = require( './hvml' );
 
     skipIfXmllintUnavailable( 'validates good HVML', ( done ) => {

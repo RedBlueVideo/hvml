@@ -9,34 +9,50 @@ import HVMLElement from './hvml-element';
 // import Series from './series';
 
 import Time from './util/time';
-import Validation from './util/validation';
+import Validation, { HVMLTypeError } from './util/validation';
 import Transform from './util/transform';
-import { DescriptionType } from './types/elements';
-import { ISO639LanguageCode } from './types/language';
+import { DescriptionType, HVMLCollection, HVMLDescriptionType } from './types/elements';
+import { ISO639LanguageCode, isValidISO639LanguageCode } from './types/language';
+import { JSONML } from './util/data';
 
-export type VideoTitle = {
-  [Language in ISO639LanguageCode]?: {
-    [key: string]: string;
-  }
+// export type VideoTitle = {
+//   [Language in ISO639LanguageCode]?: {
+//     [key: string]: string;
+//   }
+// } | string;
+
+export type VideoTitle = Record<string, {
+  [key: string]: string;
+}>; // | string;
+
+/**
+ * key should satify `DescriptionType`
+ */
+export interface IHVMLDescription {
+  text: string;
+  jsonml: JSONML;
+  xhtml: string;
 }
 
-class Video extends HVMLElement {
+class HVMLVideoElement extends HVMLElement {
   /**
    * TODO: Make explicit allowed values
    */
-  type: string | string[];
+  type?: string | string[];
 
-  lang?: string;
+  lang: string = '_';
 
-  title: VideoTitle;
+  region: string = '_';
+
+  title?: VideoTitle;
 
   episode?: number;
 
   runtime?: string;
 
-  description: Partial<{ [key in DescriptionType]: unknown }>;
+  description?: Partial<IHVMLDescription>;
 
-  static isValidType( type ) {
+  static isValidType( type: string ) {
     switch ( type ) {
       case 'narrative':
       case 'documentary':
@@ -49,11 +65,11 @@ class Video extends HVMLElement {
     }
   }
 
-  _validateTypes( types, fieldName = 'type' ) {
-    const badTypes = [];
+  _validateTypes( types: string[], fieldName = 'type' ) {
+    const badTypes: string[] = [];
 
     types.forEach( ( type ) => {
-      if ( !Video.isValidType( type ) ) {
+      if ( !HVMLVideoElement.isValidType( type ) ) {
         badTypes.push( type );
       }
     } );
@@ -70,12 +86,16 @@ class Video extends HVMLElement {
   }
 
   _getRegion( lang: string ) {
-    let region;
+    let region: string | undefined;
 
     if ( lang === this.language ) {
       ( { region } = this );
     } else {
       region = '_';
+    }
+
+    if (!region) {
+      region = '_'
     }
 
     return region;
@@ -85,7 +105,7 @@ class Video extends HVMLElement {
     return ( lang.indexOf( '-' ) !== -1 );
   }
 
-  _getLanguageAndRegion( lang: string, regionFallback = () => '_' ) {
+  _getLanguageAndRegion( lang: string, regionFallback = () => '_' ): { language: ISO639LanguageCode; region: string; } {
     let language: string;
     let region: string;
 
@@ -96,10 +116,18 @@ class Video extends HVMLElement {
       region = regionFallback();
     }
 
-    return { language, region };
+    if (isValidISO639LanguageCode(language)) {
+      return { language, region };
+    }
+
+    throw new HVMLTypeError({
+      methodName: '_getLanguageAndRegion',
+      expected: 'Valid ISO-639 two-letter language code',
+      got: language,
+    })
   }
 
-  constructor( config: Partial<Video> = {} ) {
+  constructor( config: Partial<HVMLVideoElement> = {} ) {
     super();
 
     let language;
@@ -140,7 +168,9 @@ class Video extends HVMLElement {
       language = '_';
       region = '_';
     }
-    this.language = language;
+    if (isValidISO639LanguageCode(language)) {
+      this.language = language;
+    }
     this.region = region;
 
     if ( !isUndefined( config.id ) ) {
@@ -160,7 +190,7 @@ class Video extends HVMLElement {
     return this;
   }
 
-  hasType( type ) {
+  hasType( type: string | string[] ) {
     if ( !this.type ) {
       return false;
     }
@@ -172,7 +202,12 @@ class Video extends HVMLElement {
       "expected": ["String", "Array"],
       "input": type,
     };
-    const hasAll = () => type.every( typeValue => this.type.indexOf( typeValue ) !== -1 );
+    /**
+     * FIXME: type coercion
+     * Assuming for now that `hasAll` is only called in contexts
+     * in which we have already established that `type` is an array
+     */
+    const hasAll = () => (type as string[]).every( typeValue => this.type?.indexOf( typeValue ) !== -1 );
 
     if ( Array.isArray( type ) ) {
       const numberOfTypesToCheck = type.length;
@@ -217,8 +252,8 @@ class Video extends HVMLElement {
       "expected": "String",
       "input": title,
     };
-    let language = '_';
-    let region = '_';
+    let language: string = '_';
+    let region: string = '_';
 
     if ( !isString( title ) ) {
       throw new Validation.TypeError( errorData );
@@ -246,7 +281,7 @@ class Video extends HVMLElement {
       ( { language, region } = this );
     }
 
-    return this.title[language][region];
+    return this.title?.[language][region];
   }
 
   setEpisode( number: string | number ) {
@@ -272,7 +307,7 @@ class Video extends HVMLElement {
     return this.episode;
   }
 
-  setRuntime( runtime ) {
+  setRuntime( runtime: string | number ) {
     const errorData = {
       ...this._baseErrorData,
       "fieldName": "runtime",
@@ -303,7 +338,10 @@ class Video extends HVMLElement {
     this.runtime = `PT${runtime}M`;
   }
 
-  getRuntime( format ) {
+  /**
+   * TODO: Enumerate format options in a union type
+   */
+  getRuntime( format: string ) {
     /* istanbul ignore else */
     if ( isString( format ) ) {
       format = format.toLowerCase();
@@ -321,7 +359,7 @@ class Video extends HVMLElement {
   }
 
   /* type = text|xhtml */
-  setDescription( description, type = 'text' ) {
+  setDescription( description: string | { xhtml?: object; text?: string; childNodes?: HVMLCollection }, type = 'text' ) {
     const errorData = {
       ...this._baseErrorData,
       "methodName": "setDescription",
@@ -443,9 +481,9 @@ class Video extends HVMLElement {
   }
 }
 
-export default Video;
+export default HVMLVideoElement;
 
-global.HVML = {
-  ...global.HVML,
-  Video,
+globalThis.HVML = {
+  ...globalThis.HVML,
+  HVMLVideoElement,
 };

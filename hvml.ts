@@ -52,7 +52,7 @@ class HVML extends HVMLElement {
 
   ready: Promise<HVMLElement['json'] | HVMLElement['xml']>;
 
-  constructor( path: string, config: Partial<HVMLConfig> = {} ) {
+  constructor( path: string, userConfig: Partial<HVMLConfig> = {} ) {
     super();
     /*
       readFile(path[, options], callback)
@@ -70,9 +70,9 @@ class HVML extends HVMLElement {
       "encoding": "utf8",
     };
 
-    config = {
+    const config: HVMLConfig = {
       ...defaultConfig,
-      ...config,
+      ...userConfig,
     };
 
     this.namespaces = {
@@ -141,8 +141,10 @@ class HVML extends HVMLElement {
           }
 
           this.xml = xml.parseXmlString( fileContents );
+          // @ts-ignore
           this.json = null;
           this.hvmlPath = path;
+          // @ts-ignore
           this.children = [];
           // this.xsd = xml.parseXmlString( data[1] );
           return this.xml;
@@ -152,6 +154,7 @@ class HVML extends HVMLElement {
           this.xml = null;
           this.json = JSON.parse( fileContents );
           this.hvmlPath = path;
+          // @ts-ignore
           this.children = [];
           // throw new Error( 'JSON Parsing not implemented yet' );
           return this.json;
@@ -164,6 +167,7 @@ class HVML extends HVMLElement {
       this.xml = null;
       this.json = Data.getJsonBoilerplate();
       this.hvmlPath = null;
+      // @ts-ignore
       this.children = [];
       this.ready = Promise.resolve( this.json );
     }
@@ -207,7 +211,7 @@ class HVML extends HVMLElement {
             type: string;
             error: string;
             expecting?: string;
-            got?: string;
+            got?: string | null;
           }
 
           let _validationErrors: string[] = error.toString().trim().split( '\n' );
@@ -387,7 +391,7 @@ class HVML extends HVMLElement {
     } ) );
   }
 
-  appendChild( child ) {
+  appendChild( child: HVMLElement ) {
     const errorData = {
       ...this._baseErrorData,
       "methodName": "appendChild",
@@ -417,7 +421,7 @@ class HVML extends HVMLElement {
 
 export { HVML, Series, Group, Video };
 
-global.HVML = {
-  ...global.HVML,
+globalThis.HVML = {
+  ...globalThis.HVML,
   HVML,
 };

@@ -3,28 +3,39 @@ import set from 'lodash.set';
 import {
   XMLDocument as ILibxmljsXMLDocument,
   XMLElement as ILibxmljsXMLElement,
+  XMLElement,
 } from 'libxmljs';
 
-import Data from './util/data';
+import Data, { HVMLPath, LodashPath } from './util/data';
 import { hasProperty } from './util/types';
 import { ucFirst } from './util/strings';
 import {
   HVMLElementTagName,
+  HVMLGlobalAttributeName,
   HVMLNode,
+  HVMLNodeOrNodeName,
   IHVMLElement,
   JSONLDSerializedHTMLElement,
+  ValidXMLGlobalAttributeName,
 } from './types/elements';
+import { XMLAttribute } from 'libxmljs/dist/lib/node';
+import { HVMLTypeError } from './util/validation';
+import HVMLVideoElement from './video';
 
-class HVMLElement extends HVMLNode {
-  id?: string;
+export type HVMLChildCount = {
+  count: number;
+  i: number;
+};
+export type HVMLChildCounts = Record<string, HVMLChildCount>;
 
-  children: Array<IHVMLElement>;
+// export type IHVMLElement = InstanceType<typeof HVMLElement>;
 
-  json: Partial<IHVMLElement>;
+export class HVMLElement extends HVMLNode {
+  json: Partial<IHVMLElement>; // | null;
 
-  xml: ILibxmljsXMLDocument & ILibxmljsXMLElement;
+  xml: (ILibxmljsXMLDocument & ILibxmljsXMLElement) | null;
 
-  hvmlPath: string;
+  hvmlPath: string | null;
 
   /**
    * Mapping of URIs to XML namespaces
@@ -41,7 +52,12 @@ class HVMLElement extends HVMLNode {
       }
     }
 
+    // @ts-ignore - TS limitation
     this.children = [];
+    this.hvmlPath = null;
+    this.json = {};
+    this.prefixes = {};
+    this.xml = null;
   }
 
   get _baseErrorData() {
@@ -51,15 +67,13 @@ class HVMLElement extends HVMLNode {
   }
 
   /* istanbul ignore next: internals of toJson(), which is already tested */
-  _jsonifyAttribute( attribute, attributePath = [] ) {
+  _jsonifyAttribute( attribute: XMLAttribute, attributePath: LodashPath = [] ) {
     const namespace = attribute.namespace();
     let property = attribute.name();
 
     if ( namespace ) {
       property = `${namespace.prefix()}:${property}`;
     }
-
-    // console.log( attributePath, attribute.name() );
 
     switch ( property ) {
       case 'endtime':
@@ -90,13 +104,17 @@ class HVMLElement extends HVMLNode {
     }
 
     attributePath.push( property );
-    // }
     set( this.json, attributePath, attribute.value() );
     attributePath.pop();
   }
 
   /* istanbul ignore next: internals of toJson(), which is already tested */
-  _jsonifyChild( child, path: (string | number)[] = [], domNode = false, childIndex?: number ) {
+  _jsonifyChild(
+    child: XMLElement,
+    path: LodashPath = [],
+    domNode = false,
+    childIndex?: number,
+  ) {
     const type = child.type();
     const attributes = child.attrs();
     // let path;
@@ -132,7 +150,7 @@ class HVMLElement extends HVMLNode {
         }
 
         if ( Number.isInteger( childIndex ) ) {
-          path.push( childIndex );
+          path.push( childIndex! );
         }
 
         if ( attributes.length ) {
@@ -146,7 +164,16 @@ class HVMLElement extends HVMLNode {
             if ( prefix === 'html' ) {
               let i = -1;
               path.push( 'childNodes' );
-              path.push( null );
+              /**
+               * FIXME: This is the ONLY instance
+               * of pushing `null` onto a path, which
+               * is causing type-checking issues. I’ve
+               * verified that Lodash stringifies `null`s,
+               * so it’s not going to cause any runtime errors
+               * as far as Lodash is concerned. But nevertheless
+               * don’t remember the intent behind this.
+               */
+              path.push( null! );
               grandchildren.forEach( ( grandchild ) => {
                 path.pop();
                 path.push( ++i );
@@ -214,7 +241,8 @@ class HVMLElement extends HVMLNode {
 
               if ( htmlPos !== -1 ) {
                 dupePath.pop();
-                const attrs = child.parent().attrs();
+                const parent = child.parent();
+                const attrs = parent && 'attrs' in parent ? parent.attrs() : [];
                 const obj: JSONLDSerializedHTMLElement = {
                   // Necessary coercion
                   "@type": upone.substring( 5 ) as keyof HTMLElementTagNameMap,
@@ -228,11 +256,12 @@ class HVMLElement extends HVMLNode {
 
                 set( this.json, dupePath, obj );
               } else {
-                const attrs = child.parent().attrs();
+                const parent = child.parent();
+                const attrs = parent && 'attrs' in parent ? parent.attrs() : [];
 
                 if ( attrs.length ) {
                   const value = [];
-                  const keyValue = {};
+                  const keyValue: Record<string, string> = {};
                   attrs.forEach( ( attr ) => {
                     keyValue[attr.name()] = attr.value();
                   } );
@@ -270,32 +299,34 @@ class HVMLElement extends HVMLNode {
   }
 
   /* istanbul ignore next: internals of toJson(), which is already tested */
-  _setJsonChild( child, path = [], root = false, atIndex = null ) {
+  _setJsonChild( child: HVMLNodeOrNodeName, path: LodashPath = [], root = false, atIndex: number | null = null ) {
     const nodeName = child.constructor.name.toLowerCase();
     // const attributes = { ...child };
-    let attributes: HVMLNode = {};
+    let attributes: Partial<HVMLNode> = {};
 
-    if ( child.id ) {
-      attributes['xml:id'] = child.id;
-    }
-
-    if ( child.language && ( child.language !== '_' ) ) {
-      if ( child.region && ( child.region !== '_' ) ) {
-        attributes['xml:lang'] = `${child.language}-${child.region}`;
-      } else {
-        attributes['xml:lang'] = child.language;
+    if (typeof child !== 'string') {
+      if ( child.id ) {
+        attributes['xml:id'] = child.id;
       }
-    }
 
-    attributes = {
-      ...attributes,
-      ...child,
-    };
-    delete attributes.id;
-    delete attributes.children;
-    delete attributes.language;
-    delete attributes.region;
-    delete attributes.instance;
+      if ( child.language && ( child.language !== '_' ) ) {
+        if ( child.region && ( child.region !== '_' ) ) {
+          attributes['xml:lang'] = `${child.language}-${child.region}`;
+        } else {
+          attributes['xml:lang'] = child.language;
+        }
+      }
+
+      attributes = {
+        ...attributes,
+        ...child,
+      };
+      delete attributes.id;
+      delete attributes.children;
+      delete attributes.language;
+      delete attributes.region;
+      delete attributes.instance;
+    }
 
     // const parentNode = path[path.length - 1 ];
 
@@ -330,34 +361,36 @@ class HVMLElement extends HVMLNode {
       }
     }
 
-    if ( child.children.length ) {
-      const grandchildren = child.children;
-      const grandchildCounts = {};
+    if (typeof child !== 'string') {
+      if ( child.children.length ) {
+        const grandchildren = child.children;
+        const grandchildCounts: HVMLChildCounts = {};
 
-      grandchildren.forEach( ( grandchild ) => {
-        const key = grandchild.constructor.name.toLowerCase();
+        grandchildren.forEach( ( grandchild ) => {
+          const key = grandchild.constructor.name.toLowerCase();
 
-        if ( hasProperty( grandchildCounts, key ) ) {
-          grandchildCounts[key].count += 1;
-        } else {
-          grandchildCounts[key] = {
-            "count": 1,
-            "i": -1,
-          };
-        }
-      } );
+          if ( hasProperty( grandchildCounts, key ) ) {
+            grandchildCounts[key].count += 1;
+          } else {
+            grandchildCounts[key] = {
+              "count": 1,
+              "i": -1,
+            };
+          }
+        } );
 
-      grandchildren.forEach( ( grandchild ) => {
-        const grandchildNodeName = grandchild.constructor.name.toLowerCase();
+        grandchildren.forEach( ( grandchild ) => {
+          const grandchildNodeName = grandchild.constructor.name.toLowerCase();
 
-        if ( grandchildCounts[grandchildNodeName].count > 1 ) {
-          ++grandchildCounts[grandchildNodeName].i;
+          if ( grandchildCounts[grandchildNodeName].count > 1 ) {
+            ++grandchildCounts[grandchildNodeName].i;
 
-          this._setJsonChild( grandchild, path, null, grandchildCounts[grandchildNodeName].i );
-        } else {
-          this._setJsonChild( grandchild, path );
-        }
-      } );
+            this._setJsonChild( grandchild, path, null!, grandchildCounts[grandchildNodeName].i );
+          } else {
+            this._setJsonChild( grandchild, path );
+          }
+        } );
+      }
     }
   }
 
@@ -367,15 +400,15 @@ class HVMLElement extends HVMLNode {
       this.json = Data.getJsonBoilerplate();
     }
 
-    if ( this.children.length ) {
-      const path = [];
+    if ( this.children?.length ) {
+      const path: string[] = [];
       // path.push( nodeName );
 
       // this.children.forEach( ( child ) => {
       //   this._setJsonChild( child, path, true );
       // } );
       const { children } = this;
-      const childCounts = {};
+      const childCounts: HVMLChildCounts = {};
 
       children.forEach( ( child ) => {
         const key = child.constructor.name.toLowerCase();
@@ -406,7 +439,7 @@ class HVMLElement extends HVMLNode {
     }
 
     if ( this.xml ) {
-      this.xml.root().childNodes().forEach( ( node ) => {
+      this.xml.root()?.childNodes().forEach( ( node ) => {
         if ( node.type() === 'element' ) {
           const attributes = node.attrs();
           const children = node.childNodes();
@@ -431,10 +464,19 @@ class HVMLElement extends HVMLNode {
     return this.json;
   }
 
-  _momifyChild( key, value, target = this.children ) {
-    if ( key === '@type' ) {
+  _momifyChild(
+    /**
+     * Technically something like:
+     * `HVMLGlobalAttributeName | HVMLElementTagName | ValidXMLGlobalAttributeName`,
+     * but `string` is less of a pain in the ass.
+     */
+    key: string,
+    value: string | object,
+    target = this.children,
+  ) {
+    if ( key === '@type' && typeof value === 'string' ) {
       const className = ucFirst( value );
-      this.children.push( new global.HVML[className]() );
+      this.children.push( new globalThis.HVML[className]() );
     } else {
       const className = ucFirst( key );
       const lastChild = target[target.length - 1];
@@ -444,10 +486,26 @@ class HVMLElement extends HVMLNode {
         case 'string':
           switch ( key ) {
             case 'xml:id':
-              lastChild.id = value;
+              if (typeof lastChild !== 'string') {
+                lastChild.id = value;
+              }
               break;
 
             case 'title':
+              /**
+               * `title` is only valid on select elements
+               * (currently only `<hvml:video>`) but there
+               * is no way to validate what type we are
+               * working with at this stage since the
+               * element is being built one piece at a
+               * time, and type information isn’t necessarily
+               * in place yet.
+               * 
+               * TODO: Maybe introduce an `HVMLAnyElement`
+               * convenience interface (assuming it doesn’t
+               * just create more TS problems).
+               */
+              // @ts-ignore
               lastChild.title = value;
               break;
 
@@ -455,11 +513,17 @@ class HVMLElement extends HVMLNode {
             case 'description':
             // case 'type':
             // case 'recorded':
-              /* istanbul ignore else: edge case */
-              if ( typeof lastChild[setMethod] === 'function' ) {
-                lastChild[setMethod]( value );
-              } else {
-                lastChild[key] = value;
+              if (typeof lastChild !== 'string') {
+                /* istanbul ignore else: edge case */
+                // FIXME:
+                // @ts-ignore - TS refuses to narrow this even with `hasOwnProperty` or `in`
+                if ( typeof lastChild[setMethod] === 'function' ) {
+                  // @ts-ignore
+                  lastChild[setMethod]( value );
+                } else {
+                  // @ts-ignore
+                  lastChild[key] = value;
+                }
               }
               break;
 
@@ -475,23 +539,36 @@ class HVMLElement extends HVMLNode {
         case 'object':
           switch ( key ) {
             case 'description':
-              switch ( value.type ) {
-                case 'xhtml':
-                  lastChild.setDescription( value['html:div'], 'xhtml' );
-                  break;
+              /**
+               * TODO: Same as above re `HVMLAnyElement`. Determine whether
+               * or not to aggressively narrow here. Do we want to be absolutely
+               * type-safe or do we want to support potentially invalid MOM trees
+               * and save conformance checking for the RNG schema parser?
+               */
+              if ('type' in value && lastChild instanceof HVMLVideoElement) {
+                switch ( value.type ) {
+                  case 'xhtml':
+                    if ('html:div' in value) {
+                      lastChild.setDescription( value['html:div'], 'xhtml' );
+                    }
+                    break;
 
-                default:
-                  lastChild.setDescription( value );
-                  break;
+                  default:
+                    lastChild.setDescription( value );
+                    break;
+                }
               }
 
               break;
 
             default:
-              try {
-                lastChild.children.push( new global.HVML[className]() );
-              } catch ( error ) {
-                lastChild.children.push( className );
+              // FIXME: This may be redundant
+              if (typeof lastChild !== 'string') {
+                try {
+                  lastChild.children.push( new globalThis.HVML[className]() );
+                } catch ( error ) {
+                  lastChild.children.push( className );
+                }
               }
           }
           break;
@@ -503,15 +580,32 @@ class HVMLElement extends HVMLNode {
 
   toMom() {
     if ( this.json ) {
+      // @ts-ignore - TS limitation
       this.children = [];
 
       for ( const [key, value] of Object.entries( this.json ) ) {
-        this._momifyChild( key, value );
+        const valueType = typeof value;
+        if ((valueType === 'string' || valueType === 'object') && value) {
+          this._momifyChild( key, value );
+        } else {
+          /**
+           * TODO: Remains to be seen whether this warrants
+           * a type error or not, or if `_momifyChild` should
+           * have its type signature updated from `value: string | object`.
+           */
+          throw new HVMLTypeError({
+            badValues: [`${value}`],
+            expected: ['String', 'Object'],
+            got: typeof value,
+            input: this.json,
+            methodName: 'toMom',
+          })
+        }
       }
-    }
+    } 
 
     if ( this.constructor.name !== 'HVML' ) {
-      const hvml = new global.HVML.HVML();
+      const hvml = new globalThis.HVML.HVML();
       hvml.appendChild( this );
       return hvml;
     }
@@ -519,7 +613,7 @@ class HVMLElement extends HVMLNode {
     return this;
   }
 
-  appendChild( child ) {
+  appendChild( child: HVMLElement ) {
     // const errorData = {
     //   ...this._baseErrorData,
     //   "methodName": "appendChild",
@@ -527,12 +621,12 @@ class HVMLElement extends HVMLNode {
 
     this.children.push( child );
 
-    if ( hasProperty( child, 'id' ) ) {
+    if ( hasProperty( child, 'id' ) && typeof child.id !== 'undefined' ) {
       this.children[child.id] = this.children[this.children.length - 1];
     }
   }
 
-  removeChild( child ) {
+  removeChild( child: HVMLElement ) {
     let i = this.children.length;
 
     while ( i-- ) {
@@ -541,7 +635,7 @@ class HVMLElement extends HVMLNode {
       if ( Object.is( child, this.children[i] ) ) {
         this.children.splice( i, 1 );
 
-        if ( hasProperty( element, 'id' ) ) {
+        if ( typeof element !== 'string' && hasProperty( element, 'id' ) && typeof element.id !== 'undefined' ) {
           delete this.children[element.id];
         }
       }

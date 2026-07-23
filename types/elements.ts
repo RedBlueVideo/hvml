@@ -82,7 +82,9 @@ export type HVMLDescriptionType =
   | 'xhtml'
 ;
 
-export type HVMLCollection = IHVMLNode[] & { [namedIndex: string]: IHVMLNode };
+export type HVMLNodeOrNodeName = HVMLNode | string;
+
+export type HVMLCollection = HVMLNodeOrNodeName[] & { [namedIndex: string]: HVMLNodeOrNodeName };
 
 export class HVMLNode {
   id?: string;
