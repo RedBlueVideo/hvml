@@ -3,7 +3,23 @@
   "version": "0.0.3",
   "description": "HVML Parser for JavaScript",
   "type": "module",
-  "module": "hvml.ts",
+  "main": "./dist/hvml.js",
+  "types": "./dist/hvml.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/hvml.d.ts",
+      "default": "./dist/hvml.js"
+    }
+  },
+  "files": [
+    "dist",
+    "rng",
+    "md2jsonml.d.ts",
+    "xml-trident.d.ts"
+  ],
+  "engines": {
+    "node": ">=18.20"
+  },
   "scripts": {
     "typecheck": "tsc --noEmit",
     "lint": "eslint .",
@@ -19,7 +35,9 @@
     "rng2xsd": "java -jar ./jing-trang/build/trang.jar -I rng -O xsd rng/hvml.rng xsd/hvml.xsd",
     "jing-trang-build": "cd jing-trang && ./ant",
     "trang": "java -jar ./jing-trang/build/trang.jar",
-    "dist": "yarn run test && npm-minify"
+    "build": "rm -rf dist && tsc -p tsconfig.build.json",
+    "dist": "npm test && npm run build && npm-minify",
+    "prepublishOnly": "npm run lint && npm test && npm run build"
   },
   "repository": {
     "type": "git",

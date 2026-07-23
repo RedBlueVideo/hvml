@@ -1,0 +1,24 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "outDir": "dist",
+    "declaration": true,
+    "declarationMap": true,
+    "sourceMap": true
+  },
+  "include": [
+    "hvml.ts",
+    "hvml-element.ts",
+    "video.ts",
+    "series.ts",
+    "group.ts",
+    "description.ts",
+    "types/**/*.ts",
+    "util/**/*.ts",
+    "md2jsonml.d.ts",
+    "xml-trident.d.ts"
+  ],
+  "exclude": [
+    "**/*.test.ts"
+  ]
+}

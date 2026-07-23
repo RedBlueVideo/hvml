@@ -76,7 +76,7 @@ class HVML extends HVMLElement {
 
   ready: Promise<HVMLElement['json'] | HVMLElement['xml']>;
 
-  constructor( path: string, userConfig: Partial<HVMLConfig> = {} ) {
+  constructor( path?: string, userConfig: Partial<HVMLConfig> = {} ) {
     super();
     /*
       readFile(path[, options], callback)
