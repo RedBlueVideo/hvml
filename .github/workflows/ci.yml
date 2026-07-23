@@ -1,0 +1,49 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        # Single entry until libxmljs unpins Node (see .nvmrc);
+        # 20/22 become one-line additions when it does.
+        node-version: ['18.20.8']
+    steps:
+      - uses: actions/checkout@v4
+
+      # xmllint, so the validation suite exercises instead of skipping
+      - run: sudo apt-get update && sudo apt-get install -y libxml2-utils
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: yarn
+
+      - run: yarn install --frozen-lockfile
+
+      - run: npm run typecheck
+      - run: npm run lint
+      - run: npx jest --verbose
+      - run: npm run build
+      - run: npx publint --pack npm
+
+  packaging:
+    # arethetypeswrong requires Node >= 20; libxmljs is optional, so its
+    # native build failing here is non-fatal and irrelevant (static
+    # analysis only).
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: yarn
+
+      - run: yarn install --frozen-lockfile --ignore-engines
+      - run: npm run build
+      - run: npx @arethetypeswrong/cli --pack .
