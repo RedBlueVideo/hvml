@@ -419,7 +419,8 @@ class HVMLVideoElement extends HVMLElement {
 
           case 'object':
             if ( !Array.isArray( description ) && Array.isArray( description.childNodes ) ) {
-              this.description.xhtml = '';
+              // Accumulated locally: closures reset property narrowing
+              let xhtml = '';
 
               description.childNodes.forEach( ( childNode ) => {
                 if ( childNode['@type'] && childNode.textContent ) {
@@ -427,11 +428,13 @@ class HVMLVideoElement extends HVMLElement {
                   delete attributes['@type'];
                   delete attributes.textContent;
 
-                  this.description.xhtml += Transform.jsonMlToXmlString(
+                  xhtml += Transform.jsonMlToXmlString(
                     [childNode['@type'], attributes, childNode.textContent],
                   );
                 }
               } );
+
+              this.description.xhtml = xhtml;
             }
             break;
 

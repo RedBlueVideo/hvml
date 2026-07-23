@@ -41,6 +41,10 @@ describe( 'Video', () => {
       thrownError = error;
     }
 
+    if ( !( thrownError instanceof Validation.DomainError ) ) {
+      throw thrownError;
+    }
+
     expect( thrownError.data ).toEqual(
       expect.objectContaining( {
         "className": "HVMLVideoElement",
@@ -69,6 +73,10 @@ describe( 'Video', () => {
       thrownError = error;
     }
 
+    if ( !( thrownError instanceof Validation.DomainError ) ) {
+      throw thrownError;
+    }
+
     expect( thrownError.data ).toEqual( {
       "className": "HVMLVideoElement",
       "fieldName": "config.type",
@@ -94,6 +102,10 @@ describe( 'Video', () => {
       thrownError = error;
     }
 
+    if ( !( thrownError instanceof Validation.DomainError ) ) {
+      throw thrownError;
+    }
+
     expect( thrownError.data ).toEqual(
       expect.objectContaining( {
         "className": "HVMLVideoElement",
@@ -116,12 +128,18 @@ describe( 'Video', () => {
 
     expect.assertions( 2 );
 
+    // @ts-expect-error — deliberately invalid input; the runtime throw is the point
     expect( () => new Video( configWithBadId ) ).toThrow( Validation.TypeError );
 
     try {
+      // @ts-expect-error — deliberately invalid input; the runtime throw is the point
       new Video( configWithBadId ); // eslint-disable-line no-new
     } catch ( error ) {
       thrownError = error;
+    }
+
+    if ( !( thrownError instanceof Validation.DomainError ) ) {
+      throw thrownError;
     }
 
     expect( thrownError.data ).toEqual(
@@ -156,6 +174,10 @@ describe( 'Video', () => {
       video._validateTypes( mixedValidInvalidTypes );
     } catch ( error ) {
       thrownError = error;
+    }
+
+    if ( !( thrownError instanceof Validation.DomainError ) ) {
+      throw thrownError;
     }
 
     expect( thrownError.data ).toEqual(
@@ -315,6 +337,10 @@ describe( 'Video', () => {
         thrownError = error;
       }
 
+      if ( !( thrownError instanceof Validation.DomainError ) ) {
+        throw thrownError;
+      }
+
       expect( thrownError.data ).toEqual(
         expect.objectContaining( {
           "className": "HVMLVideoElement",
@@ -401,9 +427,14 @@ describe( 'Video', () => {
       expect.assertions( 2 );
 
       try {
+        // @ts-expect-error — deliberately invalid input; the runtime throw is the point
         video.setTitle( null, 'en' );
       } catch ( error ) {
         thrownError = error;
+      }
+
+      if ( !( thrownError instanceof Validation.DomainError ) ) {
+        throw thrownError;
       }
 
       expect( thrownError.constructor.name ).toBe( 'HVMLTypeError' );
@@ -564,9 +595,14 @@ describe( 'Video', () => {
       let thrownError;
 
       try {
+        // @ts-expect-error — deliberately invalid input; the runtime throw is the point
         video.setDescription( text, 'text' );
       } catch ( error ) {
         thrownError = error;
+      }
+
+      if ( !( thrownError instanceof Validation.DomainError ) ) {
+        throw thrownError;
       }
 
       expect( thrownError.data ).toEqual(
@@ -671,12 +707,18 @@ describe( 'Video', () => {
 
       expect.assertions( 5 );
 
+      // @ts-expect-error — deliberately invalid input; the runtime throw is the point
       expect( () => video.setRuntime( nullValue ) ).toThrow( Validation.TypeError );
 
       try {
+        // @ts-expect-error — deliberately invalid input; the runtime throw is the point
         video.setRuntime( nullValue );
       } catch ( error ) {
         thrownErrorOne = error;
+      }
+
+      if ( !( thrownErrorOne instanceof Validation.DomainError ) ) {
+        throw thrownErrorOne;
       }
 
       expect( thrownErrorOne.constructor.name ).toBe( 'HVMLTypeError' );
@@ -697,6 +739,10 @@ describe( 'Video', () => {
         video.setRuntime( subZeroValue );
       } catch ( error ) {
         thrownErrorTwo = error;
+      }
+
+      if ( !( thrownErrorTwo instanceof Validation.DomainError ) ) {
+        throw thrownErrorTwo;
       }
 
       expect( thrownErrorTwo.constructor.name ).toBe( 'HVMLRangeError' );

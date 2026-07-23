@@ -121,7 +121,7 @@ class HVML extends HVMLElement {
     };
 
     this.prefixes = Object.keys( this.namespaces )
-      .reduce( ( accumulator, currentPrefix ) => {
+      .reduce<{ [uri: string]: string }>( ( accumulator, currentPrefix ) => {
         accumulator[this.namespaces[currentPrefix]] = currentPrefix;
         return accumulator;
       }, {} );

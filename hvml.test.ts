@@ -27,8 +27,9 @@ const libxmljsAvailable = !libxmljsUnavailable;
 const skipIfLibxmljsUnavailable = skipIf( () => libxmljsUnavailable );
 
 const skipIfXmllintUnavailable = skipIf( () => {
-  let exitCode;
-  let error;
+  let exitCode: unknown;
+  let stdout: unknown = '';
+  let stderr: unknown = '';
 
   if ( libxmljsUnavailable ) {
     return true;
@@ -37,14 +38,17 @@ const skipIfXmllintUnavailable = skipIf( () => {
   try {
     exitCode = execSync( 'xmllint', { "encoding": "utf8" } );
   } catch ( err ) {
-    error = err;
-    exitCode = err.status;
+    if ( err && typeof err === 'object' ) {
+      exitCode = ( 'status' in err ) ? err.status : undefined;
+      stdout = ( 'stdout' in err ) ? err.stdout : '';
+      stderr = ( 'stderr' in err ) ? err.stderr : '';
+    }
   }
 
   return (
     ( exitCode === 127 )
     // xmllint prints its usage text to stderr on current libxml2
-    || !/xmllint \[options\] XMLfiles/.test( `${error.stdout}${error.stderr}` )
+    || !/xmllint \[options\] XMLfiles/.test( `${stdout}${stderr}` )
   );
 } );
 
@@ -67,7 +71,7 @@ describe( 'HVML', () => {
       expect.assertions( 2 );
 
       expect( hvml.ready ).resolves.toEqual( expect.anything() );
-      hvml.ready.then( ( xml ) => {
+      hvml.ready.then( ( xml: unknown ) => {
         const { XMLDocument } = require( 'libxmljs' );
         expect( xml ).toBeInstanceOf( XMLDocument );
         done();
@@ -121,8 +125,8 @@ describe( 'HVML', () => {
         .then( () => {
           expect( hvml.toJson() ).toStrictEqual( JSON_LD );
         } )
-        .catch( ( error ) => {
-          throw new Error( error.toString() );
+        .catch( ( error: unknown ) => {
+          throw new Error( String( error ) );
         } );
     } );
 
@@ -132,8 +136,8 @@ describe( 'HVML', () => {
         .then( () => {
           expect( hvml.toJson() ).toStrictEqual( JSON_LD );
         } )
-        .catch( ( error ) => {
-          throw new Error( error.toString() );
+        .catch( ( error: unknown ) => {
+          throw new Error( String( error ) );
         } );
     } );
   } );
@@ -168,7 +172,7 @@ describe( 'HVML', () => {
 
       return goodHvml.ready
         .then( () => goodHvml.validate() )
-        .then( ( goodValidationResult ) => {
+        .then( ( goodValidationResult: unknown ) => {
           expect( goodValidationResult ).toStrictEqual( true );
         } );
     } );
@@ -182,10 +186,10 @@ describe( 'HVML', () => {
 
         return badHvml.ready
           .then( () => badHvml.validate() )
-          .then( ( badValidationResult ) => {
+          .then( ( badValidationResult: unknown ) => {
             expect( badValidationResult ).toBeUndefined();
           } )
-          .catch( ( error ) => {
+          .catch( ( error: unknown ) => {
             expect( error ).toStrictEqual( [{
               "error": "Expecting element hvml, got ovml",
               "expecting": "hvml",
@@ -206,10 +210,10 @@ describe( 'HVML', () => {
 
         return badHvml.ready
           .then( () => badHvml.validate() )
-          .then( ( badValidationResult ) => {
+          .then( ( badValidationResult: unknown ) => {
             expect( badValidationResult ).toBeUndefined();
           } )
-          .catch( ( error ) => {
+          .catch( ( error: unknown ) => {
             expect( error ).toStrictEqual( [{
               "error": "Element hvml has wrong namespace: expecting https://hypervideo.tech/hvml#",
               "element": "hvml",
@@ -231,10 +235,10 @@ describe( 'HVML', () => {
 
         return badHvml.ready
           .then( () => badHvml.validate() )
-          .then( ( badValidationResult ) => {
+          .then( ( badValidationResult: unknown ) => {
             expect( badValidationResult ).toBeUndefined();
           } )
-          .catch( ( error ) => {
+          .catch( ( error: unknown ) => {
             expect( error ).toStrictEqual( [{
               "error": "Expecting a namespace for element hvml",
               "element": "hvml",
@@ -256,10 +260,10 @@ describe( 'HVML', () => {
 
         return badHvml.ready
           .then( () => badHvml.validate() )
-          .then( ( badValidationResult ) => {
+          .then( ( badValidationResult: unknown ) => {
             expect( badValidationResult ).toBeUndefined();
           } )
-          .catch( ( error ) => {
+          .catch( ( error: unknown ) => {
             expect( error ).toStrictEqual( [{
               "error": "Did not expect text in element hvml content",
               "element": "hvml",
@@ -280,10 +284,10 @@ describe( 'HVML', () => {
 
         return badHvml.ready
           .then( () => badHvml.validate() )
-          .then( ( badValidationResult ) => {
+          .then( ( badValidationResult: unknown ) => {
             expect( badValidationResult ).toBeUndefined();
           } )
-          .catch( ( error ) => {
+          .catch( ( error: unknown ) => {
             expect( error ).toStrictEqual( [{
               "error": "Invalid attribute x for element hvml",
               "element": "hvml",
@@ -304,10 +308,10 @@ describe( 'HVML', () => {
 
         return badHvml.ready
           .then( () => badHvml.validate() )
-          .then( ( badValidationResult ) => {
+          .then( ( badValidationResult: unknown ) => {
             expect( badValidationResult ).toBeUndefined();
           } )
-          .catch( ( error ) => {
+          .catch( ( error: unknown ) => {
             expect( error ).toStrictEqual( [{
               "error": "Did not expect element big-chungus there",
               // "element": "hvml",
@@ -327,8 +331,13 @@ describe( 'HVML', () => {
 
       hvml.ready
         .then( () => hvml.validate( 'wtf' ) )
-        .catch( ( validationErrors ) => {
-          expect( validationErrors.message ).toBe( 'Optional dependency xmllint is not installed, so HVML::validate can not be used' );
+        .catch( ( validationErrors: unknown ) => {
+          expect( validationErrors ).toBeInstanceOf( Error );
+
+          if ( validationErrors instanceof Error ) {
+            expect( validationErrors.message ).toBe( 'Optional dependency xmllint is not installed, so HVML::validate can not be used' );
+          }
+
           done();
         } );
     } );
@@ -378,6 +387,10 @@ describe( 'HVML', () => {
         hvml.appendChild( channel );
       } catch ( error ) {
         thrownError = error;
+      }
+
+      if ( !( thrownError instanceof Validation.EnumError ) ) {
+        throw thrownError;
       }
 
       expect( thrownError.constructor ).toBe( Validation.EnumError );

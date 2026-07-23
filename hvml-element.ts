@@ -11,7 +11,6 @@ import { hasMethod, hasProperty } from './util/types.js';
 import { ucFirst } from './util/strings.js';
 import {
   createHVMLCollection,
-  HVMLElementTagName,
   HVMLGlobalAttributeName,
   HVMLNode,
   HVMLTitle,
@@ -85,8 +84,16 @@ export class HVMLElement extends HVMLNode {
     };
   }
 
+  /**
+   * `toJson()` establishes `json` before delegating to the `_jsonify*`
+   * internals; each self-defends anyway so the null-flow is airtight.
+   */
   /* istanbul ignore next: internals of toJson(), which is already tested */
   _jsonifyAttribute( attribute: XMLAttribute, attributePath: LodashPath = [] ) {
+    if ( !this.json ) {
+      this.json = Data.getJsonBoilerplate();
+    }
+
     const namespace = attribute.namespace();
     let property = attribute.name();
 
@@ -134,6 +141,10 @@ export class HVMLElement extends HVMLNode {
     domNode = false,
     childIndex?: number,
   ) {
+    if ( !this.json ) {
+      this.json = Data.getJsonBoilerplate();
+    }
+
     const type = child.type();
     const attributes = child.attrs();
     // let path;
@@ -318,6 +329,10 @@ export class HVMLElement extends HVMLNode {
 
   /* istanbul ignore next: internals of toJson(), which is already tested */
   _setJsonChild( child: HVMLElement, path: LodashPath = [], root = false, atIndex: number | null = null ) {
+    if ( !this.json ) {
+      this.json = Data.getJsonBoilerplate();
+    }
+
     const { nodeName } = child;
     // const attributes = { ...child };
     let attributes: Partial<HVMLElement> = {};
@@ -458,13 +473,19 @@ export class HVMLElement extends HVMLNode {
     }
 
     if ( this.xml ) {
+      /**
+       * Captured because closures reset TS’s property narrowing; the
+       * reference stays current — nothing below reassigns `this.json`,
+       * only mutates it.
+       */
+      const json = this.json;
+
       this.xml.root()?.childNodes().forEach( ( node ) => {
         if ( node.type() === 'element' ) {
           const attributes = node.attrs();
           const children = node.childNodes();
 
-          // Necessary coercion
-          this.json['@type'] = node.name() as HVMLElementTagName;
+          json['@type'] = node.name();
 
           attributes.forEach( ( attribute ) => {
             this._jsonifyAttribute( attribute );

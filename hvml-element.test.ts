@@ -117,7 +117,7 @@ describe( 'HVMLElement', () => {
           expect( firstChild ).toBeInstanceOf( Video );
 
           if ( firstChild instanceof Video ) {
-            expect( firstChild.description.text ).toBe( 'Full Facebook Live stream: https://www.facebook.com/hugh.guiney/videos/10100195051457860/\n\n#mfaNOW #mfaLateNites' );
+            expect( firstChild.description?.text ).toBe( 'Full Facebook Live stream: https://www.facebook.com/hugh.guiney/videos/10100195051457860/\n\n#mfaNOW #mfaLateNites' );
           }
 
           done();

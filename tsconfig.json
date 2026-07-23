@@ -1,6 +1,7 @@
 {
   "compilerOptions": {
     "outDir": "compiled",
+    "strict": true,
     "target": "ES2022",
     "lib": ["ES2022"],
     "module": "NodeNext",
