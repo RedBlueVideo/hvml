@@ -31,12 +31,12 @@ describe( 'Video', () => {
 
     expect.assertions( 2 );
 
-    // @ts-expect-error
+    // @ts-expect-error — deliberately invalid input; the runtime throw is the point
     expect( () => new Video( badConfig ) ).toThrow( Validation.TypeError );
 
     try {
-      // @ts-expect-error
-      new Video( badConfig ); // eslint-disable-line no-new
+      // @ts-expect-error — deliberately invalid input; the runtime throw is the point
+      new Video( badConfig );  
     } catch ( error ) {
       thrownError = error;
     }
@@ -68,7 +68,7 @@ describe( 'Video', () => {
     expect( () => new Video( badTypes ) ).toThrow( Validation.EnumError );
 
     try {
-      new Video( badTypes ); // eslint-disable-line no-new
+      new Video( badTypes );  
     } catch ( error ) {
       thrownError = error;
     }
@@ -92,12 +92,12 @@ describe( 'Video', () => {
 
     expect.assertions( 2 );
 
-    // @ts-expect-error
+    // @ts-expect-error — deliberately invalid input; the runtime throw is the point
     expect( () => new Video( badType ) ).toThrow( Validation.TypeError );
 
     try {
-      // @ts-expect-error
-      new Video( badType ); // eslint-disable-line no-new
+      // @ts-expect-error — deliberately invalid input; the runtime throw is the point
+      new Video( badType );  
     } catch ( error ) {
       thrownError = error;
     }
@@ -133,7 +133,7 @@ describe( 'Video', () => {
 
     try {
       // @ts-expect-error — deliberately invalid input; the runtime throw is the point
-      new Video( configWithBadId ); // eslint-disable-line no-new
+      new Video( configWithBadId );  
     } catch ( error ) {
       thrownError = error;
     }

@@ -19,8 +19,10 @@ export type XHTMLTagName = string;
 export interface JSONLDSerializedHTMLElement {
   /**
    * This should technically conform to only
-   * valid HTML attributes.
+   * valid HTML attributes. `any` (not `unknown`) so serialized
+   * attribute records stay assignable to JSONMLAttributes.
    */
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   [propertyName: string]: any;
   "@type"?: XHTMLTagName;
   "textContent"?: string;

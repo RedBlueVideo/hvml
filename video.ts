@@ -457,7 +457,7 @@ class HVMLVideoElement extends HVMLElement {
     }
   }
 
-  getDescription( type?: DescriptionType, parseMarkdown = true, newlinesToBRs = true ) { // eslint-disable-line consistent-return
+  getDescription( type?: DescriptionType, parseMarkdown = true, newlinesToBRs = true ) {  
     if ( !this.description ) {
       return null;
     }

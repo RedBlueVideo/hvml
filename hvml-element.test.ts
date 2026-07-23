@@ -28,7 +28,7 @@ describe( 'HVMLElement', () => {
       hvmlElement.appendChild( secondChannel );
 
       expect( hvmlElement.children?.length ).toBe( 2 );
-      expect( Object.keys( hvmlElement.children! ).length ).toBe( 2 );
+      expect( Object.keys( hvmlElement.children ).length ).toBe( 2 );
       expect( hvmlElement.children?.[0] ).toStrictEqual( channel );
       expect( hvmlElement.children?.[1] ).toStrictEqual( secondChannel );
     } );
@@ -59,7 +59,7 @@ describe( 'HVMLElement', () => {
       hvmlElement.removeChild( channel );
 
       expect( hvmlElement.children?.length ).toBe( 1 );
-      expect( Object.keys( hvmlElement.children! ).length ).toBe( 1 );
+      expect( Object.keys( hvmlElement.children ).length ).toBe( 1 );
     } );
 
     it( 'deregisters named indices when removing children with IDs', () => {
@@ -76,7 +76,7 @@ describe( 'HVMLElement', () => {
       hvmlElement.removeChild( channel );
 
       expect( hvmlElement.children?.length ).toBe( 1 );
-      expect( Object.keys( hvmlElement.children! ).length ).toBe( 2 );
+      expect( Object.keys( hvmlElement.children ).length ).toBe( 2 );
       expect( hvmlElement.children?.['welcome-to-my-channel'] ).toBeUndefined();
       expect( hvmlElement.children?.['welcome-to-my-second-channel'] ).toStrictEqual( secondChannel );
     } );
@@ -128,9 +128,9 @@ describe( 'HVMLElement', () => {
           } );
       } );
 
-      it( 'handles object descriptions', async () => {
+      it( 'handles object descriptions', () => {
         hvml = new HVML( './examples/text-description--object.jsonld' );
-        hvml.ready.then( () => {
+        return hvml.ready.then( () => {
           const MOM = hvml!.toMom();
           const firstChild = MOM.children[0];
           // const { description } = children;
@@ -140,8 +140,7 @@ describe( 'HVMLElement', () => {
           console.debug( 'firstChild', firstChild );
           // console.debug( 'description', description );
           // expect( description.text ).toBe( 'Full Facebook Live stream: https://www.facebook.com/hugh.guiney/videos/10100195051457860/\n\n#mfaNOW #mfaLateNites' );
-        } )
-          .catch( ( error ) => { throw new Error( error ); } );
+        } );
       } );
     } );
   } );
@@ -245,7 +244,7 @@ describe( 'HVMLElement', () => {
       const imperativeToJson = hvmlElement.toJson();
 
       hvml = new HVML( './examples/series.xml' );
-      hvml.ready.then( () => {
+      void hvml.ready.then( () => {
         const declarativeToJson = hvml!.toJson();
 
         expect( imperativeToJson ).toStrictEqual( declarativeToJson );

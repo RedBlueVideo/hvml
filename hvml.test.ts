@@ -1,4 +1,4 @@
-/* eslint-disable global-require */
+ 
 import skipIf from 'skip-if';
 import { execSync } from 'child_process';
 import { readFileSync } from 'fs';
@@ -16,8 +16,8 @@ const libxmljsUnavailable = ( () => {
   try {
     ( require.resolve( 'libxmljs' ) );
     canParseXml = true;
-  } catch ( error ) {
-    // eslint-disable-line no-empty
+  } catch {
+    // Not installed
   }
 
   return !canParseXml;
@@ -48,7 +48,7 @@ const skipIfXmllintUnavailable = skipIf( () => {
   return (
     ( exitCode === 127 )
     // xmllint prints its usage text to stderr on current libxml2
-    || !/xmllint \[options\] XMLfiles/.test( `${stdout}${stderr}` )
+    || !/xmllint \[options\] XMLfiles/.test( `${String( stdout )}${String( stderr )}` )
   );
 } );
 
@@ -64,18 +64,14 @@ describe( 'HVML', () => {
       return expect( hvml.ready ).resolves.toEqual( { "@context": JSON_LD['@context'] } );
     } );
 
-    skipIfLibxmljsUnavailable( 'from XML', ( done ) => {
+    skipIfLibxmljsUnavailable( 'from XML', async () => {
       const { HVML } = require( './hvml' );
+      const { XMLDocument } = require( 'libxmljs' );
       const hvml = new HVML( './examples/hvml.xml' );
 
-      expect.assertions( 2 );
+      expect.assertions( 1 );
 
-      expect( hvml.ready ).resolves.toEqual( expect.anything() );
-      hvml.ready.then( ( xml: unknown ) => {
-        const { XMLDocument } = require( 'libxmljs' );
-        expect( xml ).toBeInstanceOf( XMLDocument );
-        done();
-      } );
+      await expect( hvml.ready ).resolves.toBeInstanceOf( XMLDocument );
     } );
 
     test( 'from XML: throws an error when libxmljs is not installed', () => {
@@ -196,7 +192,7 @@ describe( 'HVML', () => {
               "file": badHvmlPath,
               "got": "ovml",
               "line": "3",
-              "message": `${badHvmlPath}:3: element ovml: Relax-NG validity error : Expecting element hvml, got ovml`, // eslint-disable-line
+              "message": `${badHvmlPath}:3: element ovml: Relax-NG validity error : Expecting element hvml, got ovml`,  
               "type": "validity",
             }] );
           } );

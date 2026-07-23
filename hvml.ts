@@ -10,10 +10,9 @@ import Group from './group.js';
 import { createRequire } from 'module';
 
 import Validation from './util/validation.js';
-import { hasProperty } from './util/types.js';
 import { defineHVMLElement } from './util/registry.js';
 import Data from './util/data.js';
-import { createHVMLCollection, IHVMLElement } from './types/elements.js';
+import { createHVMLCollection } from './types/elements.js';
 
 import type { XMLDocument as ILibxmljsXMLDocument } from 'libxmljs';
 
@@ -39,10 +38,11 @@ const nodeRequire = createRequire( import.meta.url );
 let parseXml: XMLParser | null = null;
 
 try {
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment -- require() trust boundary, constrained by LibxmljsModule
   const libxmljs: LibxmljsModule = nodeRequire( 'libxmljs' );
   /* istanbul ignore next */
   parseXml = libxmljs.parseXml ?? libxmljs.parseXmlString ?? null;
-} catch ( error ) {
+} catch {
   // Optional dependency not installed
 }
 
@@ -174,6 +174,7 @@ class HVML extends HVMLElement {
 
         if ( isJson ) {
           this.xml = null;
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment -- JSON.parse trust boundary; conformance is the RNG validator's job
           this.json = JSON.parse( fileContents );
           this.hvmlPath = path;
           this.children = createHVMLCollection();
@@ -196,7 +197,7 @@ class HVML extends HVMLElement {
   validate( xmllintPath = 'xmllint' ) {
     // return this.xml.validate( this.xsd );
     return ( new Promise( ( resolve, reject ) => {
-      exec( `${xmllintPath} --nowarning --noout --relaxng ${this.schemaPath} ${this.hvmlPath}`, ( error, stdout, stderr ) => { // eslint-disable-line
+      exec( `${xmllintPath} --nowarning --noout --relaxng ${this.schemaPath} ${this.hvmlPath}`, ( error, stdout, stderr ) => {  
         if ( error ) {
           /* istanbul ignore next */
           const xmllintNotFound = (
@@ -234,7 +235,8 @@ class HVML extends HVMLElement {
             got?: string | null;
           }
 
-          let _validationErrors: string[] = error.toString().trim().split( '\n' );
+          // eslint-disable-next-line @typescript-eslint/no-base-to-string -- ExecException stringifies via Error.prototype.toString; the parser depends on that exact format
+          const _validationErrors: string[] = error.toString().trim().split( '\n' );
           _validationErrors.shift();
           _validationErrors.pop();
 
@@ -397,6 +399,7 @@ class HVML extends HVMLElement {
             throw new Validation.DomainError( currentValue );
           } );
 
+          // eslint-disable-next-line @typescript-eslint/prefer-promise-reject-errors -- public API contract: validate() rejects with the ValidationError[] payload (tested)
           reject( validationErrors );
         } else {
           // xmllint prints diagnostic information, good or bad, to stderr

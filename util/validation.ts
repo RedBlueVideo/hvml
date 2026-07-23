@@ -57,13 +57,9 @@ export class HVMLTypeError extends HVMLDomainError {
   }
 
   static getExpected( data: IHVMLDomainError ) {
-    let expected;
-
-    if ( Array.isArray( data.expected ) ) {
-      expected = data.expected.join( '|' );
-    } else {
-      ( { expected } = data );
-    }
+    const expected = Array.isArray( data.expected )
+      ? data.expected.join( '|' )
+      : data.expected;
 
     if ( !expected ) {
       const error = new HVMLTypeError( {
@@ -182,7 +178,7 @@ export class HVMLEnumError extends HVMLDomainError {
       try {
         forField = ` for ${HVMLTypeError.getFieldOrParameter( data )}`;
       // Only time getFieldOrParameter throws is if className is present but fieldName is missing.
-      } catch ( error ) {
+      } catch {
         forField = ` for ${data.className}.${data.methodName || 'constructor'}`;
       }
     }

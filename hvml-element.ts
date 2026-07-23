@@ -6,17 +6,15 @@ import {
   XMLElement,
 } from 'libxmljs';
 
-import Data, { HVMLPath, LodashPath } from './util/data.js';
+import Data, { LodashPath } from './util/data.js';
 import { hasMethod, hasProperty } from './util/types.js';
 import { ucFirst } from './util/strings.js';
 import {
   createHVMLCollection,
-  HVMLGlobalAttributeName,
   HVMLNode,
   HVMLTitle,
   IHVMLElement,
   JSONLDSerializedHTMLElement,
-  ValidXMLGlobalAttributeName,
 } from './types/elements.js';
 import { HVMLTypeError } from './util/validation.js';
 import { createHVMLElement } from './util/registry.js';
@@ -622,7 +620,7 @@ export class HVMLElement extends HVMLNode {
            * have its type signature updated from `value: string | object`.
            */
           throw new HVMLTypeError({
-            badValues: [`${value}`],
+            badValues: [String( value )],
             expected: ['String', 'Object'],
             got: typeof value,
             input: this.json,
@@ -669,7 +667,8 @@ export class HVMLElement extends HVMLNode {
       if ( Object.is( child, this.children[i] ) ) {
         this.children.splice( i, 1 );
 
-        if ( typeof element !== 'string' && hasProperty( element, 'id' ) && typeof element.id !== 'undefined' ) {
+        if ( hasProperty( element, 'id' ) && typeof element.id !== 'undefined' ) {
+          // eslint-disable-next-line @typescript-eslint/no-array-delete -- removing the NAMED index (DOM-style live collection), not an array slot
           delete this.children[element.id];
         }
       }
