@@ -1,8 +1,8 @@
 import set from 'lodash.set';
 // import Video from './video';
 import {
+  XMLAttribute,
   XMLDocument as ILibxmljsXMLDocument,
-  XMLElement as ILibxmljsXMLElement,
   XMLElement,
 } from 'libxmljs';
 
@@ -18,7 +18,6 @@ import {
   JSONLDSerializedHTMLElement,
   ValidXMLGlobalAttributeName,
 } from './types/elements';
-import { XMLAttribute } from 'libxmljs/dist/lib/node';
 import { HVMLTypeError } from './util/validation';
 import { createHVMLElement } from './util/registry';
 
@@ -41,7 +40,7 @@ function getNodeName( node: HVMLNodeOrNodeName ): string {
 export class HVMLElement extends HVMLNode {
   json: Partial<IHVMLElement> | null;
 
-  xml: (ILibxmljsXMLDocument & ILibxmljsXMLElement) | null;
+  xml: ILibxmljsXMLDocument | null;
 
   hvmlPath: string | null;
 

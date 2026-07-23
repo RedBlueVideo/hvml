@@ -43,7 +43,8 @@ const skipIfXmllintUnavailable = skipIf( () => {
 
   return (
     ( exitCode === 127 )
-    || !/xmllint \[options\] XMLfiles/.test( error.stdout )
+    // xmllint prints its usage text to stderr on current libxml2
+    || !/xmllint \[options\] XMLfiles/.test( `${error.stdout}${error.stderr}` )
   );
 } );
 
@@ -67,7 +68,8 @@ describe( 'HVML', () => {
 
       expect( hvml.ready ).resolves.toEqual( expect.anything() );
       hvml.ready.then( ( xml ) => {
-        expect( xml.constructor.name ).toBe( 'Document' );
+        const { XMLDocument } = require( 'libxmljs' );
+        expect( xml ).toBeInstanceOf( XMLDocument );
         done();
       } );
     } );
@@ -161,31 +163,27 @@ describe( 'HVML', () => {
     // TODO: Convert to ESM if possible
     const { HVML } = require( './hvml' );
 
-    skipIfXmllintUnavailable( 'validates good HVML', ( done ) => {
+    skipIfXmllintUnavailable( 'validates good HVML', () => {
       const goodHvml = new HVML( './examples/hvml.xml' );
 
       return goodHvml.ready
         .then( () => goodHvml.validate() )
         .then( ( goodValidationResult ) => {
           expect( goodValidationResult ).toStrictEqual( true );
-          done();
-        } )
-        .catch( ( error ) => {
-          expect( error ).toBeUndefined();
-          done();
         } );
     } );
 
     describe( 'validates bad HVML', () => {
-      skipIfXmllintUnavailable( 'unexpected element', ( done ) => {
+      skipIfXmllintUnavailable( 'unexpected element', () => {
         const badHvmlPath = './examples/legacy/redblue.ovml.xml';
         const badHvml = new HVML( badHvmlPath );
+
+        expect.assertions( 1 );
 
         return badHvml.ready
           .then( () => badHvml.validate() )
           .then( ( badValidationResult ) => {
             expect( badValidationResult ).toBeUndefined();
-            done();
           } )
           .catch( ( error ) => {
             expect( error ).toStrictEqual( [{
@@ -197,19 +195,19 @@ describe( 'HVML', () => {
               "message": `${badHvmlPath}:3: element ovml: Relax-NG validity error : Expecting element hvml, got ovml`, // eslint-disable-line
               "type": "validity",
             }] );
-            done();
           } );
       } );
 
-      skipIfXmllintUnavailable( 'wrong namespace', ( done ) => {
+      skipIfXmllintUnavailable( 'wrong namespace', () => {
         const badHvmlPath = './examples/legacy/vlog.hvml';
         const badHvml = new HVML( badHvmlPath );
+
+        expect.assertions( 1 );
 
         return badHvml.ready
           .then( () => badHvml.validate() )
           .then( ( badValidationResult ) => {
             expect( badValidationResult ).toBeUndefined();
-            done();
           } )
           .catch( ( error ) => {
             expect( error ).toStrictEqual( [{
@@ -222,19 +220,19 @@ describe( 'HVML', () => {
               "message": `${badHvmlPath}:2: element hvml: Relax-NG validity error : Element hvml has wrong namespace: expecting https://hypervideo.tech/hvml#`,
               "type": "validity error",
             }] );
-            done(error);
           } );
       } );
 
-      skipIfXmllintUnavailable( 'missing namespace', ( done ) => {
+      skipIfXmllintUnavailable( 'missing namespace', () => {
         const badHvmlPath = './examples/bad/missing-namespace.hvml';
         const badHvml = new HVML( badHvmlPath );
+
+        expect.assertions( 1 );
 
         return badHvml.ready
           .then( () => badHvml.validate() )
           .then( ( badValidationResult ) => {
             expect( badValidationResult ).toBeUndefined();
-            done();
           } )
           .catch( ( error ) => {
             expect( error ).toStrictEqual( [{
@@ -247,19 +245,19 @@ describe( 'HVML', () => {
               "message": `${badHvmlPath}:2: element hvml: Relax-NG validity error : Expecting a namespace for element hvml`,
               "type": "validity error",
             }] );
-            done();
           } );
       } );
 
-      skipIfXmllintUnavailable( 'unexpected text', ( done ) => {
+      skipIfXmllintUnavailable( 'unexpected text', () => {
         const badHvmlPath = './examples/bad/unexpected-text-children.hvml';
         const badHvml = new HVML( badHvmlPath );
+
+        expect.assertions( 1 );
 
         return badHvml.ready
           .then( () => badHvml.validate() )
           .then( ( badValidationResult ) => {
             expect( badValidationResult ).toBeUndefined();
-            done();
           } )
           .catch( ( error ) => {
             expect( error ).toStrictEqual( [{
@@ -271,19 +269,19 @@ describe( 'HVML', () => {
               "message": `${badHvmlPath}:2: element hvml: Relax-NG validity error : Did not expect text in element hvml content`,
               "type": "validity error",
             }] );
-            done();
           } );
       } );
 
-      skipIfXmllintUnavailable( 'invalid attribute', ( done ) => {
+      skipIfXmllintUnavailable( 'invalid attribute', () => {
         const badHvmlPath = './examples/bad/invalid-attribute.hvml';
         const badHvml = new HVML( badHvmlPath );
+
+        expect.assertions( 1 );
 
         return badHvml.ready
           .then( () => badHvml.validate() )
           .then( ( badValidationResult ) => {
             expect( badValidationResult ).toBeUndefined();
-            done();
           } )
           .catch( ( error ) => {
             expect( error ).toStrictEqual( [{
@@ -295,20 +293,19 @@ describe( 'HVML', () => {
               "message": `${badHvmlPath}:2: element hvml: Relax-NG validity error : Invalid attribute x for element hvml`,
               "type": "validity error",
             }] );
-            done();
           } );
       } );
 
-      skipIfXmllintUnavailable( 'unexpected element', ( done ) => {
+      skipIfXmllintUnavailable( 'unexpected element', () => {
         const badHvmlPath = './examples/bad/unexpected-element.hvml';
         const badHvml = new HVML( badHvmlPath );
+
+        expect.assertions( 1 );
 
         return badHvml.ready
           .then( () => badHvml.validate() )
           .then( ( badValidationResult ) => {
-          //   expect( badValidationResult ).toBeUndefined();
-            console.log( 'badValidationResult', badValidationResult );
-            done();
+            expect( badValidationResult ).toBeUndefined();
           } )
           .catch( ( error ) => {
             expect( error ).toStrictEqual( [{
@@ -320,7 +317,6 @@ describe( 'HVML', () => {
               "message": `${badHvmlPath}:3: element big-chungus: Relax-NG validity error : Did not expect element big-chungus there`,
               "type": "validity error",
             }] );
-            done();
           } );
       } );
     } );

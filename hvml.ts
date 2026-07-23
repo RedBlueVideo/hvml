@@ -7,24 +7,43 @@ import Video from './video';
 import Series from './series';
 import Group from './group';
 
+import { createRequire } from 'module';
+
 import Validation from './util/validation';
 import { hasProperty } from './util/types';
 import { defineHVMLElement } from './util/registry';
 import Data from './util/data';
-import { XMLElement } from 'libxmljs';
 import { IHVMLElement } from './types/elements';
 
-let xml;
-let canParseXml = false;
+import type { XMLDocument as ILibxmljsXMLDocument } from 'libxmljs';
+
+type XMLParser = ( source: string ) => ILibxmljsXMLDocument;
+
+/**
+ * libxmljs ≥1.0 renamed `parseXmlString` to `parseXml`; accept both so
+ * the optional dependency works across the rename.
+ */
+interface LibxmljsModule {
+  parseXml?: XMLParser;
+  parseXmlString?: XMLParser;
+}
+
+/**
+ * libxmljs is a native optional dependency: load it imperatively so a
+ * missing or failed install degrades to OptionalDependencyNotInstalled
+ * at parse time instead of breaking module evaluation. `createRequire`
+ * preserves that try/catch semantic under ESM.
+ */
+const nodeRequire = createRequire( import.meta.url );
+
+let parseXml: XMLParser | null = null;
 
 try {
-  xml = require( 'libxmljs' ); /* eslint-disable-line global-require */ /* eslint-disable-line import/no-extraneous-dependencies */
+  const libxmljs: LibxmljsModule = nodeRequire( 'libxmljs' );
   /* istanbul ignore next */
-  if ( hasProperty( xml, 'parseXmlString' ) ) {
-    canParseXml = true;
-  }
+  parseXml = libxmljs.parseXml ?? libxmljs.parseXmlString ?? null;
 } catch ( error ) {
-  // eslint-disable-line no-empty
+  // Optional dependency not installed
 }
 
 // const elements = {
@@ -137,7 +156,7 @@ class HVML extends HVMLElement {
         const isJson = ( this.fileExtensions.json.indexOf( extension ) !== -1 );
 
         if ( isXml ) {
-          if ( !canParseXml ) {
+          if ( !parseXml ) {
             throw new Validation.OptionalDependencyNotInstalled( {
               "className": "HVML",
               "fieldName": "ready",
@@ -145,7 +164,7 @@ class HVML extends HVMLElement {
             } );
           }
 
-          this.xml = xml.parseXmlString( fileContents );
+          this.xml = parseXml( fileContents );
           this.json = null;
           this.hvmlPath = path;
           // @ts-ignore
