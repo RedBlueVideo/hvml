@@ -1,6 +1,6 @@
 {
   "name": "hvml",
-  "version": "0.0.3",
+  "version": "0.1.0",
   "description": "HVML Parser for JavaScript",
   "type": "module",
   "main": "./dist/hvml.js",

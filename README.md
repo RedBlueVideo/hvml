@@ -1,16 +1,17 @@
 # hvml
 [HVML](https://hvml.redblue.video) Parser for Node.js
 
-[![Build Status](https://api.travis-ci.com/RedBlueVideo/hvml.svg?branch=master)](https://travis-ci.com/RedBlueVideo/hvml) [![Code Coverage](https://img.shields.io/codecov/c/github/RedBlueVideo/hvml/master.svg)](https://codecov.io/gh/RedBlueVideo/hvml/) [![Downloads per month (NPM)](https://img.shields.io/npm/dm/hvml.svg)](https://www.npmjs.com/package/hvml)
+[![CI](https://github.com/RedBlueVideo/hvml/actions/workflows/ci.yml/badge.svg)](https://github.com/RedBlueVideo/hvml/actions/workflows/ci.yml) [![Code Coverage](https://img.shields.io/codecov/c/github/RedBlueVideo/hvml/master.svg)](https://codecov.io/gh/RedBlueVideo/hvml/) [![Downloads per month (NPM)](https://img.shields.io/npm/dm/hvml.svg)](https://www.npmjs.com/package/hvml)
 
 HVML (Hypervideo Markup Language) is a video metadata vocabulary. It covers three main classes of metadata:
 - Technical details, like the available resolutions or codecs of a media file;
 - Artistic details, like who appears in a given movie or what awards it has won; and
 - Interactive UI instructions for compatible video players such as [RedBlue](https://github.com/RedBlueVideo/redblue).
 
-HVML is designed to be human-friendly enough to write by hand in most cases. This library is not required in order to use it; it just provides an imperative API for working with it programmatically.
+HVML is designed to be human-friendly enough to write by hand in most cases. This library is not required in order to use it; it just provides an imperative API for working with it programmatically — and serves as the reference implementation of the (evolving) HVML specification.
 
 ## Installation
+
 ```shell
 yarn add hvml
 ```
@@ -19,16 +20,16 @@ or
 npm install hvml
 ```
 
+Requires Node ≥ 18.20. This is an **ESM-only** package (`import`, not `require`) — see [TypeScript & Module Notes](#typescript--module-notes).
+
 ## Example Usage
 
-```js
-const { HVML, Video } = require( 'hvml' );
+```ts
+import { HVML, Video } from 'hvml';
 
 const hvml = new HVML( './hvml.xml' );
-hvml.ready.then( () => {
-  // Instance methods available now
-  console.log( hvml.toJson() );
-} );
+await hvml.ready;
+console.log( hvml.toJson() );
 
 const video = new Video( {
   "type": ["personal", "documentary"],
@@ -40,7 +41,26 @@ video.setTitle( 'チャンネルへようこそ！', 'ja' );
 // The Video types `personal` and `documentary` combine
 // to create an implicit "vlog episode" semantic.
 console.log( video.isVlogEpisode() ); // true
+
+hvml.appendChild( video );
+
+// DOM cue: children is a live, named collection —
+// look children up by id via bracket access…
+hvml.children['welcome-to-my-channel'];
+// …or the typed, null-safe namedItem() (cf. HTMLCollection.namedItem)
+hvml.children.namedItem( 'welcome-to-my-channel' );
 ```
+
+## TypeScript & Module Notes
+
+The library is written in TypeScript and ships complete declarations — the types *are* the API documentation, designed the way `lib.dom` models browsers:
+
+- **`HVMLElementTagNameMap`** maps every HVML tag name to its element class, mirroring `HTMLElementTagNameMap`. `createHVMLElement( 'video' )` returns a typed `HVMLVideoElement | undefined`.
+- **DOM-cue naming.** Class identities follow the DOM convention: the `video` element class is `HVMLVideoElement` (as browsers say `HTMLVideoElement`), with **`Video`** exported as its ergonomic alias. Unknown tags are represented by `HVMLUnknownElement` (cf. `HTMLUnknownElement`) rather than failing.
+- **`HVMLCollection`** models the DOM's live, named element collection — bracket access by `id` *and* `namedItem()` — something TypeScript's own `HTMLCollection` type cannot express.
+- **Spec-pinned vocabulary.** The element tag-name union derives from `HVML_ELEMENT_TAG_NAMES`, which a conformance test diffs against the RELAX NG grammar (`rng/hvml.rng`) — the schema remains the single source of truth as the spec evolves.
+- Compiled under `"strict": true` with `lib: ["ES2022"]` — the published types work in Node projects without the browser (`"dom"`) lib.
+- **ESM-only.** The element registry is a stateful singleton; a dual CJS/ESM build would risk two registries in one process (the dual-package hazard). On Node ≥ 22, CommonJS consumers can `require()` it natively; otherwise use dynamic `import()`.
 
 ## Roadmap
 
@@ -52,9 +72,9 @@ View project progress at the [public Trello board](https://trello.com/b/SJg4TLYz
 
 A Class representing the [`hvml` root element](https://hvml.redblue.video/elements/hvml/).
 
-#### Constructor: `new HVML(path, [config])`
+#### Constructor: `new HVML([path], [config])`
 
-- `path`: HVML file to be read.
+- `path`: (optional) HVML file to be read. Omit to start from an empty document.
 - `config`: (optional) Configuration object with keys:
   - `schemaPath` Path to validation schema. Defaults to `rng/hvml.rng` (relative to `node_modules/hvml/`).
   - `schemaType`: Type of validation schema, `rng` for RELAX NG or `xsd` for XML Schema Definition. Currently only `rng` is supported. Defaults to `rng`.
@@ -76,6 +96,10 @@ The Promise itself returns a [libxmljs](https://github.com/libxmljs/libxmljs) ob
 
 This is mostly just used internally but it’s provided as a convenience for custom operations.
 
+##### `.children`
+
+<b>HVMLCollection</b>. The element’s children — an array that also supports named lookup by child `id`, via bracket access (`children['my-id']`) or `namedItem( 'my-id' )`.
+
 ##### `.hvmlPath`
 
 <b>String</b>. The HVML file path specified in the constructor.
@@ -87,6 +111,10 @@ This is mostly just used internally but it’s provided as a convenience for cus
 Transforms the current HVML tree to its JSON representation (i.e. an object literal).
 
 Returns <b>Object</b>.
+
+##### `.appendChild(child)` / `.removeChild(child)`
+
+DOM cues: add or remove a child element (`Video` or `Series` at the root). Children with an `id` register a named index on `.children`.
 
 ##### `.validate([xmllintPath])`
 Validates the HVML file against an internal RELAX NG schema.
@@ -124,11 +152,11 @@ We realize this is a pain but we’d rather ship the feature than be blocked by 
 
 ### Video
 
-A Class representing a [`video` element](https://hvml.redblue.video/elements/video/).
+A Class representing a [`video` element](https://hvml.redblue.video/elements/video/). `Video` is the export alias of the canonical class `HVMLVideoElement` (DOM cue: `HTMLVideoElement`).
 
 #### Constructor: `new Video([config])`
 
-- `config`: (optional) Configuration object with keys:
+- `config`: (optional) `HVMLVideoElementConfig` object with keys:
   - `type`: Space-separated string or array containing valid video types (`narrative`, `documentary`, `ad`, `personal`, `historical`).
   - `lang`: A [BCP 47](https://tools.ietf.org/html/bcp47) language/region tag, e.g. `en` or `en-US`.
   - `id`: An XML/HTML-style unique ID for querying.
@@ -137,8 +165,9 @@ Returns <b>Object</b>, an instance of `Video`.
 
 ##### Example
 
-```js
-const { Video } = require( 'hvml' );
+```ts
+import { Video } from 'hvml';
+
 const video = new Video( {
   "type": ["personal", "documentary"],
   "lang": "en-US",
@@ -158,8 +187,9 @@ Returns <b>Boolean</b>.
 
 ##### Example
 
-```js
-const { Video } = require( 'hvml' );
+```ts
+import { Video } from 'hvml';
+
 console.log( Video.isValidType( 'narrative' ) ); // true
 console.log( Video.isValidType( 'big-chungus' ) ); // false
 ```
@@ -174,15 +204,16 @@ Returns <b>Boolean</b>.
 
 ##### Example
 
-```js
-const { Video } = require( 'hvml' );
+```ts
+import { Video } from 'hvml';
+
 const video = new Video( {
   "type": ["personal", "documentary"],
   "lang": "en-US",
   "id": "welcome-to-my-channel",
 } );
-console.log( Video.hasType( 'documentary' ) ); // true
-console.log( Video.hasType( 'ad' ) ); // false
+console.log( video.hasType( 'documentary' ) ); // true
+console.log( video.hasType( 'ad' ) ); // false
 ```
 
 ##### `isVlogEpisode()`
@@ -193,8 +224,9 @@ Returns <b>Boolean</b>.
 
 ##### Example
 
-```js
-const { Video } = require( 'hvml' );
+```ts
+import { Video } from 'hvml';
+
 const video = new Video( {
   "type": ["personal", "documentary"],
   "lang": "en-US",
@@ -211,8 +243,9 @@ Returns <b>Boolean</b>.
 
 ##### Example
 
-```js
-const { Video } = require( 'hvml' );
+```ts
+import { Video } from 'hvml';
+
 const video = new Video( {
   "type": ["personal", "historical"],
   "lang": "en-US",
