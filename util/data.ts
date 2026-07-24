@@ -13,7 +13,7 @@ export default Data;
 /**
  * JSON-ML (https://web.archive.org/web/2021/http://www.jsonml.org/):
  * an element is a tuple of tag name, optional attribute record, then
- * children — each a text node or a nested element. This is the single
+ * children (each a text node or a nested element). This is the single
  * definition; the `md2jsonml` and `xml-trident` shims import it.
  */
 export type JSONMLAttributes = Record<string, string>;

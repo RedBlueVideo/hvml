@@ -31,11 +31,11 @@ describe( 'Video', () => {
 
     expect.assertions( 2 );
 
-    // @ts-expect-error — deliberately invalid input; the runtime throw is the point
+    // @ts-expect-error
     expect( () => new Video( badConfig ) ).toThrow( Validation.TypeError );
 
     try {
-      // @ts-expect-error — deliberately invalid input; the runtime throw is the point
+      // @ts-expect-error
       new Video( badConfig );  
     } catch ( error ) {
       thrownError = error;
@@ -92,11 +92,11 @@ describe( 'Video', () => {
 
     expect.assertions( 2 );
 
-    // @ts-expect-error — deliberately invalid input; the runtime throw is the point
+    // @ts-expect-error
     expect( () => new Video( badType ) ).toThrow( Validation.TypeError );
 
     try {
-      // @ts-expect-error — deliberately invalid input; the runtime throw is the point
+      // @ts-expect-error
       new Video( badType );  
     } catch ( error ) {
       thrownError = error;
@@ -128,11 +128,11 @@ describe( 'Video', () => {
 
     expect.assertions( 2 );
 
-    // @ts-expect-error — deliberately invalid input; the runtime throw is the point
+    // @ts-expect-error
     expect( () => new Video( configWithBadId ) ).toThrow( Validation.TypeError );
 
     try {
-      // @ts-expect-error — deliberately invalid input; the runtime throw is the point
+      // @ts-expect-error
       new Video( configWithBadId );  
     } catch ( error ) {
       thrownError = error;
@@ -327,11 +327,11 @@ describe( 'Video', () => {
 
       expect.assertions( 2 );
 
-      // @ts-expect-error — deliberately invalid input; the runtime throw is the point
+      // @ts-expect-error
       expect( () => video.hasType( badInput ) ).toThrow( Validation.TypeError );
 
       try {
-        // @ts-expect-error — deliberately invalid input; the runtime throw is the point
+        // @ts-expect-error
         video.hasType( badInput );
       } catch ( error ) {
         thrownError = error;
@@ -427,7 +427,7 @@ describe( 'Video', () => {
       expect.assertions( 2 );
 
       try {
-        // @ts-expect-error — deliberately invalid input; the runtime throw is the point
+        // @ts-expect-error
         video.setTitle( null, 'en' );
       } catch ( error ) {
         thrownError = error;
@@ -595,7 +595,7 @@ describe( 'Video', () => {
       let thrownError;
 
       try {
-        // @ts-expect-error — deliberately invalid input; the runtime throw is the point
+        // @ts-expect-error
         video.setDescription( text, 'text' );
       } catch ( error ) {
         thrownError = error;
@@ -707,11 +707,11 @@ describe( 'Video', () => {
 
       expect.assertions( 5 );
 
-      // @ts-expect-error — deliberately invalid input; the runtime throw is the point
+      // @ts-expect-error
       expect( () => video.setRuntime( nullValue ) ).toThrow( Validation.TypeError );
 
       try {
-        // @ts-expect-error — deliberately invalid input; the runtime throw is the point
+        // @ts-expect-error
         video.setRuntime( nullValue );
       } catch ( error ) {
         thrownErrorOne = error;

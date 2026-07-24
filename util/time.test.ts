@@ -100,7 +100,7 @@ describe( 'Time', () => {
       }
 
       expect( thrownErrorOne ).toBeInstanceOf( Error );
-      // @ts-expect-error — deliberately invalid input; the runtime throw is the point
+      // @ts-expect-error
       expect( thrownErrorOne.message ).toBe( 'Invalid duration' );
 
       try {
@@ -110,7 +110,7 @@ describe( 'Time', () => {
       }
 
       expect( thrownErrorTwo ).toBeInstanceOf( Error );
-      // @ts-expect-error — deliberately invalid input; the runtime throw is the point
+      // @ts-expect-error
       expect( thrownErrorTwo.message ).toBe( 'Invalid duration' );
     } );
   } );

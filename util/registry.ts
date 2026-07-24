@@ -10,13 +10,15 @@ export type HVMLElementConstructor = new ( ...args: never[] ) => HVMLElement;
 
 /**
  * Tag-name-keyed element registry, à la `customElements.define` /
- * `document.createElement`. A leaf module — it imports no element
- * classes at runtime, so it can never join an import cycle; classes
- * self-register at the bottom of their own modules instead.
+ * `document.createElement`.
+ *
+ * This is a leaf module: it imports no element classes at runtime, so
+ * it can never join an import cycle. Classes self-register at the
+ * bottom of their own modules instead.
  *
  * The `HVMLElementTagNameMap`-keyed overloads make the map an enforced
- * contract: registering the wrong class for a known tag, or creating a
- * known tag, both type-check against the map.
+ * contract. Registering the wrong class for a known tag is a type
+ * error. So is expecting the wrong element back from a known one.
  */
 const registry = new Map<string, HVMLElementConstructor>();
 

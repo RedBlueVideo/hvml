@@ -10,8 +10,8 @@ export interface IHVMLDomainError {
   extraInfo?: string | null;
   /**
    * Broader than string: values are only ever printed (via join), and
-   * callers legitimately report whole objects — e.g. a rejected child
-   * element in HVML.appendChild.
+   * callers legitimately report whole objects, e.g. a rejected child
+   * element in `HVML.appendChild`.
    */
   badValues?: readonly unknown[];
   dependency?: string;

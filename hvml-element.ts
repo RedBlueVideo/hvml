@@ -29,10 +29,11 @@ export type HVMLChildCounts = Record<string, HVMLChildCount>;
 
 export class HVMLElement extends HVMLNode {
   /**
-   * Present on select elements; subclasses narrow to their own shape
-   * (Video: the i18n VideoTitle record). `declare` keeps it type-only —
-   * a real field would leak into serialization via the attribute
-   * spread.
+   * Present on select elements; subclasses narrow this to their own
+   * shape (Video: the i18n `VideoTitle` record). `declare` keeps the
+   * field type-only. NOTE: an emitted field would leak into
+   * serialization, because `_setJsonChild` spreads instances into
+   * attribute records.
    */
   declare title?: HVMLTitle;
 
@@ -84,7 +85,8 @@ export class HVMLElement extends HVMLNode {
 
   /**
    * `toJson()` establishes `json` before delegating to the `_jsonify*`
-   * internals; each self-defends anyway so the null-flow is airtight.
+   * internals. Each internal also establishes it for itself, so no
+   * call order can reach `set( null, … )`.
    */
   /* istanbul ignore next: internals of toJson(), which is already tested */
   _jsonifyAttribute( attribute: XMLAttribute, attributePath: LodashPath = [] ) {
@@ -472,9 +474,9 @@ export class HVMLElement extends HVMLNode {
 
     if ( this.xml ) {
       /**
-       * Captured because closures reset TS’s property narrowing; the
-       * reference stays current — nothing below reassigns `this.json`,
-       * only mutates it.
+       * We capture `json` because closures reset TypeScript’s property
+       * narrowing. The reference stays current: nothing below
+       * reassigns `this.json`, only mutates it.
        */
       const json = this.json;
 
@@ -530,8 +532,8 @@ export class HVMLElement extends HVMLNode {
                * `title` is only valid on select elements but there is
                * no way to validate what type we are working with at
                * this stage: the element is built one piece at a time,
-               * and type information isn’t necessarily in place yet —
-               * the MOM stays permissive; conformance belongs to the
+               * and type information isn’t necessarily in place yet.
+               * The MOM stays permissive; conformance belongs to the
                * RNG validator.
                */
               lastChild.title = value;
@@ -546,9 +548,10 @@ export class HVMLElement extends HVMLNode {
                 lastChild[setMethod]( value );
               } else {
                 /**
-                 * Expando assignment for not-yet-conformant trees;
-                 * `Object.assign` because HVMLElement (rightly) has no
-                 * string index signature.
+                 * Expando assignment for not-yet-conformant trees. We
+                 * go through `Object.assign` because `HVMLElement` has
+                 * no string index signature (adding one would defeat
+                 * type-checking everywhere else).
                  */
                 Object.assign( lastChild, { [key]: value } );
               }
@@ -573,11 +576,12 @@ export class HVMLElement extends HVMLNode {
                * and save conformance checking for the RNG schema parser?
                */
               /**
-               * Duck-typed rather than `instanceof HVMLVideoElement`:
-               * importing the class here would recreate the
-               * `hvml-element` ⇄ `video` circular import, and the MOM
-               * deliberately tolerates not-yet-conformant trees
-               * (conformance belongs to the RNG validator).
+               * We duck-type here rather than test
+               * `instanceof HVMLVideoElement`. Importing that class
+               * into this module would recreate the
+               * `hvml-element` ⇄ `video` circular import. Duck typing
+               * also matches the MOM’s tolerance for not-yet-conformant
+               * trees; conformance belongs to the RNG validator.
                */
               if ('type' in value && hasMethod(lastChild, 'setDescription')) {
                 switch ( value.type ) {
@@ -668,7 +672,7 @@ export class HVMLElement extends HVMLNode {
         this.children.splice( i, 1 );
 
         if ( hasProperty( element, 'id' ) && typeof element.id !== 'undefined' ) {
-          // eslint-disable-next-line @typescript-eslint/no-array-delete -- removing the NAMED index (DOM-style live collection), not an array slot
+          // eslint-disable-next-line @typescript-eslint/no-array-delete -- we delete the NAMED index here, not an array slot; the rule can’t see the live-collection design
           delete this.children[element.id];
         }
       }
@@ -678,11 +682,14 @@ export class HVMLElement extends HVMLNode {
 
 /**
  * DOM cue: `HTMLUnknownElement`. Stands in for tags with no registered
- * class so `children` always holds real elements — the MOM stays
- * permissive about not-yet-conformant trees, and conformance checking
- * remains the RNG validator’s job. A private field backs `nodeName`
- * (rather than a plain field) so it stays out of the serialization
- * attribute spread.
+ * class, so `children` always holds real elements.
+ *
+ * The MOM stays permissive about not-yet-conformant trees; conformance
+ * checking remains the RNG validator’s job. (This settles the old
+ * question in `_momifyChild` about how aggressively to narrow.)
+ *
+ * A private field backs `nodeName` rather than a plain field, which
+ * keeps it out of the serialization attribute spread.
  */
 export class HVMLUnknownElement extends HVMLElement {
   #nodeName: string;

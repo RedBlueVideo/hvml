@@ -22,10 +22,12 @@ export function hasProperty(object: object, property: string) {
 }
 
 /**
- * Narrows to “object with a callable `method`” — TypeScript’s sanctioned
- * alternative to `@ts-ignore` for duck-typed dynamic dispatch. Works where
- * `instanceof` would require importing the concrete class (and, between
- * `hvml-element.ts` and `video.ts`, create a circular import).
+ * Narrows to “object with a callable `method`”. Type guards are
+ * TypeScript’s sanctioned escape hatch for duck-typed dynamic
+ * dispatch, where `@ts-ignore` would otherwise accumulate. We also
+ * reach for this where `instanceof` would require importing the
+ * concrete class; between `hvml-element.ts` and `video.ts`, that
+ * import creates a cycle.
  */
 export function hasMethod<MethodName extends string>(
   object: unknown,

@@ -16,9 +16,7 @@ const libxmljsUnavailable = ( () => {
   try {
     ( require.resolve( 'libxmljs' ) );
     canParseXml = true;
-  } catch {
-    // Not installed
-  }
+  } catch {}
 
   return !canParseXml;
 } )();

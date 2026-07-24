@@ -3,8 +3,8 @@ declare module 'xml-trident' {
 
   /**
    * The upstream library also accepts DOM nodes, but this package only
-   * ever passes strings/JSON-ML — typing that subset keeps the DOM lib
-   * out of the program.
+   * ever passes strings/JSON-ML. Typing only that subset keeps the DOM
+   * lib out of the program.
    */
   export function toJsonml(xmlSource: string): JSONML;
   export function toString(jsonml: JSONML): string;

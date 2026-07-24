@@ -19,8 +19,8 @@ import type { XMLDocument as ILibxmljsXMLDocument } from 'libxmljs';
 type XMLParser = ( source: string ) => ILibxmljsXMLDocument;
 
 /**
- * libxmljs ≥1.0 renamed `parseXmlString` to `parseXml`; accept both so
- * the optional dependency works across the rename.
+ * libxmljs ≥1.0 renamed `parseXmlString` to `parseXml`. We accept
+ * both, so the optional dependency works across the rename.
  */
 interface LibxmljsModule {
   parseXml?: XMLParser;
@@ -28,17 +28,18 @@ interface LibxmljsModule {
 }
 
 /**
- * libxmljs is a native optional dependency: load it imperatively so a
- * missing or failed install degrades to OptionalDependencyNotInstalled
- * at parse time instead of breaking module evaluation. `createRequire`
- * preserves that try/catch semantic under ESM.
+ * libxmljs is a native optional dependency, so we load it imperatively.
+ * A missing or failed install then degrades to
+ * `OptionalDependencyNotInstalled` at parse time, rather than breaking
+ * module evaluation for the JSON-LD paths that never needed it.
+ * `createRequire` preserves the try/catch semantic under ESM.
  */
 const nodeRequire = createRequire( import.meta.url );
 
 let parseXml: XMLParser | null = null;
 
 try {
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment -- require() trust boundary, constrained by LibxmljsModule
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment -- require() is a trust boundary; the LibxmljsModule interface constrains its shape
   const libxmljs: LibxmljsModule = nodeRequire( 'libxmljs' );
   /* istanbul ignore next */
   parseXml = libxmljs.parseXml ?? libxmljs.parseXmlString ?? null;
@@ -174,7 +175,7 @@ class HVML extends HVMLElement {
 
         if ( isJson ) {
           this.xml = null;
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment -- JSON.parse trust boundary; conformance is the RNG validator's job
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment -- JSON.parse is a trust boundary; conformance stays the RNG validator’s job
           this.json = JSON.parse( fileContents );
           this.hvmlPath = path;
           this.children = createHVMLCollection();
@@ -235,7 +236,7 @@ class HVML extends HVMLElement {
             got?: string | null;
           }
 
-          // eslint-disable-next-line @typescript-eslint/no-base-to-string -- ExecException stringifies via Error.prototype.toString; the parser depends on that exact format
+          // eslint-disable-next-line @typescript-eslint/no-base-to-string -- ExecException stringifies via Error.prototype.toString, and the parser depends on that exact format
           const _validationErrors: string[] = error.toString().trim().split( '\n' );
           _validationErrors.shift();
           _validationErrors.pop();
@@ -399,7 +400,7 @@ class HVML extends HVMLElement {
             throw new Validation.DomainError( currentValue );
           } );
 
-          // eslint-disable-next-line @typescript-eslint/prefer-promise-reject-errors -- public API contract: validate() rejects with the ValidationError[] payload (tested)
+          // eslint-disable-next-line @typescript-eslint/prefer-promise-reject-errors -- the public API contract: validate() rejects with the ValidationError[] payload, and tests assert it
           reject( validationErrors );
         } else {
           // xmllint prints diagnostic information, good or bad, to stderr

@@ -29,17 +29,17 @@ export default tseslint.config(
   },
   {
     /**
-     * Formatting is deliberately not linted — the old
-     * airbnb/hughx/lodash stack predates the conversion, the lodash
-     * plugins contradicted the near-zero-dependency goal, and style
-     * enforcement belongs to a formatter if it's ever wanted.
+     * Formatting is deliberately not linted. The old airbnb/hughx/lodash
+     * stack predates the conversion, and the lodash plugins contradicted
+     * the near-zero-dependency goal. If we ever want style enforcement,
+     * that job belongs to a formatter.
      */
     "files": ['**/*.test.ts'],
     "rules": {
       /**
        * The instantiation suites use require() + jest.resetModules for
        * module isolation (jest.mock interception only sees jest's own
-       * require), which makes the imported classes `any` — the unsafe-*
+       * require), which makes the imported classes `any`. The unsafe-*
        * family would flag every use.
        */
       "@typescript-eslint/no-require-imports": 'off',
@@ -48,6 +48,12 @@ export default tseslint.config(
       "@typescript-eslint/no-unsafe-argument": 'off',
       "@typescript-eslint/no-unsafe-call": 'off',
       "@typescript-eslint/no-unsafe-return": 'off',
+      /**
+       * `@ts-expect-error` is self-descriptive, and it self-verifies
+       * (the directive errors when unused), so we don’t require
+       * descriptions in tests.
+       */
+      "@typescript-eslint/ban-ts-comment": ['error', { "ts-expect-error": false }],
     },
   },
 );

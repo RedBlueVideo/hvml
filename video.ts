@@ -45,8 +45,8 @@ export interface HVMLXhtmlDescriptionInput {
 }
 
 /**
- * Constructor input — distinct from the instance shape: `lang` is
- * parsed into `language` + `region` and never stored verbatim.
+ * Constructor input. This is distinct from the instance shape: `lang`
+ * is parsed into `language` + `region` and never stored verbatim.
  */
 export interface HVMLVideoElementConfig {
   type?: string | string[];
@@ -419,7 +419,7 @@ class HVMLVideoElement extends HVMLElement {
 
           case 'object':
             if ( !Array.isArray( description ) && Array.isArray( description.childNodes ) ) {
-              // Accumulated locally: closures reset property narrowing
+              // We accumulate in a local because closures reset property narrowing
               let xhtml = '';
 
               description.childNodes.forEach( ( childNode ) => {

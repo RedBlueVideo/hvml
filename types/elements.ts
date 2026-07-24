@@ -9,18 +9,18 @@ import type { HVMLDescriptionElement } from "../description.js";
 
 /**
  * Embedded-XHTML tag name. HVML embeds arbitrary XHTML content (rich
- * descriptions and the like); duplicating lib.dom’s hundred-plus tag
+ * descriptions and the like). Duplicating lib.dom’s hundred-plus tag
  * names here would create a sync burden with a spec this library
- * doesn’t own, so this stays `string` — and keeps the published types
- * usable by Node consumers who don’t load the browser lib.
+ * doesn’t own, so this stays `string`. It also keeps the published
+ * types usable in Node projects that don’t load the browser lib.
  */
 export type XHTMLTagName = string;
 
 export interface JSONLDSerializedHTMLElement {
   /**
    * This should technically conform to only
-   * valid HTML attributes. `any` (not `unknown`) so serialized
-   * attribute records stay assignable to JSONMLAttributes.
+   * valid HTML attributes. We keep `any` rather than `unknown` so
+   * serialized attribute records stay assignable to `JSONMLAttributes`.
    */
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   [propertyName: string]: any;
@@ -29,7 +29,7 @@ export interface JSONLDSerializedHTMLElement {
 }
 
 /**
- * The HVML element vocabulary. The source of truth is `rng/hvml.rng` —
+ * The HVML element vocabulary. The source of truth is `rng/hvml.rng`;
  * `types/elements.test.ts` fails with an exact diff whenever the
  * schema and this list drift apart.
  */
@@ -90,22 +90,27 @@ export type HVMLDescriptionType =
 ;
 
 /**
- * @deprecated `children` no longer contains bare tag-name strings —
+ * @deprecated `children` no longer contains bare tag-name strings;
  * unknown tags are represented by `HVMLUnknownElement`. Kept exported
  * for 0.0.x continuity.
  */
 export type HVMLNodeOrNodeName = HVMLNode | string;
 
 /**
- * The DOM’s live, named `HTMLCollection`, HVML-shaped: an element
- * array that also supports named lookup by child `id` — via bracket
- * access (`children['my-id']`, exactly how the HTML DOM behaves in a
- * real browser) or the typed, null-safe `namedItem()` (the same cue
- * TypeScript’s own `HTMLCollection` offers, since its arrays can’t
- * carry a string index signature). Intersections are exempt from
- * index-signature soundness checks, which is what makes this type
- * expressible at all; only *construction* needs convincing, and that
- * lives in `createHVMLCollection()`.
+ * The DOM’s live, named `HTMLCollection`, HVML-shaped. This is an
+ * element array that also supports named lookup by child `id`, in two
+ * ways:
+ *
+ * A.) Bracket access (`children['my-id']`), matching how the HTML DOM
+ * behaves in a real browser; and
+ * B.) `namedItem()`. (TypeScript’s own `HTMLCollection` relies on this
+ * method for the same reason: its arrays can’t carry a string index
+ * signature.)
+ *
+ * Intersection types are exempt from TypeScript’s index-signature
+ * soundness checks. That exemption is what makes this type expressible
+ * at all. Construction is the one place the compiler still objects, so
+ * we confine the cast to `createHVMLCollection()`.
  */
 export type HVMLCollection = HVMLElement[]
   & { [namedIndex: string]: HVMLElement | undefined }
@@ -113,18 +118,18 @@ export type HVMLCollection = HVMLElement[]
 
 export function createHVMLCollection(): HVMLCollection {
   /**
-   * The codebase’s one collection cast: a plain array satisfies
-   * HVMLCollection at runtime (JS arrays accept string keys), but
-   * TypeScript cannot express “array that will grow named keys”.
-   * Confining the cast here means no call site ever needs a
-   * suppression.
+   * This is the codebase’s ONLY collection cast. A plain array
+   * satisfies `HVMLCollection` at runtime, since JS arrays accept
+   * string keys just fine. TypeScript has no way to express “array
+   * that will grow named keys”, so we convince the compiler here,
+   * once. No call site ever needs a suppression.
    */
   const collection = [] as unknown as HVMLCollection;
 
   Object.defineProperty( collection, 'namedItem', {
     /**
      * Non-enumerable: `Object.keys()` counts must only ever reflect
-     * elements and named indices — tested public behavior.
+     * elements and named indices. Tests assert those counts.
      */
     "enumerable": false,
     "value": ( name: string ): HVMLElement | null => collection[name] ?? null,
@@ -135,10 +140,10 @@ export function createHVMLCollection(): HVMLCollection {
 
 export class HVMLNode {
   /**
-   * All optional fields are `declare`: they must exist only when
-   * assigned (serialization spreads instances, and an own
-   * `undefined` would overwrite computed attributes), matching the
-   * pre-TypeScript object shapes.
+   * All optional fields are `declare`. They must exist only when
+   * assigned, matching the pre-TypeScript object shapes: serialization
+   * spreads instances, and an own `undefined` would overwrite computed
+   * attributes like `xml:id`.
    */
   declare id?: string;
 
@@ -153,10 +158,11 @@ export class HVMLNode {
   declare instance?: unknown;
 
   /**
-   * DOM cue: `Node.nodeName`. Serialization keys on this — never on
-   * `constructor.name`, which changes under minification and class
-   * renames. A getter (not a field) so it stays off the instance:
-   * `_setJsonChild` spreads instances into serialized attributes.
+   * DOM cue: `Node.nodeName`. Serialization keys on this, never on
+   * `constructor.name` (which changes under minification and class
+   * renames). We use a getter rather than a field so it stays off the
+   * instance: `_setJsonChild` spreads instances into serialized
+   * attributes.
    */
   get nodeName(): string {
     return '#node';
