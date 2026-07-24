@@ -20,7 +20,17 @@ or
 npm install hvml
 ```
 
-Requires Node ≥ 18.20. This is an **ESM-only** package (`import`, not `require`) — see [TypeScript & Module Notes](#typescript--module-notes).
+This is an **ESM-only** package (`import`, not `require`) — see [TypeScript & Module Notes](#typescript--module-notes).
+
+### Runtime Support
+
+| Capability | Requirement |
+| --- | --- |
+| JSON-LD parsing, MOM manipulation, serialization | Node ≥ 18.20 (fully portable, no native code) |
+| XML parsing (`.hvml` / `.xml` / `.ovml`) | Node 18–20 only¹ |
+| `.validate()` | `xmllint` CLI on the system `$PATH` |
+
+¹ XML parsing uses [libxmljs](https://github.com/libxmljs/libxmljs), a native libxml2 binding installed as an *optional* dependency. Its final release (1.0.11, October 2023) has no builds for Node ≥ 22, so on currently supported Node lines the package installs fine but XML parsing is unavailable — `new HVML( 'file.xml' )` rejects with `OptionalDependencyNotInstalled`. JSON-LD workflows are unaffected. Replacing the native binding (and the `xmllint` shell-out) with the actively maintained WebAssembly build of libxml2 is planned — see the [roadmap board](https://trello.com/b/SJg4TLYz/hvml).
 
 ## Example Usage
 
