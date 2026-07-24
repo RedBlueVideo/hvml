@@ -9,9 +9,9 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        # Single entry until libxmljs unpins Node (see .nvmrc);
-        # 20/22 become one-line additions when it does.
-        node-version: ['18.20.8']
+        # libxmljs 1.0.11 is proven on 18 and 20 (still no prebuild for
+        # 22+ — its native build fails there, verified on 25).
+        node-version: ['18.20.8', '20.19.2']
     steps:
       - uses: actions/checkout@v4
 
