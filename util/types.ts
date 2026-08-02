@@ -1,3 +1,5 @@
+// import { HVMLElement } from "../hvml.js";
+
 export function isNumber(number: unknown) {
   return (typeof number === 'number');
 }
@@ -39,3 +41,7 @@ export function hasMethod<MethodName extends string>(
     && (typeof (object as Record<string, unknown>)[method] === 'function')
   );
 }
+
+// export function isHVMLElement(data: unknown): data is HVMLElement {
+//   if (data)
+// }

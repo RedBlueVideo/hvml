@@ -61,6 +61,7 @@ hvml.children['welcome-to-my-channel'];
 hvml.children.namedItem( 'welcome-to-my-channel' );
 ```
 
+<!-- TODO: Rework language here -->
 ## TypeScript & Module Notes
 
 The library is written in TypeScript and ships complete declarations — the types *are* the API documentation, designed the way `lib.dom` models browsers:
@@ -160,6 +161,7 @@ make install
 
 We realize this is a pain but we’d rather ship the feature than be blocked by a lack of C/C++ experience. Pull requests welcome!
 
+<!-- TODO: Rework -->
 ### Video
 
 A Class representing a [`video` element](https://hvml.redblue.video/elements/video/). `Video` is the export alias of the canonical class `HVMLVideoElement` (DOM cue: `HTMLVideoElement`).
