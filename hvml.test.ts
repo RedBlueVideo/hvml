@@ -171,6 +171,16 @@ describe( 'HVML', () => {
         } );
     } );
 
+    skipIfXmllintUnavailable( 'validates documents with `version` elements, `rel="presents"` links, and repeated `presentation` elements', () => {
+      const versionedHvml = new HVML( './examples/version.xml' );
+
+      return versionedHvml.ready
+        .then( () => versionedHvml.validate() )
+        .then( ( validationResult: unknown ) => {
+          expect( validationResult ).toStrictEqual( true );
+        } );
+    } );
+
     describe( 'validates bad HVML', () => {
       skipIfXmllintUnavailable( 'unexpected element', () => {
         const badHvmlPath = './examples/legacy/redblue.ovml.xml';
