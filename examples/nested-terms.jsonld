@@ -1,0 +1,18 @@
+{
+  "@context": "https://redblue.video/guide/hvml.context.jsonld",
+  "@type": "video",
+  "xml:id": "nested-terms",
+  "type": "personal",
+  "recorded": "2016-09-17",
+  "showing": {
+    "scope": "release",
+    "venue": {
+      "type": "site",
+      "uri": "https://www.youtube.com/watch?v=nWdWq3hMwao"
+    }
+  },
+  "presentation": [
+    { "xml:id": "first-presentation" },
+    { "xml:id": "second-presentation" }
+  ]
+}
