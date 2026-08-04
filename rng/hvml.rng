@@ -189,6 +189,27 @@
     </element>
   </define>
 
+  <!--
+    `rel`: `presents` | `derived-from` | `info` (open set while the vocabulary settles)
+  -->
+  <define name="link">
+    <element name="link">
+      <attribute name="rel" />
+      <attribute name="href">
+        <data type="anyURI" />
+      </attribute>
+    </element>
+  </define>
+
+  <define name="runtime">
+    <element name="runtime">
+      <choice>
+        <data type="duration" />
+        <ref name="nonNegativeDecimal" />
+      </choice>
+    </element>
+  </define>
+
   <define name="venue">
     <element name="venue">
       <optional>
@@ -218,7 +239,12 @@
   -->
   <define name="showing">
     <element name="showing">
-      <ref name="venue" />
+      <interleave>
+        <ref name="venue" />
+        <zeroOrMore>
+          <ref name="link" />
+        </zeroOrMore>
+      </interleave>
       <optional>
         <attribute name="scope">
           <choice>
@@ -586,8 +612,58 @@
         <zeroOrMore>
           <ref name="choice" />
         </zeroOrMore>
+        <zeroOrMore>
+          <ref name="link" />
+        </zeroOrMore>
       </interleave>
     </element><!--/presentation-->
+  </define>
+
+  <!--
+    The expression layer: which content this is, as distinct from
+    which work (`video`) and which artifact (`presentation`, `file`).
+    `type`: `theatrical` | `directors-cut` | `workprint` | `broadcast` | … (open set).
+    `datetime` dates a revision, for works whose file versions are the
+    editorial versions (unreleased and in-progress material).
+  -->
+  <define name="version">
+    <element name="version">
+      <ref name="hvmlGlobalAttributes" />
+      <optional>
+        <attribute name="type" />
+      </optional>
+      <optional>
+        <attribute name="datetime">
+          <choice>
+            <data type="dateTime" />
+            <data type="date" />
+          </choice>
+        </attribute>
+      </optional>
+      <interleave>
+        <optional>
+          <ref name="title" />
+        </optional>
+        <optional>
+          <ref name="runtime" />
+        </optional>
+        <optional>
+          <ref name="fps" />
+        </optional>
+        <optional>
+          <ref name="description" />
+        </optional>
+        <zeroOrMore>
+          <ref name="link" />
+        </zeroOrMore>
+        <zeroOrMore>
+          <ref name="showing" />
+        </zeroOrMore>
+        <zeroOrMore>
+          <ref name="presentation" />
+        </zeroOrMore>
+      </interleave>
+    </element><!--/version-->
   </define>
 
   <define name="video">
@@ -609,12 +685,29 @@
         </attribute>
       </optional>
       <interleave>
+        <!-- `title` alone is required: a record must at least name its work -->
         <ref name="title" />
-        <ref name="episode" />
-        <ref name="recorded" />
-        <ref name="description" />
-        <ref name="showing" />
-        <ref name="presentation" />
+        <optional>
+          <ref name="episode" />
+        </optional>
+        <optional>
+          <ref name="recorded" />
+        </optional>
+        <optional>
+          <ref name="description" />
+        </optional>
+        <zeroOrMore>
+          <ref name="version" />
+        </zeroOrMore>
+        <zeroOrMore>
+          <ref name="showing" />
+        </zeroOrMore>
+        <zeroOrMore>
+          <ref name="presentation" />
+        </zeroOrMore>
+        <zeroOrMore>
+          <ref name="link" />
+        </zeroOrMore>
       </interleave>
     </element><!--/video-->
   </define>
