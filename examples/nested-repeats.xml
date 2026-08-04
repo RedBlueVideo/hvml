@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<hvml
+  xmlns="https://hypervideo.tech/hvml#"
+  xml:lang="en"
+>
+  <video type="personal" xml:id="nested-repeats">
+    <presentation>
+      <choice xml:id="first-choice">
+        <name>First</name>
+      </choice>
+      <choice xml:id="second-choice">
+        <name>Second</name>
+      </choice>
+    </presentation>
+  </video>
+</hvml>
