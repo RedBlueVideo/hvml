@@ -142,6 +142,28 @@ describe( 'HVMLElement', () => {
           // expect( description.text ).toBe( 'Full Facebook Live stream: https://www.facebook.com/hugh.guiney/videos/10100195051457860/\n\n#mfaNOW #mfaLateNites' );
         } );
       } );
+
+      it( 'passes empty string values through when building the MOM from JSON', () => {
+        hvml = new HVML( './examples/empty-values.jsonld' );
+        return hvml.ready.then( () => {
+          const MOM = hvml!.toMom();
+          const firstChild = MOM.children[0];
+
+          expect( firstChild ).toBeInstanceOf( Video );
+          expect( firstChild.title ).toBe( '' );
+        } );
+      } );
+
+      it( 'ignores null values when building the MOM from JSON, following JSON-LD semantics', () => {
+        hvml = new HVML( './examples/empty-values.jsonld' );
+        return hvml.ready.then( () => {
+          const MOM = hvml!.toMom();
+          const firstChild = MOM.children[0];
+
+          expect( firstChild ).toBeInstanceOf( Video );
+          expect( ( firstChild as Video ).episode ).toBeUndefined();
+        } );
+      } );
     } );
   } );
 
@@ -274,6 +296,57 @@ describe( 'HVMLElement', () => {
               ],
             },
           ],
+        } );
+        done();
+      } )
+        .catch( error => done( error ) );
+    } );
+
+    it( 'renders empty XML elements as empty JSON objects, leaving sibling elements intact', ( done ) => {
+      hvml = new HVML( './examples/empty-elements.xml' );
+      void hvml.ready.then( () => {
+        expect( hvml!.toJson() ).toStrictEqual( {
+          "@context": "https://redblue.video/guide/hvml.context.jsonld",
+          "@type": "video",
+          "type": "personal",
+          "xml:id": "empties",
+          "title": "Empty Elements",
+          "episode": {},
+          "description": {},
+          "recorded": "2026-08-03",
+          "presentation": {
+            "fps": {
+              "rate": "30",
+              "scale": "1",
+            },
+            "poster": "placeholder",
+          },
+        } );
+        done();
+      } )
+        .catch( error => done( error ) );
+    } );
+
+    it( 'renders repeated XML elements that themselves contain children as JSON arrays', ( done ) => {
+      hvml = new HVML( './examples/nested-repeats.xml' );
+      void hvml.ready.then( () => {
+        expect( hvml!.toJson() ).toStrictEqual( {
+          "@context": "https://redblue.video/guide/hvml.context.jsonld",
+          "@type": "video",
+          "type": "personal",
+          "xml:id": "nested-repeats",
+          "presentation": {
+            "choice": [
+              {
+                "xml:id": "first-choice",
+                "name": "First",
+              },
+              {
+                "xml:id": "second-choice",
+                "name": "Second",
+              },
+            ],
+          },
         } );
         done();
       } )

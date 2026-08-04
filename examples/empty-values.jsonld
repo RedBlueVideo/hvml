@@ -1,0 +1,7 @@
+{
+  "@context": "https://redblue.video/guide/hvml.context.jsonld",
+  "@type": "video",
+  "xml:id": "empty-values",
+  "title": "",
+  "episode": null
+}

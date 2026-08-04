@@ -243,31 +243,60 @@ export class HVMLElement extends HVMLNode {
               } );
 
               grandchildren.forEach( ( grandchild ) => {
+                /**
+                 * A recursion may leave its own name (and index) on the
+                 * shared path: childless elements have no grandchildren
+                 * loop to pop them, and indexed elements pop differently
+                 * depending on whether they have children. We snapshot
+                 * the depth and restore it after every sibling, so no
+                 * sibling can disturb the next one's path.
+                 */
+                const depth = path.length;
+
                 if (
                   ( grandchild.type() === 'element' )
                   && ( elementCounts[grandchild.name()].count > 1 )
                 ) {
                   this._jsonifyChild( grandchild, path, false, ++elementCounts[grandchild.name()].i );
-                  path.pop();
-                  path.pop();
                 } else {
                   this._jsonifyChild( grandchild, path );
+                }
+
+                while ( path.length > depth ) {
+                  path.pop();
                 }
               } );
               path.pop();
             }
           } else {
             grandchildren.forEach( ( grandchild ) => {
-              // path.pop();
-              // path.push( ++i );
-              this._jsonifyChild( grandchild, path );
-              // if ( wasBlank ) {
-              //   --i;
-              // }
+              // Same depth discipline as the multi-child loop above
+              const depth = path.length;
+              const wasBlank = this._jsonifyChild( grandchild, path );
+
+              while ( path.length > depth ) {
+                path.pop();
+              }
+
+              if ( wasBlank && !attributes.length ) {
+                // Whitespace-only content is empty content: same rule
+                // as the childless branch below. (Non-null assertion:
+                // closures reset the narrowing from the guard above.)
+                set( this.json!, path, {} );
+              }
             } );
             path.pop();
-            // path.pop();
           }
+        } else if ( !attributes.length ) {
+          /**
+           * An element with no attributes and no children never reaches
+           * `set()`, so its key would vanish from the JSON. We emit an
+           * empty object instead: the canonical representation of an
+           * empty element on both serialization paths (the MOM
+           * serializer already produces `{}` for elements created
+           * without data).
+           */
+          set( this.json, path, {} );
         }
         break; // element
 
@@ -677,14 +706,19 @@ export class HVMLElement extends HVMLNode {
       this.children = createHVMLCollection();
 
       for ( const [key, value] of Object.entries( this.json ) ) {
-        if ( ( typeof value === 'string' && value ) || ( typeof value === 'object' && value !== null ) ) {
+        if ( value === null ) {
+          /**
+           * JSON-LD gives `null` a defined meaning: the entry is
+           * dropped during expansion, as if the key were absent.
+           * We follow suit rather than treating it as an authoring
+           * error.
+           */
+          continue;
+        }
+
+        if ( ( typeof value === 'string' ) || ( typeof value === 'object' ) ) {
           this._momifyChild( key, value );
         } else {
-          /**
-           * TODO: Remains to be seen whether this warrants
-           * a type error or not, or if `_momifyChild` should
-           * have its type signature updated from `value: string | object`.
-           */
           throw new HVMLTypeError({
             badValues: [String( value )],
             expected: ['String', 'Object'],

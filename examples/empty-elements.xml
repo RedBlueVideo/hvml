@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<hvml
+  xmlns="https://hypervideo.tech/hvml#"
+  xml:lang="en"
+>
+  <video type="personal" xml:id="empties">
+    <title>Empty Elements</title>
+    <episode></episode>
+    <description> </description>
+    <recorded>2026-08-03</recorded>
+    <presentation>
+      <fps rate="30" scale="1" />
+      <poster>placeholder</poster>
+    </presentation>
+  </video>
+</hvml>
