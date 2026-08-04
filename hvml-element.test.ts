@@ -251,5 +251,33 @@ describe( 'HVMLElement', () => {
         done();
       } );
     } );
+
+    it( 'renders repeated XML elements as JSON arrays, one array per element name', ( done ) => {
+      hvml = new HVML( './examples/repeated-siblings.xml' );
+      void hvml.ready.then( () => {
+        expect( hvml!.toJson() ).toStrictEqual( {
+          "@context": "https://redblue.video/guide/hvml.context.jsonld",
+          "@type": "video",
+          "type": "personal",
+          "xml:id": "repeats",
+          "title": "Repeated Siblings",
+          "presentation": [
+            {
+              "xml:id": "first-presentation",
+              "poster": "first",
+            },
+            {
+              "xml:id": "second-presentation",
+              "file": [
+                { "label": "a" },
+                { "label": "b" },
+              ],
+            },
+          ],
+        } );
+        done();
+      } )
+        .catch( error => done( error ) );
+    } );
   } );
 } );

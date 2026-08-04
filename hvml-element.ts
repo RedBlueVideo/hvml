@@ -216,28 +216,45 @@ export class HVMLElement extends HVMLNode {
               path.pop();
               path.pop();
             } else {
-              let i = -1;
-              let wasBlank;
+              /**
+               * Mirrors the MOM serializer (`_setJsonChild`): same-element
+               * siblings (multiple `presentation`s, etc.) are indexed
+               * numerically, and then fed into `lodash.set()` to develop
+               * a compact, human-readable JSON representation of the node
+               * tree. Elements that occur once remain single objects.
+               * Text nodes (whitespace, in practice) are excluded from
+               * the tally.
+               */
+              const elementCounts: HVMLChildCounts = {};
+
               grandchildren.forEach( ( grandchild ) => {
-                // path.pop();
-                ++i;
+                if ( grandchild.type() === 'element' ) {
+                  const key = grandchild.name();
+
+                  if ( hasProperty( elementCounts, key ) ) {
+                    elementCounts[key].count += 1;
+                  } else {
+                    elementCounts[key] = {
+                      "count": 1,
+                      "i": -1,
+                    };
+                  }
+                }
+              } );
+
+              grandchildren.forEach( ( grandchild ) => {
                 if (
-                  ( grandchild.name() === 'animate' )
-                  || ( grandchild.name() === 'video' )
+                  ( grandchild.type() === 'element' )
+                  && ( elementCounts[grandchild.name()].count > 1 )
                 ) {
-                  wasBlank = this._jsonifyChild( grandchild, path, false, i );
+                  this._jsonifyChild( grandchild, path, false, ++elementCounts[grandchild.name()].i );
                   path.pop();
                   path.pop();
                 } else {
-                  wasBlank = this._jsonifyChild( grandchild, path );
-                }
-                if ( wasBlank ) {
-                  --i;
+                  this._jsonifyChild( grandchild, path );
                 }
               } );
               path.pop();
-              // path.pop();
-              // path.pop();
             }
           } else {
             grandchildren.forEach( ( grandchild ) => {
@@ -398,6 +415,25 @@ export class HVMLElement extends HVMLNode {
     }
 
     if ( child.children.length ) {
+      /**
+       * Same-name children are tallied across the entire sibling set,
+       * not just adjacent runs, because this serialization treats child
+       * elements as *properties* of their parent, JSON-LD-style:
+       * <presentation/><title/><presentation/> and
+       * <presentation/><presentation/><title/> both mean “a video with
+       * two presentations and a title”. JSON forbids duplicate keys, so
+       * multi-valued properties are rendered as arrays. Relative order
+       * within one name survives in array order; interleaving across
+       * names is discarded as authoring accident, not semantics.
+       * Embedded XHTML takes the opposite path (a `childNodes` list)
+       * because prose is mixed content: there, interleaving IS the
+       * meaning.
+       *
+       * NOTE: this shape suits record-like content models. If the
+       * vocabulary ever gains sequence-like models where order across
+       * different element names is semantic (EDL-style edit sequences),
+       * those will need an explicit ordering affordance.
+       */
       const grandchildren = child.children;
       const grandchildCounts: HVMLChildCounts = {};
 
@@ -493,8 +529,34 @@ export class HVMLElement extends HVMLNode {
 
           /* istanbul ignore else: optional */
           if ( children.length ) {
+            const childCounts: HVMLChildCounts = {};
+
             children.forEach( ( child ) => {
-              this._jsonifyChild( child );
+              if ( child.type() === 'element' ) {
+                const key = child.name();
+
+                if ( hasProperty( childCounts, key ) ) {
+                  childCounts[key].count += 1;
+                } else {
+                  childCounts[key] = {
+                    "count": 1,
+                    "i": -1,
+                  };
+                }
+              }
+            } );
+
+            children.forEach( ( child ) => {
+              if (
+                ( child.type() === 'element' )
+                && ( childCounts[child.name()].count > 1 )
+              ) {
+                // Each root-level child is handed a fresh path array;
+                // there are no shared-path pops to balance here
+                this._jsonifyChild( child, [], false, ++childCounts[child.name()].i );
+              } else {
+                this._jsonifyChild( child );
+              }
             } );
           }
         }

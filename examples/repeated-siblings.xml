@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<hvml
+  xmlns="https://hypervideo.tech/hvml#"
+  xml:lang="en"
+>
+  <video type="personal" xml:id="repeats">
+    <title>Repeated Siblings</title>
+    <presentation xml:id="first-presentation">
+      <poster>first</poster>
+    </presentation>
+    <presentation xml:id="second-presentation">
+      <file label="a" />
+      <file label="b" />
+    </presentation>
+  </video>
+</hvml>
