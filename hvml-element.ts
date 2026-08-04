@@ -602,11 +602,36 @@ export class HVMLElement extends HVMLNode {
      * but `string` is less of a pain in the ass.
      */
     key: string,
-    value: string | object,
+    value: string | object | number | boolean | null,
     target = this.children,
   ) {
+    if ( value === null ) {
+      // Same rule as `toMom()`: JSON-LD drops null entries during
+      // expansion, so we skip them at every nesting depth
+      return;
+    }
+
+    if ( ( typeof value === 'number' ) || ( typeof value === 'boolean' ) ) {
+      /**
+       * JSON's typed scalars map to XSD lexical forms on the XML side
+       * (23 ↔ "23" under xs:nonNegativeInteger; the grammar already
+       * declares the XML Schema datatype library), so we carry the
+       * lexical form rather than rejecting the value. Emitting typed
+       * JSON back out belongs to the context layer, where the
+       * grammar's datatypes can drive it.
+       */
+      this._momifyChild( key, String( value ), target );
+      return;
+    }
+
+    /**
+     * `@type` names the element its containing object describes. When
+     * we build an element from an object value, `@type` is consumed as
+     * its `nodeName`; the document root has no containing object, so
+     * it is handled here.
+     */
     if ( key === '@type' && typeof value === 'string' ) {
-      this.children.push( createHVMLElement( value ) ?? new HVMLUnknownElement( value ) );
+      target.push( createHVMLElement( value ) ?? new HVMLUnknownElement( value ) );
     } else {
       const lastChild = target[target.length - 1];
       const setMethod = `set${ucFirst( key )}`;
@@ -630,29 +655,24 @@ export class HVMLElement extends HVMLNode {
               lastChild.title = value;
               break;
 
-            case 'episode':
-            case 'description':
-            // case 'type':
-            // case 'recorded':
-              /* istanbul ignore else: edge case */
-              if ( hasMethod( lastChild, setMethod ) ) {
-                lastChild[setMethod]( value );
-              } else {
-                /**
-                 * Expando assignment for not-yet-conformant trees. We
-                 * go through `Object.assign` because `HVMLElement` has
-                 * no string index signature (adding one would defeat
-                 * type-checking everywhere else).
-                 */
-                Object.assign( lastChild, { [key]: value } );
-              }
-              break;
-
             case '@context':
               break;
 
             default:
-              // console.log( key, value );
+              /**
+               * Every other string term is preserved generically: a
+               * dedicated setter wins when the class defines one
+               * (`setEpisode`, `setDescription`); otherwise the value
+               * lands as an expando property so no term is silently
+               * dropped. We go through `Object.assign` because
+               * `HVMLElement` has no string index signature (adding
+               * one would defeat type-checking everywhere else).
+               */
+              if ( hasMethod( lastChild, setMethod ) ) {
+                lastChild[setMethod]( value );
+              } else {
+                Object.assign( lastChild, { [key]: value } );
+              }
               break;
           }
           break;
@@ -691,12 +711,69 @@ export class HVMLElement extends HVMLNode {
               break;
 
             default:
-              // FIXME: This may be redundant
-              lastChild.children.push( createHVMLElement( key ) ?? new HVMLUnknownElement( key ) );
+              if ( Array.isArray( value ) ) {
+                /**
+                 * A JSON array under an element-name key holds repeated
+                 * same-name elements (`presentation: [ {…}, {…} ]`, the
+                 * XML serializer's canonical shape): we build one child
+                 * element per entry.
+                 */
+                value.forEach( ( entry: string | object | null ) => {
+                  this._momifyChild( key, entry, target );
+                } );
+              } else {
+                /**
+                 * Embedded XHTML serializes to JSON as `childNodes`
+                 * lists, where position rather than a key locates each
+                 * node: the node's tag name travels in `@type`, and
+                 * text nodes have none. `@type` therefore becomes the
+                 * new element's `nodeName`, `childNodes` entries
+                 * without one become `#text` nodes, and every other
+                 * object is named by its key.
+                 */
+                const valueRecord = value as Record<string, unknown>;
+                let newChildName = key;
+
+                if ( typeof valueRecord['@type'] === 'string' ) {
+                  newChildName = valueRecord['@type'];
+                } else if ( key === 'childNodes' ) {
+                  newChildName = '#text';
+                }
+
+                lastChild.children.push( createHVMLElement( newChildName ) ?? new HVMLUnknownElement( newChildName ) );
+
+                /**
+                 * Recurse so nested terms build out the new element's
+                 * own properties and children; without this, `showing`,
+                 * `venue`, and company arrive as empty shells. `@type`
+                 * is consumed above as the node name, so we skip it
+                 * here.
+                 */
+                Object.entries( value ).forEach( ( [nestedKey, nestedValue] ) => {
+                  if ( nestedKey === '@type' ) {
+                    return;
+                  }
+
+                  this._momifyChild( nestedKey, nestedValue as string | object | number | boolean | null, lastChild.children );
+                } );
+              }
           }
           break;
 
+        /* istanbul ignore next: defensive */
         default:
+          /**
+           * Numbers and booleans normalize to strings above, and JSON
+           * cannot produce the remaining types (undefined, function,
+           * symbol), so this throw only fires on programmatic misuse.
+           */
+          throw new HVMLTypeError({
+            badValues: [String( value )],
+            expected: ['String', 'Object'],
+            got: typeof value,
+            input: { [key]: value },
+            methodName: '_momifyChild',
+          });
       }
     }
   }
@@ -716,7 +793,12 @@ export class HVMLElement extends HVMLNode {
           continue;
         }
 
-        if ( ( typeof value === 'string' ) || ( typeof value === 'object' ) ) {
+        if (
+          ( typeof value === 'string' )
+          || ( typeof value === 'object' )
+          || ( typeof value === 'number' )
+          || ( typeof value === 'boolean' )
+        ) {
           this._momifyChild( key, value );
         } else {
           throw new HVMLTypeError({

@@ -164,6 +164,89 @@ describe( 'HVMLElement', () => {
           expect( ( firstChild as Video ).episode ).toBeUndefined();
         } );
       } );
+
+      it( 'preserves string values for terms without dedicated setters when building the MOM from JSON', () => {
+        hvml = new HVML( './examples/nested-terms.jsonld' );
+        return hvml.ready.then( () => {
+          const MOM = hvml!.toMom();
+          const firstChild = MOM.children[0];
+
+          expect( firstChild ).toBeInstanceOf( Video );
+          expect( firstChild ).toMatchObject( {
+            "type": "personal",
+            "recorded": "2016-09-17",
+          } );
+        } );
+      } );
+
+      it( 'builds nested elements recursively when their JSON values contain their own terms', () => {
+        hvml = new HVML( './examples/nested-terms.jsonld' );
+        return hvml.ready.then( () => {
+          const MOM = hvml!.toMom();
+          const video = MOM.children[0];
+          const showing = video.children[0];
+
+          expect( showing.nodeName ).toBe( 'showing' );
+          expect( showing ).toMatchObject( {
+            "scope": "release",
+          } );
+
+          const venue = showing.children[0];
+
+          expect( venue.nodeName ).toBe( 'venue' );
+          expect( venue ).toMatchObject( {
+            "type": "site",
+            "uri": "https://www.youtube.com/watch?v=nWdWq3hMwao",
+          } );
+        } );
+      } );
+
+      it( 'creates one MOM element per entry when a JSON term holds an array of repeated elements', () => {
+        hvml = new HVML( './examples/nested-terms.jsonld' );
+        return hvml.ready.then( () => {
+          const MOM = hvml!.toMom();
+          const video = MOM.children[0];
+          const presentations = video.children.filter( ( child ) => child.nodeName === 'presentation' );
+
+          expect( presentations.length ).toBe( 2 );
+          expect( presentations[0].id ).toBe( 'first-presentation' );
+          expect( presentations[1].id ).toBe( 'second-presentation' );
+        } );
+      } );
+
+      it( 'names DOM-serialized XHTML nodes by their @type, with #text for text nodes, when building the MOM', () => {
+        hvml = new HVML( './examples/hvml.jsonld' );
+        return hvml.ready.then( () => {
+          const MOM = hvml!.toMom();
+          const video = MOM.children[0];
+          const presentation = video.children.filter( ( child ) => child.nodeName === 'presentation' )[0];
+          const choice = presentation.children[0];
+          const name = choice.children[0];
+          const div = name.children[0];
+
+          expect( div.nodeName ).toBe( 'html:div' );
+          expect( div.children.map( ( child ) => child.nodeName ) ).toEqual( ['#text', 'code', '#text'] );
+          expect( div.children[1] ).toMatchObject( {
+            "style": "font-family: inherit; font-weight: bold;",
+            "textContent": "hugh.today/2016-09-17/live",
+          } );
+        } );
+      } );
+
+      it( 'converts number and boolean values to strings when building the MOM, matching their XML lexical forms', () => {
+        hvml = new HVML( './examples/typed-scalars.jsonld' );
+        return hvml.ready.then( () => {
+          const MOM = hvml!.toMom();
+          const video = MOM.children[0];
+          const presentation = video.children[0];
+
+          expect( presentation.nodeName ).toBe( 'presentation' );
+          expect( presentation ).toMatchObject( {
+            "width": "23",
+            "hidden": "true",
+          } );
+        } );
+      } );
     } );
   } );
 

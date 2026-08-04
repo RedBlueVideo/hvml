@@ -1,0 +1,9 @@
+{
+  "@context": "https://redblue.video/guide/hvml.context.jsonld",
+  "@type": "video",
+  "xml:id": "typed-scalars",
+  "presentation": {
+    "width": 23,
+    "hidden": true
+  }
+}
