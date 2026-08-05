@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<hvml
+  xmlns="https://hypervideo.tech/hvml#"
+  xml:lang="en"
+>
+  <series xml:id="hughs-vlog">
+    <title>Hugh’s Vlog</title>
+    <series xml:id="season-01">
+      <title>Season 1</title>
+      <video xml:id="episode-01">
+        <title>Introduction</title>
+      </video>
+    </series>
+  </series>
+  <group xml:id="film-diary" type="series">
+    <title>Film Diary</title>
+    <description type="text">Weekly viewing notes.</description>
+    <video xml:id="entry-01">
+      <title>Week 1: Drive</title>
+    </video>
+  </group>
+</hvml>
