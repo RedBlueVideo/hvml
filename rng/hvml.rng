@@ -120,21 +120,33 @@
     </optional>
   </define>
 
+  <!--
+    Every HVML element accepts the xml:* attributes; their specs
+    define them as global across vocabularies. `xml:base` matters
+    most at the root: IRIs formed from `xml:id` values resolve
+    against it, so a copied document keeps its global names.
+  -->
   <define name="hvmlGlobalAttributes">
     <ref name="xmlGlobalAttributes" />
   </define>
 
   <!--
-    `xml:id` mints; `about` cites: an absolute IRI referencing a
-    subject the document does not own (hvml-spec
-    docs/2026-08-03-identity-versions-presentations.md §2.2). Only the
-    subject-bearing elements carry it (`video`, `version`,
-    `presentation`, `overlay`); property elements never do, so the
-    grammar records which elements can denote subjects. On
-    `presentation`, `about` also names the presentation under its
-    owner’s authority, per relaxation R2. (The xml:* globals reach
-    every element, matching their RECs; `about` stays a deliberate
-    grant.)
+    `about` holds an absolute IRI naming the thing its element
+    describes (hvml-spec
+    docs/2026-08-03-identity-versions-presentations.md §2.2). A
+    `video` carrying a registry entry’s IRI
+    (about="https://id.nospoon.tv/2011/drive") merges, at the RDF
+    layer, with every other document about the same IRI. An author
+    publishing an annotation track names their own `presentation` the
+    same way, under a domain they control.
+
+    Only elements that describe identifiable things take `about`:
+    `video` (a work), `version` (an edit of it), `presentation` (an
+    experience of it), `overlay` (an annotation on it). Elements that
+    describe properties of those things (`title`, `runtime`, etc.)
+    take none. NOTE: this scoping is temporary while the grammar
+    hardens; we expect to lift it so that mixed-vocabulary XML
+    documents (HVML + Atom + XHTML + RDFa) conform.
   -->
   <define name="aboutAttribute">
     <attribute name="about">
@@ -198,8 +210,9 @@
   </define>
 
   <!--
-    Typed payload, per the `description type="xhtml"` idiom (and Atom's
-    element of the same job). Honest for future non-text payloads.
+    Typed payload, following the same pattern as
+    `description type="xhtml"` (and Atom’s element of the same job).
+    The `type` attribute leaves room for non-text payloads.
   -->
   <define name="content">
     <element name="content">
@@ -365,9 +378,9 @@
   </define>
 
   <!--
-    Timing and geometry attribute groups for the annotation vocabulary
-    (`overlay` now; `choice` contexts later). Grammar reuse comes from
-    these shared patterns, not shared element names.
+    Timing and geometry attribute groups for the annotation
+    vocabulary. Grammar reuse comes from these shared patterns, not
+    shared element names.
 
     `on` names the playback phase; absent means `duration`.
     `start`/`end` bound the active window in reference-timeline seconds,
@@ -427,9 +440,9 @@
   </define>
 
   <!--
-    `animate`'s attribute pairs, factored into named patterns. The
-    lowercase variants serve documents that passed through
-    case-folding HTML parsers; both spellings stay accepted.
+    `animate`’s attribute pairs as named patterns. The lowercase
+    variants serve documents that passed through case-folding HTML
+    parsers; both spellings are accepted.
   -->
   <define name="animateTimingAttributes">
     <choice>
@@ -552,8 +565,8 @@
   </define>
 
   <!--
-    Inside `overlay`, `goto` reduces to pure action: the overlay owns
-    timing and geometry, so only the link remains.
+    Inside `overlay`, `goto` carries only the link; the overlay owns
+    timing and geometry.
   -->
   <define name="goto--pureAction">
     <element name="goto">
@@ -732,10 +745,10 @@
   </define>
 
   <!--
-    The standalone time- and space-scoped annotation unit ("text
-    overlay", "graphic overlay"). Geometry and timing live on the
+    The standalone time- and space-scoped annotation unit (“text
+    overlay”, “graphic overlay”). Geometry and timing live on the
     overlay, which renders whether or not it is interactive: `content`
-    carries the payload; `goto` reduces to optional pure action.
+    carries the payload; an optional `goto` adds the action.
   -->
   <define name="overlay">
     <element name="overlay">
@@ -756,7 +769,7 @@
     PROVISIONAL: adopted for experimentation, not yet ratified
     (hvml-spec docs/2026-08-03-identity-versions-presentations.md §3).
 
-    Maps the presenting resource's local timeline onto its version's
+    Maps the presenting resource’s local timeline onto its version’s
     reference timeline: local = offset + reference × rate/scale, with
     an integer rate/scale pair per the `fps` idiom. Linear-only by
     design; repeating `sync` with segment boundaries is reserved for
@@ -927,12 +940,6 @@
       <zeroOrMore>
         <ref name="video" />
       </zeroOrMore>
-      <!--
-        The root carries the full identity set: `xml:base` in
-        particular, so a copied document keeps its global names
-        (hvml-spec docs/2026-08-03-identity-versions-presentations.md
-        §2.2).
-      -->
       <ref name="hvmlGlobalAttributes" />
       <optional>
         <attribute name="xsi:schemaLocation" />
