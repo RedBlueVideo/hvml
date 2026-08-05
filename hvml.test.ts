@@ -201,6 +201,16 @@ describe( 'HVML', () => {
         } );
     } );
 
+    skipIfXmllintUnavailable( 'validates documents with `series` and `group` collection elements', () => {
+      const collectionsHvml = new HVML( './examples/series-group.xml' );
+
+      return collectionsHvml.ready
+        .then( () => collectionsHvml.validate() )
+        .then( ( validationResult: unknown ) => {
+          expect( validationResult ).toStrictEqual( true );
+        } );
+    } );
+
     describe( 'validates bad HVML', () => {
       skipIfXmllintUnavailable( 'unexpected element', () => {
         const badHvmlPath = './examples/legacy/redblue.ovml.xml';

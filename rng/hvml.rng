@@ -935,10 +935,57 @@
     </element><!--/video-->
   </define>
 
+  <!--
+    Collections of videos. `series` is the episodic show; seasons
+    nest as child `series`. `group` is the general-purpose
+    collection, its open `type` naming what it collects
+    (e.g. type="series"). Both take the same contents.
+  -->
+  <define name="collectionContents">
+    <interleave>
+      <optional>
+        <ref name="title" />
+      </optional>
+      <optional>
+        <ref name="description" />
+      </optional>
+      <zeroOrMore>
+        <ref name="video" />
+      </zeroOrMore>
+      <zeroOrMore>
+        <ref name="series" />
+      </zeroOrMore>
+      <zeroOrMore>
+        <ref name="group" />
+      </zeroOrMore>
+    </interleave>
+  </define>
+
+  <define name="series">
+    <element name="series">
+      <ref name="hvmlGlobalAttributes" />
+      <ref name="collectionContents" />
+    </element><!--/series-->
+  </define>
+
+  <define name="group">
+    <element name="group">
+      <ref name="hvmlGlobalAttributes" />
+      <optional>
+        <attribute name="type" />
+      </optional>
+      <ref name="collectionContents" />
+    </element><!--/group-->
+  </define>
+
   <start>
     <element name="hvml">
       <zeroOrMore>
-        <ref name="video" />
+        <choice>
+          <ref name="video" />
+          <ref name="series" />
+          <ref name="group" />
+        </choice>
       </zeroOrMore>
       <ref name="hvmlGlobalAttributes" />
       <optional>
