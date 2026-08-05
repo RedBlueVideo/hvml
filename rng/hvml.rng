@@ -176,6 +176,16 @@
     </element><!--/description-->
   </define>
 
+  <!--
+    Typed payload, per the `description type="xhtml"` idiom (and Atom's
+    element of the same job). Honest for future non-text payloads.
+  -->
+  <define name="content">
+    <element name="content">
+      <ref name="atomTextConstruct" />
+    </element><!--/content-->
+  </define>
+
   <define name="entity">
     <element name="entity">
       <attribute name="site" />
@@ -316,56 +326,141 @@
     </data>
   </define>
 
+  <define name="onAttribute">
+    <attribute name="on">
+      <choice>
+        <value>durationStart</value><!-- t=0 -->
+        <value>duration</value>
+        <value>durationEnd</value>
+      </choice>
+    </attribute>
+  </define>
+
+  <!--
+    Timing and geometry attribute groups for the annotation vocabulary
+    (`overlay` now; `choice` contexts later). Grammar reuse comes from
+    these shared patterns, not shared element names.
+
+    `on` names the playback phase; absent means `duration`.
+    `start`/`end` bound the active window in reference-timeline seconds,
+    within `on="duration"`.
+  -->
+  <define name="timingAttributes">
+    <optional>
+      <ref name="onAttribute" />
+    </optional>
+    <optional>
+      <attribute name="start">
+        <ref name="nonNegativeDecimal" />
+      </attribute>
+    </optional>
+    <optional>
+      <attribute name="end">
+        <ref name="nonNegativeDecimal" />
+      </attribute>
+    </optional>
+  </define>
+
+  <!--
+    A percentage box in the CSS inset vocabulary. Insets may go
+    negative for offscreen placement; dimensions may not.
+  -->
+  <define name="geometryAttributes">
+    <optional>
+      <attribute name="width">
+        <ref name="nonNegativePercentage" />
+      </attribute>
+    </optional>
+    <optional>
+      <attribute name="height">
+        <ref name="nonNegativePercentage" />
+      </attribute>
+    </optional>
+    <optional>
+      <attribute name="top">
+        <ref name="percentage" />
+      </attribute>
+    </optional>
+    <optional>
+      <attribute name="right">
+        <ref name="percentage" />
+      </attribute>
+    </optional>
+    <optional>
+      <attribute name="bottom">
+        <ref name="percentage" />
+      </attribute>
+    </optional>
+    <optional>
+      <attribute name="left">
+        <ref name="percentage" />
+      </attribute>
+    </optional>
+  </define>
+
+  <!--
+    `animate`'s attribute pairs, factored into named patterns. The
+    lowercase variants serve documents that passed through
+    case-folding HTML parsers; both spellings stay accepted.
+  -->
+  <define name="animateTimingAttributes">
+    <choice>
+      <attribute name="startTime">
+        <ref name="nonNegativeDecimal" />
+      </attribute>
+      <attribute name="starttime">
+        <ref name="nonNegativeDecimal" />
+      </attribute>
+    </choice>
+    <choice>
+      <attribute name="endTime">
+        <ref name="nonNegativeDecimal" />
+      </attribute>
+      <attribute name="endtime">
+        <ref name="nonNegativeDecimal" />
+      </attribute>
+    </choice>
+  </define>
+
+  <define name="animateMotionAttributes">
+    <choice>
+      <attribute name="startX">
+        <ref name="percentage" />
+      </attribute>
+      <attribute name="startx">
+        <ref name="percentage" />
+      </attribute>
+    </choice>
+    <choice>
+      <attribute name="startY">
+        <ref name="percentage" />
+      </attribute>
+      <attribute name="starty">
+        <ref name="percentage" />
+      </attribute>
+    </choice>
+    <choice>
+      <attribute name="endX">
+        <ref name="percentage" />
+      </attribute>
+      <attribute name="endx">
+        <ref name="percentage" />
+      </attribute>
+    </choice>
+    <choice>
+      <attribute name="endY">
+        <ref name="percentage" />
+      </attribute>
+      <attribute name="endy">
+        <ref name="percentage" />
+      </attribute>
+    </choice>
+  </define>
+
   <define name="animate">
     <element name="animate">
-      <choice>
-        <attribute name="startTime">
-          <ref name="nonNegativeDecimal" />
-        </attribute>
-        <attribute name="starttime">
-          <ref name="nonNegativeDecimal" />
-        </attribute>
-      </choice>
-      <choice>
-        <attribute name="endTime">
-          <ref name="nonNegativeDecimal" />
-        </attribute>
-        <attribute name="endtime">
-          <ref name="nonNegativeDecimal" />
-        </attribute>
-      </choice>
-      <choice>
-        <attribute name="startX">
-          <ref name="percentage" />
-        </attribute>
-        <attribute name="startx">
-          <ref name="percentage" />
-        </attribute>
-      </choice>
-      <choice>
-        <attribute name="startY">
-          <ref name="percentage" />
-        </attribute>
-        <attribute name="starty">
-          <ref name="percentage" />
-        </attribute>
-      </choice>
-      <choice>
-        <attribute name="endX">
-          <ref name="percentage" />
-        </attribute>
-        <attribute name="endx">
-          <ref name="percentage" />
-        </attribute>
-      </choice>
-      <choice>
-        <attribute name="endY">
-          <ref name="percentage" />
-        </attribute>
-        <attribute name="endy">
-          <ref name="percentage" />
-        </attribute>
-      </choice>
+      <ref name="animateTimingAttributes" />
+      <ref name="animateMotionAttributes" />
       <empty />
     </element>
   </define>
@@ -410,13 +505,7 @@
     -->
   <define name="goto">
     <element name="goto">
-      <attribute name="on">
-        <choice>
-          <value>durationStart</value><!-- t=0 -->
-          <value>duration</value>
-          <value>durationEnd</value>
-        </choice>
-      </attribute>
+      <ref name="onAttribute" />
       <optional>
         <ref name="xlinkActuate" />
       </optional>
@@ -429,6 +518,16 @@
       <zeroOrMore>
         <ref name="animate" />
       </zeroOrMore>
+    </element>
+  </define>
+
+  <!--
+    Inside `overlay`, `goto` reduces to pure action: the overlay owns
+    timing and geometry, so only the link remains.
+  -->
+  <define name="goto--pureAction">
+    <element name="goto">
+      <ref name="xlinkActuate" />
     </element>
   </define>
 
@@ -591,6 +690,56 @@
     </element>
   </define>
 
+  <!--
+    The standalone time- and space-scoped annotation unit ("text
+    overlay", "graphic overlay"). Geometry and timing live on the
+    overlay, which renders whether or not it is interactive: `content`
+    carries the payload; `goto` reduces to optional pure action.
+  -->
+  <define name="overlay">
+    <element name="overlay">
+      <ref name="hvmlGlobalAttributes" />
+      <ref name="timingAttributes" />
+      <ref name="geometryAttributes" />
+      <ref name="content" />
+      <optional>
+        <ref name="goto--pureAction" />
+      </optional>
+    </element><!--/overlay-->
+  </define>
+
+  <!--
+    PROVISIONAL: adopted for experimentation, not yet ratified
+    (hvml-spec docs/2026-08-03-identity-versions-presentations.md §3).
+
+    Maps the presenting resource's local timeline onto its version's
+    reference timeline: local = offset + reference × rate/scale, with
+    an integer rate/scale pair per the `fps` idiom. Linear-only by
+    design; repeating `sync` with segment boundaries is reserved for
+    piecewise maps (roadshow overtures, broadcast edits) and
+    deliberately unbuilt.
+  -->
+  <define name="sync">
+    <element name="sync">
+      <optional>
+        <attribute name="offset">
+          <data type="decimal" />
+        </attribute>
+      </optional>
+      <optional>
+        <group>
+          <attribute name="rate">
+            <data type="integer" />
+          </attribute>
+          <attribute name="scale">
+            <data type="integer" />
+          </attribute>
+        </group>
+      </optional>
+      <empty />
+    </element>
+  </define>
+
   <define name="presentation">
     <element name="presentation">
       <interleave>
@@ -606,11 +755,17 @@
         <optional>
           <ref name="fps" />
         </optional>
+        <optional>
+          <ref name="sync" />
+        </optional>
         <zeroOrMore>
           <ref name="file" />
         </zeroOrMore>
         <zeroOrMore>
           <ref name="choice" />
+        </zeroOrMore>
+        <zeroOrMore>
+          <ref name="overlay" />
         </zeroOrMore>
         <zeroOrMore>
           <ref name="link" />

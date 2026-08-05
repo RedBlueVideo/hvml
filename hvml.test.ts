@@ -181,6 +181,16 @@ describe( 'HVML', () => {
         } );
     } );
 
+    skipIfXmllintUnavailable( 'validates documents with `overlay`, `content`, and `sync` elements', () => {
+      const annotatedHvml = new HVML( './examples/overlay.xml' );
+
+      return annotatedHvml.ready
+        .then( () => annotatedHvml.validate() )
+        .then( ( validationResult: unknown ) => {
+          expect( validationResult ).toStrictEqual( true );
+        } );
+    } );
+
     describe( 'validates bad HVML', () => {
       skipIfXmllintUnavailable( 'unexpected element', () => {
         const badHvmlPath = './examples/legacy/redblue.ovml.xml';

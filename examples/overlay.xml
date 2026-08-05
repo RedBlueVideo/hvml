@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<hvml
+  xmlns="https://hypervideo.tech/hvml#"
+  xmlns:xlink="http://www.w3.org/1999/xlink"
+  xml:lang="en"
+>
+  <video type="narrative" xml:id="drive">
+    <title>Drive</title>
+    <version xml:id="theatrical" type="theatrical">
+      <runtime>5880</runtime>
+      <fps rate="24000" scale="1001"/>
+      <presentation>
+        <sync offset="21.5" rate="24" scale="25"/>
+        <overlay
+          xml:id="scorpion-jacket"
+          on="duration"
+          start="1284.5"
+          end="1290"
+          width="40%"
+          top="70%"
+          left="5%"
+        >
+          <content type="xhtml">
+            <div xmlns="http://www.w3.org/1999/xhtml">Refn commissioned four scorpion jackets.</div>
+          </content>
+          <goto xlink:actuate="onRequest" xlink:href="https://cine.example/sources/refn-interview"/>
+        </overlay>
+      </presentation>
+    </version>
+  </video>
+</hvml>
