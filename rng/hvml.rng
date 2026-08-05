@@ -124,6 +124,24 @@
     <ref name="xmlGlobalAttributes" />
   </define>
 
+  <!--
+    `xml:id` mints; `about` cites: an absolute IRI referencing a
+    subject the document does not own (hvml-spec
+    docs/2026-08-03-identity-versions-presentations.md §2.2). Only the
+    subject-bearing elements carry it (`video`, `version`,
+    `presentation`, `overlay`); property elements never do, so the
+    grammar records which elements can denote subjects. On
+    `presentation`, `about` also names the presentation under its
+    owner’s authority, per relaxation R2. (The xml:* globals reach
+    every element, matching their RECs; `about` stays a deliberate
+    grant.)
+  -->
+  <define name="aboutAttribute">
+    <attribute name="about">
+      <data type="anyURI" />
+    </attribute>
+  </define>
+
   <!-- http://www.microhowto.info/howto/match_arbitrary_content_using_relax_ng.html -->
   <define name="anyContent">
     <interleave>
@@ -154,18 +172,21 @@
 
   <define name="title">
     <element name="title">
+      <ref name="hvmlGlobalAttributes" />
       <text />
     </element>
   </define>
 
   <define name="episode">
     <element name="episode">
+      <ref name="hvmlGlobalAttributes" />
       <data type="integer" />
     </element>
   </define>
 
   <define name="recorded">
     <element name="recorded">
+      <ref name="hvmlGlobalAttributes" />
       <data type="date" />
     </element>
   </define>
@@ -188,6 +209,7 @@
 
   <define name="entity">
     <element name="entity">
+      <ref name="hvmlGlobalAttributes" />
       <attribute name="site" />
       <text />
     </element>
@@ -195,6 +217,7 @@
 
   <define name="uri">
     <element name="uri">
+      <ref name="hvmlGlobalAttributes" />
       <data type="anyURI" />
     </element>
   </define>
@@ -204,6 +227,7 @@
   -->
   <define name="link">
     <element name="link">
+      <ref name="hvmlGlobalAttributes" />
       <attribute name="rel" />
       <attribute name="href">
         <data type="anyURI" />
@@ -213,6 +237,7 @@
 
   <define name="runtime">
     <element name="runtime">
+      <ref name="hvmlGlobalAttributes" />
       <choice>
         <data type="duration" />
         <ref name="nonNegativeDecimal" />
@@ -222,6 +247,7 @@
 
   <define name="venue">
     <element name="venue">
+      <ref name="hvmlGlobalAttributes" />
       <optional>
         <attribute name="type">
           <choice>
@@ -249,6 +275,7 @@
   -->
   <define name="showing">
     <element name="showing">
+      <ref name="hvmlGlobalAttributes" />
       <interleave>
         <ref name="venue" />
         <zeroOrMore>
@@ -304,6 +331,7 @@
 
   <define name="simpleName">
     <element name="name">
+      <ref name="hvmlGlobalAttributes" />
       <text />
     </element>
   </define>
@@ -459,6 +487,7 @@
 
   <define name="animate">
     <element name="animate">
+      <ref name="hvmlGlobalAttributes" />
       <ref name="animateTimingAttributes" />
       <ref name="animateMotionAttributes" />
       <empty />
@@ -505,6 +534,7 @@
     -->
   <define name="goto">
     <element name="goto">
+      <ref name="hvmlGlobalAttributes" />
       <ref name="onAttribute" />
       <optional>
         <ref name="xlinkActuate" />
@@ -527,6 +557,7 @@
   -->
   <define name="goto--pureAction">
     <element name="goto">
+      <ref name="hvmlGlobalAttributes" />
       <ref name="xlinkActuate" />
     </element>
   </define>
@@ -571,9 +602,11 @@
   <define name="dimensionElements">
     <group>
       <element name="width">
+        <ref name="hvmlGlobalAttributes" />
         <data type="positiveInteger" />
       </element>
       <element name="height">
+        <ref name="hvmlGlobalAttributes" />
         <data type="positiveInteger" />
       </element>
     </group>
@@ -591,6 +624,7 @@
 
   <define name="frametype">
     <element name="frametype">
+      <ref name="hvmlGlobalAttributes" />
       <attribute name="abbr" />
       <text />
     </element>
@@ -598,6 +632,7 @@
 
   <define name="par">
     <element name="par">
+      <ref name="hvmlGlobalAttributes" />
       <attribute name="x">
         <data type="integer" />
       </attribute>
@@ -609,6 +644,7 @@
 
   <define name="fps">
     <element name="fps">
+      <ref name="hvmlGlobalAttributes" />
       <attribute name="rate">
         <data type="integer" />
       </attribute>
@@ -620,12 +656,14 @@
 
   <define name="mime">
     <element name="mime">
+      <ref name="hvmlGlobalAttributes" />
       <text />
     </element>
   </define>
 
   <define name="bitrate">
     <element name="bitrate">
+      <ref name="hvmlGlobalAttributes" />
       <attribute name="type">
         <choice>
           <value>cbr</value>
@@ -639,12 +677,14 @@
 
   <define name="bitdepth">
     <element name="bitdepth">
+      <ref name="hvmlGlobalAttributes" />
       <text /><!-- @todo -->
     </element>
   </define>
 
   <define name="codec">
     <element name="codec">
+      <ref name="hvmlGlobalAttributes" />
       <attribute name="type">
         <choice>
           <value>video</value>
@@ -666,6 +706,7 @@
 
   <define name="container">
     <element name="container">
+      <ref name="hvmlGlobalAttributes" />
       <interleave>
         <ref name="simpleName" />
         <ref name="mime" />
@@ -699,6 +740,9 @@
   <define name="overlay">
     <element name="overlay">
       <ref name="hvmlGlobalAttributes" />
+      <optional>
+        <ref name="aboutAttribute" />
+      </optional>
       <ref name="timingAttributes" />
       <ref name="geometryAttributes" />
       <ref name="content" />
@@ -721,6 +765,7 @@
   -->
   <define name="sync">
     <element name="sync">
+      <ref name="hvmlGlobalAttributes" />
       <optional>
         <attribute name="offset">
           <data type="decimal" />
@@ -742,6 +787,10 @@
 
   <define name="presentation">
     <element name="presentation">
+      <ref name="hvmlGlobalAttributes" />
+      <optional>
+        <ref name="aboutAttribute" />
+      </optional>
       <interleave>
         <optional>
           <ref name="poster" />
@@ -785,6 +834,9 @@
     <element name="version">
       <ref name="hvmlGlobalAttributes" />
       <optional>
+        <ref name="aboutAttribute" />
+      </optional>
+      <optional>
         <attribute name="type" />
       </optional>
       <optional>
@@ -824,6 +876,9 @@
   <define name="video">
     <element name="video">
       <ref name="hvmlGlobalAttributes" />
+      <optional>
+        <ref name="aboutAttribute" />
+      </optional>
       <optional>
         <attribute name="type">
           <list>
@@ -872,9 +927,13 @@
       <zeroOrMore>
         <ref name="video" />
       </zeroOrMore>
-      <optional>
-        <ref name="xmlLang" />
-      </optional>
+      <!--
+        The root carries the full identity set: `xml:base` in
+        particular, so a copied document keeps its global names
+        (hvml-spec docs/2026-08-03-identity-versions-presentations.md
+        §2.2).
+      -->
+      <ref name="hvmlGlobalAttributes" />
       <optional>
         <attribute name="xsi:schemaLocation" />
       </optional>
