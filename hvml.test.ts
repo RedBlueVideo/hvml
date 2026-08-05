@@ -191,6 +191,16 @@ describe( 'HVML', () => {
         } );
     } );
 
+    skipIfXmllintUnavailable( 'validates documents with `about` attributes, root `xml:base`, and `xml:id` on `presentation` elements', () => {
+      const citingHvml = new HVML( './examples/about.xml' );
+
+      return citingHvml.ready
+        .then( () => citingHvml.validate() )
+        .then( ( validationResult: unknown ) => {
+          expect( validationResult ).toStrictEqual( true );
+        } );
+    } );
+
     describe( 'validates bad HVML', () => {
       skipIfXmllintUnavailable( 'unexpected element', () => {
         const badHvmlPath = './examples/legacy/redblue.ovml.xml';
