@@ -115,23 +115,17 @@ describe( 'HVML', () => {
 
     skipIfLibxmljsUnavailable( 'from XML', () => {
       const hvml = new HVML( './examples/hvml.xml' );
-      hvml.ready
+      return hvml.ready
         .then( () => {
           expect( hvml.toJson() ).toStrictEqual( JSON_LD );
-        } )
-        .catch( ( error: unknown ) => {
-          throw new Error( String( error ) );
         } );
     } );
 
     it( 'from JSON-LD', () => {
       const hvml = new HVML( './examples/hvml.jsonld' );
-      hvml.ready
+      return hvml.ready
         .then( () => {
           expect( hvml.toJson() ).toStrictEqual( JSON_LD );
-        } )
-        .catch( ( error: unknown ) => {
-          throw new Error( String( error ) );
         } );
     } );
   } );
@@ -462,6 +456,29 @@ describe( 'HVML', () => {
           ],
         } );
         done();
+      } );
+    } );
+
+    test( 'toMom builds one root-level child per named-graph node', () => {
+      const hvml = new HVML();
+      hvml.json = {
+        "@context": "https://redblue.video/guide/hvml.context.jsonld",
+        "@graph": [
+          { "@type": "video", "xml:id": "first", "title": "First" },
+          { "@type": "video", "xml:id": "second", "title": "Second" },
+        ],
+      };
+
+      const MOM = hvml.toMom();
+
+      expect( MOM.children ).toHaveLength( 2 );
+      expect( MOM.children[0] ).toMatchObject( {
+        "id": "first",
+        "title": "First",
+      } );
+      expect( MOM.children[1] ).toMatchObject( {
+        "id": "second",
+        "title": "Second",
       } );
     } );
   } );

@@ -414,14 +414,17 @@ export class HVMLElement extends HVMLNode {
 
     if ( root ) {
       if ( atIndex !== null ) {
-        this.json = {
-          ...this.json,
-          "@type": nodeName,
-        };
         path.push( atIndex );
-        set( this.json, path, attributes );
-        path.pop();
-        path.pop();
+        set( this.json, path, {
+          "@type": nodeName,
+          ...attributes,
+        } );
+        /**
+         * The path keeps this node's prefix (e.g. ['@graph', 0]) so
+         * the descendant loop below writes inside the node. Callers
+         * hand each root child a fresh path array, so there are no
+         * shared-path pops to balance.
+         */
       } else {
         this.json = {
           ...this.json,
@@ -500,41 +503,21 @@ export class HVMLElement extends HVMLNode {
     }
 
     if ( this.children?.length ) {
-      const path: string[] = [];
-      // path.push( nodeName );
-
-      // this.children.forEach( ( child ) => {
-      //   this._setJsonChild( child, path, true );
-      // } );
       const { children } = this;
-      const childCounts: HVMLChildCounts = {};
 
-      children.forEach( ( child ) => {
-        const key = child.nodeName;
-
-        if ( hasProperty( childCounts, key ) ) {
-          childCounts[key].count += 1;
-        } else {
-          childCounts[key] = {
-            "count": 1,
-            "i": -1,
-          };
-        }
-      } );
-
-      children.forEach( ( child ) => {
-        const childNodeName = child.nodeName;
-
-        if ( childCounts[childNodeName].count > 1 ) {
-          path.push( '@list' );
-          ++childCounts[childNodeName].i;
-
-          this._setJsonChild( child, path, true, childCounts[childNodeName].i );
-          path.pop();
-        } else {
-          this._setJsonChild( child, path, true );
-        }
-      } );
+      if ( children.length > 1 ) {
+        /**
+         * Multiple root-level children form a JSON-LD named graph:
+         * one node per child, each carrying its own `@type`. (The
+         * earlier `@list` shape expanded to zero nodes; a list
+         * object in node position generates no triples.)
+         */
+        children.forEach( ( child, index ) => {
+          this._setJsonChild( child, ['@graph'], true, index );
+        } );
+      } else {
+        this._setJsonChild( children[0], [], true );
+      }
     }
 
     if ( this.xml ) {
@@ -545,49 +528,61 @@ export class HVMLElement extends HVMLNode {
        */
       const json = this.json;
 
-      this.xml.root()?.childNodes().forEach( ( node ) => {
-        if ( node.type() === 'element' ) {
-          const attributes = node.attrs();
-          const children = node.childNodes();
+      const rootChildren = ( this.xml.root()?.childNodes() ?? [] ).filter(
+        ( node ) => ( node.type() === 'element' ),
+      );
 
+      rootChildren.forEach( ( node, index ) => {
+        /**
+         * A single root element serializes as the top-level object;
+         * two or more form a JSON-LD named graph, one node apiece,
+         * each carrying its own `@type`.
+         */
+        const nodePath: LodashPath = ( rootChildren.length > 1 ) ? ['@graph', index] : [];
+        const attributes = node.attrs();
+        const children = node.childNodes();
+
+        if ( nodePath.length ) {
+          set( json, [...nodePath, '@type'], node.name() );
+        } else {
           json['@type'] = node.name();
+        }
 
-          attributes.forEach( ( attribute ) => {
-            this._jsonifyAttribute( attribute );
+        attributes.forEach( ( attribute ) => {
+          this._jsonifyAttribute( attribute, nodePath );
+        } );
+
+        /* istanbul ignore else: optional */
+        if ( children.length ) {
+          const childCounts: HVMLChildCounts = {};
+
+          children.forEach( ( child ) => {
+            if ( child.type() === 'element' ) {
+              const key = child.name();
+
+              if ( hasProperty( childCounts, key ) ) {
+                childCounts[key].count += 1;
+              } else {
+                childCounts[key] = {
+                  "count": 1,
+                  "i": -1,
+                };
+              }
+            }
           } );
 
-          /* istanbul ignore else: optional */
-          if ( children.length ) {
-            const childCounts: HVMLChildCounts = {};
-
-            children.forEach( ( child ) => {
-              if ( child.type() === 'element' ) {
-                const key = child.name();
-
-                if ( hasProperty( childCounts, key ) ) {
-                  childCounts[key].count += 1;
-                } else {
-                  childCounts[key] = {
-                    "count": 1,
-                    "i": -1,
-                  };
-                }
-              }
-            } );
-
-            children.forEach( ( child ) => {
-              if (
-                ( child.type() === 'element' )
-                && ( childCounts[child.name()].count > 1 )
-              ) {
-                // Each root-level child is handed a fresh path array;
-                // there are no shared-path pops to balance here
-                this._jsonifyChild( child, [], false, ++childCounts[child.name()].i );
-              } else {
-                this._jsonifyChild( child );
-              }
-            } );
-          }
+          children.forEach( ( child ) => {
+            if (
+              ( child.type() === 'element' )
+              && ( childCounts[child.name()].count > 1 )
+            ) {
+              // Each root-level child is handed a fresh path array;
+              // there are no shared-path pops to balance here
+              this._jsonifyChild( child, [...nodePath], false, ++childCounts[child.name()].i );
+            } else {
+              this._jsonifyChild( child, [...nodePath] );
+            }
+          } );
         }
       } );
     }
@@ -679,6 +674,33 @@ export class HVMLElement extends HVMLNode {
 
         case 'object':
           switch ( key ) {
+            case '@graph':
+              /**
+               * A named graph holds root-level siblings. Each node
+               * names its element via its own `@type` and lands in
+               * the current target, never nested under the previous
+               * child the way ordinary object values are. Nodes
+               * without a string `@type` cannot be named and are
+               * skipped, matching the `@context` drop above.
+               */
+              if ( Array.isArray( value ) ) {
+                ( value as Record<string, unknown>[] ).forEach( ( node ) => {
+                  const { '@type': nodeType, ...nodeTerms } = node;
+
+                  if ( typeof nodeType !== 'string' ) {
+                    return;
+                  }
+
+                  this._momifyChild( '@type', nodeType, target );
+
+                  Object.entries( nodeTerms ).forEach( ( [nodeKey, nodeValue] ) => {
+                    this._momifyChild( nodeKey, nodeValue as string | object | number | boolean | null, target );
+                  } );
+                } );
+              }
+
+              break;
+
             case 'description':
               /**
                * TODO: Same as above re `HVMLAnyElement`. Determine whether

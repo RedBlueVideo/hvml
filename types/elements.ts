@@ -190,6 +190,12 @@ export type HVMLTitle = string | Record<string, Record<string, string>>;
 export interface IHVMLElement extends HVMLNode {
   '@context'?: string;
   /**
+   * The canonical multi-root shape: one node per root-level element,
+   * each carrying its own `@type`. A single root element serializes
+   * as the top-level object instead, with no `@graph`.
+   */
+  '@graph'?: Partial<IHVMLElement>[];
+  /**
    * This should ideally conform to `HVMLElementTagName`,
    * but doing so makes TypeScript needlessly pedantic.
    * Don’t want to add type guard functions all over the

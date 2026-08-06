@@ -313,11 +313,79 @@ describe( 'HVMLElement', () => {
 
       expect( hvmlElement.toJson() ).toEqual( {
         "@context": "https://redblue.video/guide/hvml.context.jsonld",
-        "@type": "video",
-        "@list": [
-          { "xml:id": "video-01", "xml:lang": "en-US" },
-          { "xml:id": "video-02", "xml:lang": "en" },
+        "@graph": [
+          { "@type": "video", "xml:id": "video-01", "xml:lang": "en-US" },
+          { "@type": "video", "xml:id": "video-02", "xml:lang": "en" },
         ],
+      } );
+    } );
+
+    it( 'renders multiple root-level elements as a JSON-LD named graph, each node carrying its own children', () => {
+      hvmlElement = new HVMLElement();
+      const seriesOne = new Series( {
+        "id": "series-01",
+      } );
+      const episodeOne = new Video( {
+        "id": "episode-01",
+      } );
+      const seriesTwo = new Series( {
+        "id": "series-02",
+      } );
+
+      seriesOne.appendChild( episodeOne );
+      hvmlElement.appendChild( seriesOne );
+      hvmlElement.appendChild( seriesTwo );
+
+      expect( hvmlElement.toJson() ).toEqual( {
+        "@context": "https://redblue.video/guide/hvml.context.jsonld",
+        "@graph": [
+          {
+            "@type": "series",
+            "xml:id": "series-01",
+            "video": {
+              "xml:id": "episode-01",
+            },
+          },
+          {
+            "@type": "series",
+            "xml:id": "series-02",
+          },
+        ],
+      } );
+    } );
+
+    it( 'renders multiple root-level XML elements as a JSON-LD named graph', ( done ) => {
+      hvml = new HVML( './examples/series-group.xml' );
+      void hvml.ready.then( () => {
+        const json = hvml!.toJson() as Record<string, unknown>;
+        const graph = json['@graph'] as Array<Record<string, unknown>>;
+
+        expect( json['@type'] ).toBeUndefined();
+        expect( graph ).toHaveLength( 2 );
+        expect( graph[0] ).toStrictEqual( {
+          "@type": "series",
+          "xml:id": "hughs-vlog",
+          "title": "Hugh’s Vlog",
+          "series": {
+            "xml:id": "season-01",
+            "title": "Season 1",
+            "video": {
+              "xml:id": "episode-01",
+              "title": "Introduction",
+            },
+          },
+        } );
+        expect( graph[1] ).toMatchObject( {
+          "@type": "group",
+          "xml:id": "film-diary",
+          "type": "series",
+          "title": "Film Diary",
+          "video": {
+            "xml:id": "entry-01",
+            "title": "Week 1: Drive",
+          },
+        } );
+        done();
       } );
     } );
 
