@@ -7,9 +7,10 @@
   xmlns:html="http://www.w3.org/1999/xhtml"
   xsi:schemaLocation="https://raw.githubusercontent.com/RedBlueVideo/hvml/wip/hvml.xsd"
   xml:lang="en-US"
+  xml:base="https://hugh.today/2016-09-17/"
   hidden="hidden"
 >
-  <video type="personal" xml:id="ep-23">
+  <video type="personal" xml:id="ep-23" about="https://id.nospoon.tv/2016/hughs-vlog/overnight-dance-party-at-the-mfa">
     <title>Overnight Dance Party at the Museum of Fine Arts Boston</title>
     <episode>23</episode>
     <recorded>2016-09-17</recorded>
@@ -19,6 +20,9 @@
         <p>#mfaNOW #mfaLateNites</p>
       </div>
     </description>
+    <version xml:id="live-stream" type="broadcast" datetime="2016-09-17">
+      <runtime>3600</runtime>
+    </version>
     <showing scope="release" type="internet" admission="private">
       <venue type="site">
         <entity site="https://www.youtube.com/">YouTube</entity>
@@ -36,6 +40,17 @@
           <animate starttime="523.373882" endtime="524.873404" startx="14.9%" starty="10%" endx="15%" endy="-15%"></animate>
         </goto>
       </choice>
+    </presentation>
+    <presentation xml:id="rebroadcast" about="https://hugh.today/2016-09-17/live">
+      <sync offset="-90"/>
+      <overlay xml:id="mfa-credit" on="duration" start="0" end="30" width="40%" top="5%" left="5%">
+        <content type="xhtml">
+          <div xmlns="http://www.w3.org/1999/xhtml">
+            <p>Filmed at the Museum of Fine Arts Boston</p>
+            <p>#mfaNOW</p>
+          </div>
+        </content>
+      </overlay>
     </presentation>
   </video>
 </hvml>

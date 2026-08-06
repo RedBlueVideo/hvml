@@ -3,6 +3,7 @@
   "@type": "video",
   "xml:id": "ep-23",
   "type": "personal",
+  "about": "https://id.nospoon.tv/2016/hughs-vlog/overnight-dance-party-at-the-mfa",
   "title": "Overnight Dance Party at the Museum of Fine Arts Boston",
   "episode": "23",
   "recorded": "2016-09-17",
@@ -21,6 +22,12 @@
       ]
     }
   },
+  "version": {
+    "xml:id": "live-stream",
+    "type": "broadcast",
+    "datetime": "2016-09-17",
+    "runtime": "3600"
+  },
   "showing": {
     "scope": "release",
     "type": "internet",
@@ -37,56 +44,89 @@
       "title": "Overnight Dance Party at the Museum of Fine Arts Boston | Hugh’s Vlog | #mfaNOW #mfaLateNites"
     }
   },
-  "presentation": {
-    "choice": {
-      "xml:id": "full-stream",
-      "name": {
-        "type": "xhtml",
-        "html:div": {
-          "childNodes": [
+  "presentation": [
+    {
+      "choice": {
+        "xml:id": "full-stream",
+        "name": {
+          "type": "xhtml",
+          "html:div": {
+            "childNodes": [
+              {
+                "textContent": "Go to: "
+              },
+              {
+                "@type": "code",
+                "style": "font-family: inherit; font-weight: bold;",
+                "textContent": "hugh.today/2016-09-17/live"
+              },
+              {
+                "textContent": " for the full stream"
+              }
+            ]
+          }
+        },
+        "goto": {
+          "on": "duration",
+          "xlink:actuate": "onRequest",
+          "xlink:href": "https://www.facebook.com/hugh.guiney/videos/10100195051457860/",
+          "width": "70%",
+          "height": "13%",
+          "css:font-size": "calc(384 / 150 * 1vw)",
+          "css:font-family": "'Noto Sans CJK JP', 'Noto Sans CJK', 'Noto Sans', sans-serif",
+          "css:white-space": "nowrap",
+          "css:overflow": "hidden",
+          "animate": [
             {
-              "textContent": "Go to: "
+              "startTime": "517.292107",
+              "endTime": "518.872131",
+              "startX": "14.9%",
+              "startY": "-15%",
+              "endX": "15%",
+              "endY": "10%"
             },
             {
-              "@type": "code",
-              "style": "font-family: inherit; font-weight: bold;",
-              "textContent": "hugh.today/2016-09-17/live"
-            },
-            {
-              "textContent": " for the full stream"
+              "startTime": "523.373882",
+              "endTime": "524.873404",
+              "startX": "14.9%",
+              "startY": "10%",
+              "endX": "15%",
+              "endY": "-15%"
             }
           ]
         }
+      }
+    },
+    {
+      "xml:id": "rebroadcast",
+      "about": "https://hugh.today/2016-09-17/live",
+      "sync": {
+        "offset": "-90"
       },
-      "goto": {
+      "overlay": {
+        "xml:id": "mfa-credit",
         "on": "duration",
-        "xlink:actuate": "onRequest",
-        "xlink:href": "https://www.facebook.com/hugh.guiney/videos/10100195051457860/",
-        "width": "70%",
-        "height": "13%",
-        "css:font-size": "calc(384 / 150 * 1vw)",
-        "css:font-family": "'Noto Sans CJK JP', 'Noto Sans CJK', 'Noto Sans', sans-serif",
-        "css:white-space": "nowrap",
-        "css:overflow": "hidden",
-        "animate": [
-          {
-            "startTime": "517.292107",
-            "endTime": "518.872131",
-            "startX": "14.9%",
-            "startY": "-15%",
-            "endX": "15%",
-            "endY": "10%"
-          },
-          {
-            "startTime": "523.373882",
-            "endTime": "524.873404",
-            "startX": "14.9%",
-            "startY": "10%",
-            "endX": "15%",
-            "endY": "-15%"
+        "start": "0",
+        "end": "30",
+        "width": "40%",
+        "top": "5%",
+        "left": "5%",
+        "content": {
+          "type": "xhtml",
+          "html:div": {
+            "childNodes": [
+              {
+                "@type": "p",
+                "textContent": "Filmed at the Museum of Fine Arts Boston"
+              },
+              {
+                "@type": "p",
+                "textContent": "#mfaNOW"
+              }
+            ]
           }
-        ]
+        }
       }
     }
-  }
+  ]
 }

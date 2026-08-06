@@ -351,6 +351,77 @@ describe( 'HVML', () => {
             }] );
           } );
       } );
+
+      skipIfXmllintUnavailable( 'about on a property element', () => {
+        const badHvmlPath = './examples/bad/about-on-property-element.hvml';
+        const badHvml = new HVML( badHvmlPath );
+
+        expect.assertions( 1 );
+
+        return badHvml.ready
+          .then( () => badHvml.validate() )
+          .then( ( badValidationResult: unknown ) => {
+            expect( badValidationResult ).toBeUndefined();
+          } )
+          .catch( ( error: unknown ) => {
+            expect( error ).toStrictEqual( [{
+              "error": "Invalid attribute about for element title",
+              "element": "title",
+              "file": badHvmlPath,
+              "got": "about",
+              "line": "4",
+              "message": `${badHvmlPath}:4: element title: Relax-NG validity error : Invalid attribute about for element title`,
+              "type": "validity error",
+            }] );
+          } );
+      } );
+
+      skipIfXmllintUnavailable( 'about on the root element', () => {
+        const badHvmlPath = './examples/bad/about-on-root.hvml';
+        const badHvml = new HVML( badHvmlPath );
+
+        expect.assertions( 1 );
+
+        return badHvml.ready
+          .then( () => badHvml.validate() )
+          .then( ( badValidationResult: unknown ) => {
+            expect( badValidationResult ).toBeUndefined();
+          } )
+          .catch( ( error: unknown ) => {
+            expect( error ).toStrictEqual( [{
+              "error": "Invalid attribute about for element hvml",
+              "element": "hvml",
+              "file": badHvmlPath,
+              "got": "about",
+              "line": "2",
+              "message": `${badHvmlPath}:2: element hvml: Relax-NG validity error : Invalid attribute about for element hvml`,
+              "type": "validity error",
+            }] );
+          } );
+      } );
+
+      skipIfXmllintUnavailable( 'sync outside a presentation', () => {
+        const badHvmlPath = './examples/bad/sync-outside-presentation.hvml';
+        const badHvml = new HVML( badHvmlPath );
+
+        expect.assertions( 1 );
+
+        return badHvml.ready
+          .then( () => badHvml.validate() )
+          .then( ( badValidationResult: unknown ) => {
+            expect( badValidationResult ).toBeUndefined();
+          } )
+          .catch( ( error: unknown ) => {
+            expect( error ).toStrictEqual( [{
+              "error": "Did not expect element sync there",
+              "file": badHvmlPath,
+              "got": "sync",
+              "line": "3",
+              "message": `${badHvmlPath}:3: element sync: Relax-NG validity error : Did not expect element sync there`,
+              "type": "validity error",
+            }] );
+          } );
+      } );
     } );
 
     skipIfLibxmljsUnavailable( 'alerts user when trying to validate and xmllint path is inaccessible', ( done ) => {
@@ -440,16 +511,23 @@ describe( 'HVML', () => {
               "language": "_",
               "region": "_",
               "id": "ep-23",
+              "about": "https://id.nospoon.tv/2016/hughs-vlog/overnight-dance-party-at-the-mfa",
               "title": "Overnight Dance Party at the Museum of Fine Arts Boston",
               "description": {
                 "xhtml": "<p>Full Facebook Live stream: https://www.facebook.com/hugh.guiney/videos/10100195051457860/</p><p>#mfaNOW #mfaLateNites</p>",
               },
               "children": [
                 {
-                  // <presentation>
+                  // <version>
                 },
                 {
                   // <showing>
+                },
+                {
+                  // <presentation>
+                },
+                {
+                  // <presentation xml:id="rebroadcast">
                 },
               ],
             },
