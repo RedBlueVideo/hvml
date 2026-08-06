@@ -379,8 +379,8 @@
 
   <!--
     Timing and geometry attribute groups for the annotation
-    vocabulary. Grammar reuse comes from these shared patterns, not
-    shared element names.
+    vocabulary. Grammar reuse comes from these shared patterns rather
+    than shared element names.
 
     `on` names the playback phase; absent means `duration`.
     `start`/`end` bound the active window in reference-timeline seconds,
