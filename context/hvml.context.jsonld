@@ -1,0 +1,64 @@
+{
+  "@context": {
+    "@version": 1.1,
+    "@vocab": "https://hypervideo.tech/hvml#",
+    "hvml": "https://hypervideo.tech/hvml#",
+    "xsd": "http://www.w3.org/2001/XMLSchema#",
+    "html": "http://www.w3.org/1999/xhtml#",
+    "dom": "https://dom.spec.whatwg.org/#",
+    "xlink": "http://www.w3.org/1999/xlink#",
+    "css": "https://www.w3.org/TR/CSS/#",
+    "about": "@id",
+    "xlink:href": {
+      "@type": "@id"
+    },
+    "href": {
+      "@type": "@id"
+    },
+    "uri": {
+      "@type": "xsd:anyURI"
+    },
+    "recorded": {
+      "@type": "xsd:date"
+    },
+    "presentation": {
+      "@container": "@list"
+    },
+    "version": "hvml:version",
+    "overlay": "hvml:overlay",
+    "content": "hvml:content",
+    "sync": "hvml:sync",
+    "children": {
+      "@id": "dom:dom-parentnode-children",
+      "@container": "@list"
+    },
+    "childNodes": {
+      "@id": "dom:dom-node-childnodes",
+      "@container": "@list"
+    },
+    "textContent": "dom:dom-node-textcontent",
+    "nodeName": "dom:dom-node-nodename",
+    "div": "html:div",
+    "p": "html:p",
+    "style": "html:style",
+    "code": "html:code",
+    "width": {
+      "@type": "css:percentage"
+    },
+    "height": {
+      "@type": "css:percentage"
+    },
+    "startX": {
+      "@type": "css:percentage"
+    },
+    "startY": {
+      "@type": "css:percentage"
+    },
+    "endX": {
+      "@type": "css:percentage"
+    },
+    "endY": {
+      "@type": "css:percentage"
+    }
+  }
+}
