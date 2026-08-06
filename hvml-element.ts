@@ -540,7 +540,7 @@ export class HVMLElement extends HVMLNode {
     if ( this.xml ) {
       /**
        * We capture `json` because closures reset TypeScript’s property
-       * narrowing. The reference stays current: nothing below
+       * narrowing. The reference remains current: nothing below
        * reassigns `this.json`, only mutates it.
        */
       const json = this.json;
@@ -649,7 +649,7 @@ export class HVMLElement extends HVMLNode {
                * no way to validate what type we are working with at
                * this stage: the element is built one piece at a time,
                * and type information isn’t necessarily in place yet.
-               * The MOM stays permissive; conformance belongs to the
+               * The MOM is permissive; conformance belongs to the
                * RNG validator.
                */
               lastChild.title = value;
@@ -862,7 +862,7 @@ export class HVMLElement extends HVMLNode {
  * DOM cue: `HTMLUnknownElement`. Stands in for tags with no registered
  * class, so `children` always holds real elements.
  *
- * The MOM stays permissive about not-yet-conformant trees; conformance
+ * The MOM is permissive about not-yet-conformant trees; conformance
  * checking remains the RNG validator’s job. (This settles the old
  * question in `_momifyChild` about how aggressively to narrow.)
  *

@@ -11,7 +11,7 @@ import type { HVMLDescriptionElement } from "../description.js";
  * Embedded-XHTML tag name. HVML embeds arbitrary XHTML content (rich
  * descriptions and the like). Duplicating lib.dom’s hundred-plus tag
  * names here would create a sync burden with a spec this library
- * doesn’t own, so this stays `string`. It also keeps the published
+ * doesn’t own, so this is `string`. It also keeps the published
  * types usable in Node projects that don’t load the browser lib.
  */
 export type XHTMLTagName = string;
@@ -20,7 +20,7 @@ export interface JSONLDSerializedHTMLElement {
   /**
    * This should technically conform to only
    * valid HTML attributes. We keep `any` rather than `unknown` so
-   * serialized attribute records stay assignable to `JSONMLAttributes`.
+   * serialized attribute records remain assignable to `JSONMLAttributes`.
    */
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   [propertyName: string]: any;
@@ -98,7 +98,7 @@ export type HVMLDescriptionType =
 ;
 
 /**
- * @deprecated `children` no longer contains bare tag-name strings;
+ * @deprecated Bare tag-name strings never appear in `children`;
  * unknown tags are represented by `HVMLUnknownElement`. Kept exported
  * for 0.0.x continuity.
  */
@@ -168,7 +168,7 @@ export class HVMLNode {
   /**
    * DOM cue: `Node.nodeName`. Serialization keys on this, never on
    * `constructor.name` (which changes under minification and class
-   * renames). We use a getter rather than a field so it stays off the
+   * renames). We use a getter rather than a field to keep it off the
    * instance: `_setJsonChild` spreads instances into serialized
    * attributes.
    */
