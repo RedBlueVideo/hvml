@@ -467,8 +467,8 @@ describe( 'HVMLElement', () => {
           "recorded": "2026-08-03",
           "presentation": {
             "fps": {
-              "rate": "30",
-              "scale": "1",
+              "rate": 30,
+              "scale": 1,
             },
             "poster": "placeholder",
           },
@@ -502,6 +502,21 @@ describe( 'HVMLElement', () => {
         done();
       } )
         .catch( error => done( error ) );
+    } );
+
+    it( 'emits grammar-typed numeric terms as JSON numbers when serializing the MOM', () => {
+      hvml = new HVML( './examples/hvml.jsonld' );
+      return hvml.ready.then( () => {
+        const MOM = hvml!.toMom();
+        const json = MOM.toJson() as Record<string, unknown>;
+
+        expect( json ).toMatchObject( {
+          "episode": 23,
+          "version": expect.objectContaining( {
+            "runtime": 3600,
+          } ) as unknown,
+        } );
+      } );
     } );
   } );
 } );

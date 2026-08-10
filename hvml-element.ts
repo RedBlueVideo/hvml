@@ -7,6 +7,7 @@ import {
 } from 'libxmljs';
 
 import Data, { LodashPath } from './util/data.js';
+import { emitTypedScalar } from './util/datatypes.js';
 import { hasMethod, hasProperty } from './util/types.js';
 import { ucFirst } from './util/strings.js';
 import {
@@ -130,7 +131,7 @@ export class HVMLElement extends HVMLNode {
     }
 
     attributePath.push( property );
-    set( this.json, attributePath, attribute.value() );
+    set( this.json, attributePath, emitTypedScalar( property, attribute.value() ) );
     attributePath.pop();
   }
 
@@ -341,10 +342,10 @@ export class HVMLElement extends HVMLNode {
                     keyValue[attr.name()] = attr.value();
                   } );
                   value.push( keyValue );
-                  value.push( text );
+                  value.push( emitTypedScalar( upone, text ) );
                   set( this.json, dupePath, value );
                 } else {
-                  set( this.json, dupePath, text );
+                  set( this.json, dupePath, emitTypedScalar( upone, text ) );
                 }
               }
             }
@@ -409,6 +410,17 @@ export class HVMLElement extends HVMLNode {
     delete attributes.json;
     delete attributes.prefixes;
     delete attributes.xml;
+
+    /**
+     * The MOM stores every scalar in its XML lexical form (`toMom`
+     * normalizes JSON numbers and booleans to strings on ingestion),
+     * so grammar-typed terms convert back on the way out.
+     */
+    for ( const [term, value] of Object.entries( attributes ) ) {
+      if ( typeof value === 'string' ) {
+        ( attributes as Record<string, unknown> )[term] = emitTypedScalar( term, value );
+      }
+    }
 
     // const parentNode = path[path.length - 1 ];
 

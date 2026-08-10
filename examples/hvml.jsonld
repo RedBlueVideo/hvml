@@ -5,7 +5,7 @@
   "type": "personal",
   "about": "https://id.nospoon.tv/2016/hughs-vlog/overnight-dance-party-at-the-mfa",
   "title": "Overnight Dance Party at the Museum of Fine Arts Boston",
-  "episode": "23",
+  "episode": 23,
   "recorded": "2016-09-17",
   "description": {
     "type": "xhtml",
@@ -26,7 +26,7 @@
     "xml:id": "live-stream",
     "type": "broadcast",
     "datetime": "2016-09-17",
-    "runtime": "3600"
+    "runtime": 3600
   },
   "showing": {
     "scope": "release",
@@ -78,16 +78,16 @@
           "css:overflow": "hidden",
           "animate": [
             {
-              "startTime": "517.292107",
-              "endTime": "518.872131",
+              "startTime": 517.292107,
+              "endTime": 518.872131,
               "startX": "14.9%",
               "startY": "-15%",
               "endX": "15%",
               "endY": "10%"
             },
             {
-              "startTime": "523.373882",
-              "endTime": "524.873404",
+              "startTime": 523.373882,
+              "endTime": 524.873404,
               "startX": "14.9%",
               "startY": "10%",
               "endX": "15%",
@@ -101,13 +101,13 @@
       "xml:id": "rebroadcast",
       "about": "https://hugh.today/2016-09-17/live",
       "sync": {
-        "offset": "-90"
+        "offset": -90
       },
       "overlay": {
         "xml:id": "mfa-credit",
         "on": "duration",
-        "start": "0",
-        "end": "30",
+        "start": 0,
+        "end": 30,
         "width": "40%",
         "top": "5%",
         "left": "5%",
