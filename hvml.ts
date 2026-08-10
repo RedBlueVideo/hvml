@@ -6,6 +6,10 @@ import HVMLElement from './hvml-element.js';
 import Video from './video.js';
 import Series from './series.js';
 import Group from './group.js';
+import Version from './version.js';
+import Overlay from './overlay.js';
+import Content from './content.js';
+import Sync from './sync.js';
 
 import { createRequire } from 'module';
 
@@ -443,7 +447,7 @@ class HVML extends HVMLElement {
 
 // toJson
 
-export { HVML, Series, Group, Video };
+export { HVML, Series, Group, Video, Version, Overlay, Content, Sync };
 export { HVMLElement, HVMLUnknownElement } from './hvml-element.js';
 export { createHVMLElement, defineHVMLElement, getHVMLElementClass } from './util/registry.js';
 

@@ -5,6 +5,10 @@ import type { HVML } from "../hvml.js";
 import type HVMLVideoElement from "../video.js";
 import type Series from "../series.js";
 import type Group from "../group.js";
+import type Version from "../version.js";
+import type Overlay from "../overlay.js";
+import type Content from "../content.js";
+import type Sync from "../sync.js";
 import type { HVMLDescriptionElement } from "../description.js";
 
 /**
@@ -94,10 +98,14 @@ export function isValidHVMLElementTagName(tagName: string): tagName is HVMLEleme
  * grows a class.
  */
 export interface HVMLElementTagNameMap extends Record<HVMLElementTagName, HVMLElement> {
+  content: Content;
   description: HVMLDescriptionElement;
   group: Group;
   hvml: HVML;
+  overlay: Overlay;
   series: Series;
+  sync: Sync;
+  version: Version;
   video: HVMLVideoElement;
 }
 
