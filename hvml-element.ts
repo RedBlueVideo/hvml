@@ -320,9 +320,22 @@ export class HVMLElement extends HVMLNode {
                 dupePath.pop();
                 const parent = child.parent();
                 const attrs = parent && 'attrs' in parent ? parent.attrs() : [];
-                const obj: JSONLDSerializedHTMLElement = {
-                  "@type": upone.substring( 5 ),
-                };
+                const obj: JSONLDSerializedHTMLElement = {};
+
+                /**
+                 * Two slot shapes for a text-only XHTML element: a
+                 * positional `childNodes` index carries no element
+                 * name, so the node states its own via `@type`; a
+                 * name-keyed slot (`html:div` directly under a typed
+                 * payload like `content`) already carries it, and
+                 * hoisting the payload one level up would overwrite
+                 * the containing element and its attributes.
+                 */
+                const slotIsPositional = ( typeof dupePath[dupePath.length - 1] === 'number' );
+
+                if ( slotIsPositional ) {
+                  obj['@type'] = upone.substring( 5 );
+                }
 
                 attrs.forEach( ( attr ) => {
                   obj[attr.name()] = attr.value();
@@ -330,7 +343,7 @@ export class HVMLElement extends HVMLNode {
 
                 obj.textContent = text;
 
-                set( this.json, dupePath, obj );
+                set( this.json, slotIsPositional ? dupePath : path, obj );
               } else {
                 const parent = child.parent();
                 const attrs = parent && 'attrs' in parent ? parent.attrs() : [];
