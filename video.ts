@@ -11,7 +11,7 @@ import HVMLElement from './hvml-element.js';
 import Time from './util/time.js';
 import Validation, { HVMLTypeError } from './util/validation.js';
 import Transform from './util/transform.js';
-import { DescriptionType, JSONLDSerializedHTMLElement } from './types/elements.js';
+import { DescriptionType, HVMLXhtmlPayloadInput } from './types/elements.js';
 import { ISO639LanguageCode, isValidISO639LanguageCode } from './types/language.js';
 import { JSONML, JSONMLNode } from './util/data.js';
 import { defineHVMLElement } from './util/registry.js';
@@ -36,13 +36,10 @@ export interface IHVMLDescription {
 }
 
 /**
- * The `xhtml`-typed input accepted by `setDescription` when it isn’t a
- * raw XHTML string: JSON-LD-serialized HTML, as parsed from an HVML
- * document’s `html:div` content.
+ * @deprecated Renamed `HVMLXhtmlPayloadInput` (types/elements.ts)
+ * when `content` joined `description` as a typed-payload carrier.
  */
-export interface HVMLXhtmlDescriptionInput {
-  childNodes?: JSONLDSerializedHTMLElement[];
-}
+export type HVMLXhtmlDescriptionInput = HVMLXhtmlPayloadInput;
 
 /**
  * Constructor input. This is distinct from the instance shape: `lang`
@@ -385,9 +382,9 @@ class HVMLVideoElement extends HVMLElement {
 
   setDescription( description: JSONMLNode[], type: 'jsonml' ): void;
 
-  setDescription( description: string | HVMLXhtmlDescriptionInput, type: 'xhtml' ): void;
+  setDescription( description: string | HVMLXhtmlPayloadInput, type: 'xhtml' ): void;
 
-  setDescription( description: string | HVMLXhtmlDescriptionInput | JSONMLNode[], type: DescriptionType = 'text' ) {
+  setDescription( description: string | HVMLXhtmlPayloadInput | JSONMLNode[], type: DescriptionType = 'text' ) {
     const errorData = {
       ...this._baseErrorData,
       "methodName": "setDescription",
@@ -419,22 +416,7 @@ class HVMLVideoElement extends HVMLElement {
 
           case 'object':
             if ( !Array.isArray( description ) && Array.isArray( description.childNodes ) ) {
-              // We accumulate in a local because closures reset property narrowing
-              let xhtml = '';
-
-              description.childNodes.forEach( ( childNode ) => {
-                if ( childNode['@type'] && childNode.textContent ) {
-                  const attributes = { ...childNode };
-                  delete attributes['@type'];
-                  delete attributes.textContent;
-
-                  xhtml += Transform.jsonMlToXmlString(
-                    [childNode['@type'], attributes, childNode.textContent],
-                  );
-                }
-              } );
-
-              this.description.xhtml = xhtml;
+              this.description.xhtml = Transform.jsonLdChildNodesToXmlString( description.childNodes );
             }
             break;
 

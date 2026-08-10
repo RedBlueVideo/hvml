@@ -29,6 +29,16 @@ export interface JSONLDSerializedHTMLElement {
 }
 
 /**
+ * The `xhtml`-typed input accepted by the payload setters
+ * (`setDescription`, `setContent`) when it isn’t a raw XHTML string:
+ * JSON-LD-serialized HTML, as parsed from an HVML document’s
+ * `html:div` content.
+ */
+export interface HVMLXhtmlPayloadInput {
+  childNodes?: JSONLDSerializedHTMLElement[];
+}
+
+/**
  * The HVML element vocabulary. The source of truth is `rng/hvml.rng`;
  * `types/elements.test.ts` fails with an exact diff whenever the
  * schema and this list drift apart.

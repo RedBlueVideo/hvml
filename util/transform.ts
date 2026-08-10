@@ -7,6 +7,7 @@ import { isString, isPlainObject } from './types.js';
 import { softTrim } from './strings.js';
 
 import type { JSONML, JSONMLAttributes, JSONMLNode } from './data.js';
+import type { JSONLDSerializedHTMLElement } from '../types/elements.js';
 
 export type { JSONML } from './data.js';
 
@@ -43,6 +44,29 @@ class Transform {
 
   static wrapJsonMl( childNodes: ( JSONMLAttributes | JSONMLNode )[] ): JSONML {
     return [...Transform.jsonMlWrapper, ...childNodes];
+  }
+
+  /**
+   * Serializes JSON-LD-serialized HTML child nodes (an `html:div`’s
+   * `childNodes` list) back into an XML fragment string. Shared by
+   * the `description` and `content` payload setters.
+   */
+  static jsonLdChildNodesToXmlString( childNodes: JSONLDSerializedHTMLElement[] ): string {
+    let xml = '';
+
+    childNodes.forEach( ( childNode ) => {
+      if ( childNode['@type'] && childNode.textContent ) {
+        const attributes = { ...childNode };
+        delete attributes['@type'];
+        delete attributes.textContent;
+
+        xml += Transform.jsonMlToXmlString(
+          [childNode['@type'], attributes, childNode.textContent],
+        );
+      }
+    } );
+
+    return xml;
   }
 
   static getJsonMlTextContent( jsonML: JSONML, preserveBRs = false, normalizeWhitespace = false ) {
