@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  The independently published annotation track from hvml-spec
+  docs/2026-08-03-identity-versions-presentations.md §4, verbatim: an
+  ordinary partial HVML document citing the work and the version it
+  annotates by IRI. NOTE: serialization-only for now, like
+  `series.xml`; the grammar requires `title` on `video`, which a
+  citing document has no reason to restate. That tension is an open
+  design question, not settled here.
+-->
+<hvml xmlns="https://hypervideo.tech/hvml#" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <video about="https://id.nospoon.tv/2011/drive">
+    <presentation about="https://cine.example/tracks/drive-trivia">
+      <link rel="presents" href="https://id.nospoon.tv/2011/drive#theatrical"/>
+      <overlay xml:id="scorpion-jacket" on="duration" start="1284.5" end="1290"
+               width="40%" top="70%" left="5%">
+        <content type="xhtml">
+          <div xmlns="http://www.w3.org/1999/xhtml">Refn commissioned four scorpion jackets.</div>
+        </content>
+        <goto xlink:actuate="onRequest" xlink:href="https://cine.example/sources/refn-interview"/>
+      </overlay>
+    </presentation>
+  </video>
+</hvml>

@@ -1,0 +1,31 @@
+{
+  "@context": "https://redblue.video/guide/hvml.context.jsonld",
+  "@type": "video",
+  "about": "https://id.nospoon.tv/2011/drive",
+  "presentation": {
+    "about": "https://cine.example/tracks/drive-trivia",
+    "link": {
+      "rel": "presents",
+      "href": "https://id.nospoon.tv/2011/drive#theatrical"
+    },
+    "overlay": {
+      "xml:id": "scorpion-jacket",
+      "on": "duration",
+      "start": 1284.5,
+      "end": 1290,
+      "width": "40%",
+      "top": "70%",
+      "left": "5%",
+      "content": {
+        "type": "xhtml",
+        "html:div": {
+          "textContent": "Refn commissioned four scorpion jackets."
+        }
+      },
+      "goto": {
+        "xlink:actuate": "onRequest",
+        "xlink:href": "https://cine.example/sources/refn-interview"
+      }
+    }
+  }
+}
