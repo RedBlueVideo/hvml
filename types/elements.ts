@@ -7,6 +7,7 @@ import type Series from "../series.js";
 import type Group from "../group.js";
 import type Version from "../version.js";
 import type Overlay from "../overlay.js";
+import type Presentation from "../presentation.js";
 import type Content from "../content.js";
 import type Sync from "../sync.js";
 import type { HVMLDescriptionElement } from "../description.js";
@@ -103,6 +104,7 @@ export interface HVMLElementTagNameMap extends Record<HVMLElementTagName, HVMLEl
   group: Group;
   hvml: HVML;
   overlay: Overlay;
+  presentation: Presentation;
   series: Series;
   sync: Sync;
   version: Version;

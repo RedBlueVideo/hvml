@@ -15,6 +15,7 @@
     "description.ts",
     "version.ts",
     "overlay.ts",
+    "presentation.ts",
     "content.ts",
     "sync.ts",
     "types/**/*.ts",
