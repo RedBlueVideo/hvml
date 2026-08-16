@@ -1,5 +1,8 @@
 {
-  "@context": "https://redblue.video/guide/hvml.context.jsonld",
+  "@context": [
+    "https://redblue.video/guide/hvml.context.jsonld",
+    { "@base": "https://hugh.today/2016-09-17/" }
+  ],
   "@type": "video",
   "xml:id": "ep-23",
   "type": "personal",
@@ -23,6 +26,7 @@
     }
   },
   "version": {
+    "@id": "#live-stream",
     "xml:id": "live-stream",
     "type": "broadcast",
     "datetime": "2016-09-17",
@@ -47,6 +51,7 @@
   "presentation": [
     {
       "choice": {
+        "@id": "#full-stream",
         "xml:id": "full-stream",
         "name": {
           "type": "xhtml",
@@ -104,6 +109,7 @@
         "offset": -90
       },
       "overlay": {
+        "@id": "#mfa-credit",
         "xml:id": "mfa-credit",
         "on": "duration",
         "start": 0,

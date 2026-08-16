@@ -138,6 +138,8 @@ Identity, per the mint-versus-cite rule: an `xml:id` resolved against the docume
 - `.getBase()` returns the declared base, from `xml:base` on the root or `@base` in a JSON-LD `@context`; `null` when none is declared, in which case the document mints only local names.
 - `.getIri(element)` returns the IRI this document gives `element`: its `about` when present, else its minted IRI, else `null` (a blank node).
 
+The JSON serialization follows the same rule: a declared base travels as `@base` beside the context URL, and every minting element carries a relative `@id` (`""` for the primary child, `#id` below it) alongside its `xml:id`.
+
 ##### `.validate([xmllintPath])`
 Validates the HVML file against an internal RELAX NG schema.
 

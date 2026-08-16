@@ -215,8 +215,23 @@ export type HVMLTitle = string | Record<string, Record<string, string>>;
 /**
  * FIXME:
  */
+/**
+ * A JSON-LD context reference: the published context URL alone, or
+ * that URL alongside an embedded object carrying the document’s
+ * `@base` (the JSON counterpart of the root’s `xml:base`).
+ */
+export type JSONLDContext = string | Record<string, unknown> | ( string | Record<string, unknown> )[];
+
 export interface IHVMLElement extends HVMLNode {
-  '@context'?: string;
+  '@context'?: JSONLDContext;
+  /**
+   * The subject IRI, relative to `@base`: `""` for the primary child
+   * of `hvml` (it mints the base itself), `#id` for every other
+   * element with an `xml:id`. Emitted only when the document declares
+   * a base and the element does not cite with `about`, which the
+   * context aliases to `@id`.
+   */
+  '@id'?: string;
   /**
    * The canonical multi-root shape: one node per root-level element,
    * each carrying its own `@type`. A single root element serializes
@@ -254,6 +269,7 @@ export type DescriptionType =
  */
 export type HVMLGlobalAttributeName =
  | '@context'
+ | '@id'
  | '@type'
  /**
   * Cites the IRI of the thing an element describes. The grammar

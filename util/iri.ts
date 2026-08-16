@@ -18,6 +18,17 @@ export function mintIri( base: string, xmlId: string, isPrimary = false ): strin
 }
 
 /**
+ * The relative form of a minted IRI inside a document that
+ * declares its base: the empty same-document reference for the
+ * primary child, `#id` for everything else. JSON-LD resolves both
+ * against `@base`, the way an XML processor resolves them against
+ * `xml:base`.
+ */
+export function relativeMintedIri( xmlId: string, isPrimary = false ): string {
+  return isPrimary ? '' : `#${xmlId}`;
+}
+
+/**
  * The document base declared by a JSON-LD `@context`, in any of the
  * shapes the twin serialization writes or accepts: a bare context
  * URL declares none; an embedded object or an array of contexts may

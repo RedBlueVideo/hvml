@@ -1,10 +1,26 @@
-import { IHVMLElement } from "../types/elements.js";
+import { IHVMLElement, JSONLDContext } from "../types/elements.js";
 
 class Data {
+  static readonly CONTEXT_URL = 'https://redblue.video/guide/hvml.context.jsonld';
+
   static getJsonBoilerplate(): Partial<IHVMLElement> {
     return {
-      "@context": "https://redblue.video/guide/hvml.context.jsonld",
+      "@context": Data.getJsonContext(),
     };
+  }
+
+  /**
+   * The document’s `@context`: the published URL alone, or paired
+   * with an embedded `@base` when the document declares one, so
+   * relative `@id`s and `href`s resolve the way `xml:base` resolves
+   * them in the XML twin.
+   */
+  static getJsonContext( base?: string | null ): JSONLDContext {
+    if ( base ) {
+      return [Data.CONTEXT_URL, { "@base": base }];
+    }
+
+    return Data.CONTEXT_URL;
   }
 }
 

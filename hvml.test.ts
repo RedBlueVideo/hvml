@@ -3,6 +3,7 @@ import skipIf from 'skip-if';
 import { execSync } from 'child_process';
 import { readFileSync } from 'fs';
 import Validation from './util/validation.js';
+import Data from './util/data.js';
 
 // test( 'opens files successfully', () => {} );
 
@@ -59,7 +60,7 @@ describe( 'HVML', () => {
     test( 'from nothing', () => {
       const { HVML } = require( './hvml' );
       const hvml = new HVML();
-      return expect( hvml.ready ).resolves.toEqual( { "@context": JSON_LD['@context'] } );
+      return expect( hvml.ready ).resolves.toEqual( Data.getJsonBoilerplate() );
     } );
 
     skipIfLibxmljsUnavailable( 'from XML', async () => {

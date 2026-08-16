@@ -19,7 +19,7 @@ import {
 } from './types/elements.js';
 import { HVMLTypeError } from './util/validation.js';
 import { createHVMLElement } from './util/registry.js';
-import { getBaseFromContext, mintIri } from './util/iri.js';
+import { getBaseFromContext, mintIri, relativeMintedIri } from './util/iri.js';
 
 export type HVMLChildCount = {
   count: number;
@@ -178,6 +178,10 @@ export class HVMLElement extends HVMLNode {
 
         if ( Number.isInteger( childIndex ) ) {
           path.push( childIndex! );
+        }
+
+        if ( !domNode ) {
+          this._jsonifyIdentity( attributes, path );
         }
 
         if ( attributes.length ) {
@@ -391,7 +395,12 @@ export class HVMLElement extends HVMLNode {
 
     const { nodeName } = child;
     // const attributes = { ...child };
-    let attributes: Partial<HVMLElement> = {};
+    let attributes: Partial<HVMLElement> & { '@id'?: string } = {};
+    const mintedId = this._getSerializedId( child, root && ( ( atIndex === null ) || ( atIndex === 0 ) ) );
+
+    if ( mintedId !== null ) {
+      attributes['@id'] = mintedId;
+    }
 
     if ( child.id ) {
       attributes['xml:id'] = child.id;
@@ -523,6 +532,18 @@ export class HVMLElement extends HVMLNode {
       this.json = Data.getJsonBoilerplate();
     }
 
+    const base = this.getBase();
+
+    /**
+     * A declared base travels as `@base` beside the context URL, so
+     * the relative `@id`s and `href`s below resolve to the same IRIs
+     * an XML processor derives from `xml:base`. A loaded context that
+     * already declares this base is left as authored.
+     */
+    if ( base && ( getBaseFromContext( this.json['@context'] ) !== base ) ) {
+      this.json['@context'] = Data.getJsonContext( base );
+    }
+
     if ( this.children?.length ) {
       const { children } = this;
 
@@ -568,6 +589,8 @@ export class HVMLElement extends HVMLNode {
         } else {
           json['@type'] = node.name();
         }
+
+        this._jsonifyIdentity( attributes, nodePath, index === 0 );
 
         attributes.forEach( ( attribute ) => {
           this._jsonifyAttribute( attribute, nodePath );
@@ -659,6 +682,22 @@ export class HVMLElement extends HVMLNode {
               lastChild.id = value;
               break;
 
+            case '@id':
+              /**
+               * The context aliases `about` to `@id`, so an absolute
+               * `@id` is a citation. A fragment is a minted `xml:id`,
+               * relative to `@base`; the empty same-document reference
+               * is the primary child minting the base, which
+               * its `xml:id` already records. Explicit `xml:id` and
+               * `about` keys win over anything derived here.
+               */
+              if ( value.startsWith( '#' ) ) {
+                lastChild.id ??= value.slice( 1 );
+              } else if ( value && !getAbout( lastChild ) ) {
+                Object.assign( lastChild, { "about": value } );
+              }
+              break;
+
             case 'title':
               /**
                * `title` is only valid on select elements but there is
@@ -695,6 +734,21 @@ export class HVMLElement extends HVMLNode {
 
         case 'object':
           switch ( key ) {
+            case '@context':
+              /**
+               * An embedded context is only read for the document
+               * base; the terms themselves are the published
+               * context's business.
+               */
+              {
+                const base = getBaseFromContext( value );
+
+                if ( base ) {
+                  this['xml:base'] = base;
+                }
+              }
+              break;
+
             case '@graph':
               /**
                * A named graph holds root-level siblings. Each node
@@ -935,6 +989,38 @@ export class HVMLElement extends HVMLNode {
     }
 
     return mintIri( base, element.id, this.children[0] === element );
+  }
+
+  /**
+   * The relative `@id` a MOM element serializes with, or `null` when
+   * it takes none: no base declared, no `xml:id`, or an `about`
+   * citation (the context aliases `about` to `@id`; carrying both is
+   * a JSON-LD keyword collision).
+   */
+  _getSerializedId( element: HVMLElement, isPrimary: boolean ): string | null {
+    if ( !element.id || getAbout( element ) || !this.getBase() ) {
+      return null;
+    }
+
+    return relativeMintedIri( element.id, isPrimary );
+  }
+
+  /**
+   * The XML-side twin of `_getSerializedId`: writes the element’s
+   * relative `@id` from its `xml:id` and `about` attributes.
+   */
+  _jsonifyIdentity( attributes: XMLAttribute[], path: LodashPath, isPrimary = false ) {
+    if ( !this.getBase() ) {
+      return;
+    }
+
+    const xmlId = getXmlAttributeValue( attributes, 'xml:id' );
+
+    if ( !xmlId || getXmlAttributeValue( attributes, 'about' ) ) {
+      return;
+    }
+
+    set( this.json!, [...path, '@id'], relativeMintedIri( xmlId, isPrimary ) );
   }
 
   appendChild( child: HVMLElement ) {

@@ -27,10 +27,16 @@ const context = (
  * compare at the RDF layer: triple-equal rather than string-equal.
  * The published context URL still serves the conflicted document; M9
  * publishes the in-repo source at hypervideo.tech. Until then both
- * twins expand against the local file.
+ * twins expand against the local file, with any embedded `@base`
+ * kept in place: relative `@id`s cannot canonicalize without it.
  */
 async function canonicalize( document: Record<string, unknown> ): Promise<string> {
-  return jsonld.canonize( { ...document, "@context": context } as JsonLdDocument, {
+  const declared = document['@context'];
+  const localized = Array.isArray( declared )
+    ? declared.map( ( entry: unknown ) => ( ( typeof entry === 'string' ) ? context : entry ) )
+    : context;
+
+  return jsonld.canonize( { ...document, "@context": localized } as JsonLdDocument, {
     "algorithm": "URDNA2015",
     "format": "application/n-quads",
   } );

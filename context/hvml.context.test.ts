@@ -116,7 +116,9 @@ describe( 'HVML JSON-LD context', () => {
      * M9 publishes this file at hypervideo.tech. Until then the twin
      * fixtures expand against the in-repo source.
      */
-    fixture['@context'] = context;
+    fixture['@context'] = ( fixture['@context'] as unknown[] ).map(
+      ( entry ) => ( ( typeof entry === 'string' ) ? context : entry ),
+    );
 
     const expanded = await expandDocument( fixture );
 
