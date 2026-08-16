@@ -440,7 +440,13 @@ export class HVMLElement extends HVMLNode {
       }
     }
 
-    // const parentNode = path[path.length - 1 ];
+    /**
+     * The path grows by this node's name (and sibling index) for the
+     * duration of its own write and its descendants' writes, then
+     * shrinks back to where the caller left it, so no sibling can
+     * disturb the next one's path. Same discipline as `_jsonifyChild`.
+     */
+    const depth = path.length;
 
     if ( root ) {
       if ( atIndex !== null ) {
@@ -449,31 +455,21 @@ export class HVMLElement extends HVMLNode {
           "@type": nodeName,
           ...attributes,
         } );
-        /**
-         * The path keeps this node's prefix (e.g. ['@graph', 0]) so
-         * the descendant loop below writes inside the node. Callers
-         * hand each root child a fresh path array, so there are no
-         * shared-path pops to balance.
-         */
       } else {
         this.json = {
           ...this.json,
           "@type": nodeName,
           ...attributes,
         };
-        // set( this.json, path, attributes );
       }
     } else {
       path.push( nodeName );
 
       if ( atIndex !== null ) {
         path.push( atIndex );
-        set( this.json, path, attributes );
-        path.pop();
-        path.pop();
-      } else {
-        set( this.json, path, attributes );
       }
+
+      set( this.json, path, attributes );
     }
 
     if ( child.children.length ) {
@@ -518,11 +514,15 @@ export class HVMLElement extends HVMLNode {
         if ( grandchildCounts[grandchildNodeName].count > 1 ) {
           ++grandchildCounts[grandchildNodeName].i;
 
-          this._setJsonChild( grandchild, path, null!, grandchildCounts[grandchildNodeName].i );
+          this._setJsonChild( grandchild, path, false, grandchildCounts[grandchildNodeName].i );
         } else {
           this._setJsonChild( grandchild, path );
         }
       } );
+    }
+
+    while ( path.length > depth ) {
+      path.pop();
     }
   }
 

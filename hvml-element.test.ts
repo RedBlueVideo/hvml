@@ -1,5 +1,13 @@
 import HVMLElement from './hvml-element.js';
-import { HVML, Video, Series } from './hvml.js';
+import {
+  HVML,
+  Video,
+  Series,
+  Version,
+  Presentation,
+  Overlay,
+  Sync,
+} from './hvml.js';
 
 describe( 'HVMLElement', () => {
   let hvml: HVML | undefined;
@@ -254,6 +262,46 @@ describe( 'HVMLElement', () => {
     beforeEach( () => {
       hvml = undefined;
       hvmlElement = undefined;
+    } );
+
+    it( 'keeps every sibling at its own depth, whether it repeats or not', () => {
+      const document = new HVML();
+      const video = new Video( { "id": "drive" } );
+      const version = new Version( { "id": "theatrical" } );
+      const first = new Presentation( { "id": "first" } );
+      const second = new Presentation( { "id": "second" } );
+      const sync = new Sync();
+      const opening = new Overlay( { "id": "opening" } );
+      const closing = new Overlay( { "id": "closing" } );
+
+      sync.offset = '-90';
+      opening.on = 'duration';
+      closing.on = 'durationEnd';
+      second.appendChild( sync );
+      second.appendChild( opening );
+      second.appendChild( closing );
+      video.appendChild( version );
+      video.appendChild( first );
+      video.appendChild( second );
+      document.appendChild( video );
+
+      expect( document.toJson() ).toStrictEqual( {
+        "@context": "https://redblue.video/guide/hvml.context.jsonld",
+        "@type": "video",
+        "xml:id": "drive",
+        "version": { "xml:id": "theatrical" },
+        "presentation": [
+          { "xml:id": "first" },
+          {
+            "xml:id": "second",
+            "sync": { "offset": -90 },
+            "overlay": [
+              { "xml:id": "opening", "on": "duration" },
+              { "xml:id": "closing", "on": "durationEnd" },
+            ],
+          },
+        ],
+      } );
     } );
 
     it( 'converts children', () => {
