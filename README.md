@@ -127,6 +127,17 @@ Returns <b>Object</b>.
 
 DOM cues: add or remove a child element (`Video` or `Series` at the root). Children with an `id` register a named index on `.children`.
 
+##### `.getElementByXmlId(xmlId)`
+
+DOM cue: `getElementById`. Returns the first descendant whose `xml:id` matches, or `null`.
+
+##### `.getBase()` / `.getIri(element)`
+
+Identity, per the mint-versus-cite rule: an `xml:id` resolved against the document’s `xml:base` mints a subject IRI (the primary child of `hvml` mints the base itself; every other `xml:id` mints `base#id`), while `about` cites one.
+
+- `.getBase()` returns the declared base, from `xml:base` on the root or `@base` in a JSON-LD `@context`; `null` when none is declared, in which case the document mints only local names.
+- `.getIri(element)` returns the IRI this document gives `element`: its `about` when present, else its minted IRI, else `null` (a blank node).
+
 ##### `.validate([xmllintPath])`
 Validates the HVML file against an internal RELAX NG schema.
 

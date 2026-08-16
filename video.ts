@@ -72,6 +72,8 @@ class HVMLVideoElement extends HVMLElement {
 
   declare description?: Partial<IHVMLDescription>;
 
+  declare about?: string;
+
   static isValidType( type: string ) {
     switch ( type ) {
       case 'narrative':

@@ -19,6 +19,7 @@ import {
 } from './types/elements.js';
 import { HVMLTypeError } from './util/validation.js';
 import { createHVMLElement } from './util/registry.js';
+import { getBaseFromContext, mintIri } from './util/iri.js';
 
 export type HVMLChildCount = {
   count: number;
@@ -95,12 +96,7 @@ export class HVMLElement extends HVMLNode {
       this.json = Data.getJsonBoilerplate();
     }
 
-    const namespace = attribute.namespace();
-    let property = attribute.name();
-
-    if ( namespace ) {
-      property = `${namespace.prefix()}:${property}`;
-    }
+    let property = getQualifiedAttributeName( attribute );
 
     switch ( property ) {
       case 'endtime':
@@ -874,6 +870,73 @@ export class HVMLElement extends HVMLNode {
     return this;
   }
 
+  /**
+   * DOM cue: `getElementById`. Depth-first over descendants; the
+   * receiver itself is never a match.
+   */
+  getElementByXmlId( xmlId: string ): HVMLElement | null {
+    for ( const child of this.children ) {
+      if ( child.id === xmlId ) {
+        return child;
+      }
+
+      const match = child.getElementByXmlId( xmlId );
+
+      if ( match ) {
+        return match;
+      }
+    }
+
+    return null;
+  }
+
+  /**
+   * The document base, read from whichever representation this
+   * element holds: `xml:base` on the MOM root, the XML root’s
+   * `xml:base`, or `@base` in the JSON `@context`. `null` when none is
+   * declared: the document mints only local names.
+   */
+  getBase(): string | null {
+    if ( this['xml:base'] ) {
+      return this['xml:base'];
+    }
+
+    const xmlRoot = this.xml?.root();
+
+    if ( xmlRoot ) {
+      const base = getXmlAttributeValue( xmlRoot.attrs(), 'xml:base' );
+
+      if ( base ) {
+        return base;
+      }
+    }
+
+    return getBaseFromContext( this.json?.['@context'] );
+  }
+
+  /**
+   * The IRI this document gives `element`, for a receiver that is the
+   * document root: the cited `about` when present; else the minted
+   * IRI when the document declares a base and the element carries an
+   * `xml:id` (the primary child mints the base itself, every other
+   * element a fragment); else `null`, a blank node.
+   */
+  getIri( element: HVMLElement ): string | null {
+    const about = getAbout( element );
+
+    if ( about ) {
+      return about;
+    }
+
+    const base = this.getBase();
+
+    if ( !base || !element.id ) {
+      return null;
+    }
+
+    return mintIri( base, element.id, this.children[0] === element );
+  }
+
   appendChild( child: HVMLElement ) {
     // const errorData = {
     //   ...this._baseErrorData,
@@ -903,6 +966,34 @@ export class HVMLElement extends HVMLNode {
       }
     }
   }
+}
+
+/**
+ * `prefix:name` for a namespaced attribute (`xml:id`, `xlink:href`),
+ * the bare name otherwise: the key the serialization uses.
+ */
+function getQualifiedAttributeName( attribute: XMLAttribute ): string {
+  const namespace = attribute.namespace();
+  const name = attribute.name();
+
+  return namespace ? `${namespace.prefix()}:${name}` : name;
+}
+
+function getXmlAttributeValue( attributes: XMLAttribute[], qualifiedName: string ): string | null {
+  const attribute = attributes.find( ( candidate ) => getQualifiedAttributeName( candidate ) === qualifiedName );
+
+  return attribute ? attribute.value() : null;
+}
+
+/**
+ * `about` is declared per subject-bearing class rather than on the
+ * base element, and ingest sets it as an expando on whichever element
+ * carries it.
+ */
+function getAbout( element: HVMLElement ): string | null {
+  const value = ( element as { about?: unknown } ).about;
+
+  return ( typeof value === 'string' && value ) ? value : null;
 }
 
 /**

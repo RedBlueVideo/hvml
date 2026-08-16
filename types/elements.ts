@@ -179,6 +179,14 @@ export class HVMLNode {
 
   declare 'xml:lang'?: string;
 
+  /**
+   * The base IRI `xml:id` values resolve against. Consulted on the
+   * document root only: `getBase()`/`getIri()` know nothing of XML
+   * Base’s nested-scope resolution, so an `xml:base` on a descendant
+   * serializes as an ordinary attribute and mints nothing.
+   */
+  declare 'xml:base'?: string;
+
   language: ISO639LanguageCode = '_';
 
   declare region?: string;
@@ -247,6 +255,13 @@ export type DescriptionType =
 export type HVMLGlobalAttributeName =
  | '@context'
  | '@type'
+ /**
+  * Cites the IRI of the thing an element describes. The grammar
+  * grants it to the subject-bearing elements only (`video`,
+  * `version`, `presentation`, `overlay`); this union names
+  * attributes, the RNG polices placement.
+  */
+ | 'about'
  | 'children'
  | 'id'
  | 'instance'
@@ -255,6 +270,7 @@ export type HVMLGlobalAttributeName =
 ;
 
 export type ValidXMLGlobalAttributeName =
+ | 'xml:base'
  | 'xml:id'
  | 'xml:lang'
 //  | 'xmlns'
