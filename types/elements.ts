@@ -1,4 +1,5 @@
 import { ISO639LanguageCode } from "./language.js";
+import type { JSONML } from "../util/data.js";
 
 import type { HVMLElement } from "../hvml-element.js";
 import type { HVML } from "../hvml.js";
@@ -262,6 +263,16 @@ export type DescriptionType =
   | 'text'
   | 'xhtml'
 ;
+
+/**
+ * A description as its element stores it: keyed by `DescriptionType`,
+ * with the XHTML form wrapped in its namespaced `div`.
+ */
+export interface IHVMLDescription {
+  text: string;
+  jsonml: JSONML;
+  xhtml: string;
+}
 
 /**
  * TODO: Confirm whether we actually allow JSON-LD

@@ -10,11 +10,11 @@ import HVMLElement from './hvml-element.js';
 
 import Time from './util/time.js';
 import Validation, { HVMLTypeError } from './util/validation.js';
-import Transform from './util/transform.js';
-import { DescriptionType, HVMLXhtmlPayloadInput } from './types/elements.js';
+import { DescriptionType, HVMLXhtmlPayloadInput, IHVMLDescription } from './types/elements.js';
 import { ISO639LanguageCode, isValidISO639LanguageCode } from './types/language.js';
-import { JSONML, JSONMLNode } from './util/data.js';
+import { JSONMLNode } from './util/data.js';
 import { defineHVMLElement } from './util/registry.js';
+import { setDescription, getDescription } from './util/description.js';
 
 // export type VideoTitle = {
 //   [Language in ISO639LanguageCode]?: {
@@ -27,13 +27,10 @@ export type VideoTitle = Record<string, {
 }>; // | string;
 
 /**
- * key should satify `DescriptionType`
+ * @deprecated Moved to types/elements.ts when `version` joined `video`
+ * as a description carrier; re-exported here for 0.1.x continuity.
  */
-export interface IHVMLDescription {
-  text: string;
-  jsonml: JSONML;
-  xhtml: string;
-}
+export type { IHVMLDescription } from './types/elements.js';
 
 /**
  * @deprecated Renamed `HVMLXhtmlPayloadInput` (types/elements.ts)
@@ -387,130 +384,11 @@ class HVMLVideoElement extends HVMLElement {
   setDescription( description: string | HVMLXhtmlPayloadInput, type: 'xhtml' ): void;
 
   setDescription( description: string | HVMLXhtmlPayloadInput | JSONMLNode[], type: DescriptionType = 'text' ) {
-    const errorData = {
-      ...this._baseErrorData,
-      "methodName": "setDescription",
-      "fieldName": "description",
-      "input": description,
-      "expected": ["String", "Object"],
-    };
-
-    if ( ( type === 'text' ) && !isString( description ) ) {
-      throw new Validation.TypeError( errorData );
-    }
-
-    this.description = {};
-
-    switch ( type ) {
-      case 'jsonml':
-        if ( !Array.isArray( description ) ) {
-          throw new Validation.TypeError( errorData );
-        }
-
-        this.description.xhtml = Transform.jsonMlToXmlString( Transform.wrapJsonMl( description ) );
-        break;
-
-      case 'xhtml':
-        switch ( typeof description ) {
-          case 'string':
-            this.description.xhtml = Transform.wrapXhtml( description.trim() );
-            break;
-
-          case 'object':
-            if ( !Array.isArray( description ) && Array.isArray( description.childNodes ) ) {
-              this.description.xhtml = Transform.jsonLdChildNodesToXhtml( description.childNodes );
-            }
-            break;
-
-          default:
-            throw new Validation.TypeError( errorData );
-        }
-        break;
-
-      case 'text':
-      default:
-        /**
-         * Unknown `type` values arrive here from untyped callers; they
-         * get the same validation 'text' got up top.
-         */
-        if ( !isString( description ) ) {
-          throw new Validation.TypeError( errorData );
-        }
-
-        this.description.text = description.trim();
-    }
+    setDescription( this, description, type );
   }
 
-  getDescription( type?: DescriptionType, parseMarkdown = true, newlinesToBRs = true ) {  
-    if ( !this.description ) {
-      return null;
-    }
-
-    switch ( type ) {
-      case 'jsonml':
-      // case 'json':
-        /* istanbul ignore else */
-        if ( this.description.xhtml ) {
-          return Transform.xmlStringToJsonMl( this.description.xhtml );
-        }
-
-        /* istanbul ignore else */
-        if ( this.description.text ) {
-          return Transform.markdownToJsonMl( this.description.text );
-        }
-        /* istanbul ignore next */
-        break;
-
-      case 'xhtml':
-      // case 'html':
-      // case 'xml':
-        /* istanbul ignore else */
-        if ( this.description.xhtml ) {
-          return this.description.xhtml;
-        }
-
-        // If user set a text description, and is trying to get back XHTML,
-        // assume the text is Markdown-formatted and convert it to JSON-ML
-        // before turning it into a DOM string
-        /* istanbul ignore else */
-        if ( this.description.text ) {
-          let description;
-
-          if ( parseMarkdown ) {
-            description = Transform.markdownToJsonMl( this.description.text );
-          } else {
-            description = this.description.text;
-
-            if ( newlinesToBRs ) {
-              description = description.replace( /\n/g, '<br />' );
-            }
-
-            description = Transform.xmlStringToJsonMl( Transform.wrapXhtml( `<p>${description}</p>` ) );
-          }
-
-          return Transform.jsonMlToXmlString( description );
-        }
-        /* istanbul ignore next */
-        break;
-      case 'text':
-      default:
-        /* istanbul ignore else */
-        if ( this.description.text ) {
-          return this.description.text;
-        }
-
-        /* istanbul ignore else */
-        if ( this.description.xhtml ) {
-          const documentJsonMl = Transform.xmlStringToJsonMl( this.description.xhtml );
-          const rootElement = documentJsonMl[1];
-
-          /* istanbul ignore else: descriptions serialize wrapped in a root div */
-          if ( Array.isArray( rootElement ) ) {
-            return Transform.getJsonMlTextContent( rootElement, true, true );
-          }
-        }
-        // throw new Validation.DomainError( 'Something broke. Please file a bug.' );
-    }
+  getDescription( type?: DescriptionType, parseMarkdown = true, newlinesToBRs = true ) {
+    return getDescription( this, type, parseMarkdown, newlinesToBRs );
   }
 }
 

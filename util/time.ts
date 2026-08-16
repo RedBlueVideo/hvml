@@ -64,6 +64,60 @@ class Time {
     throw new Error( `Invalid duration` );
   }
 
+  /**
+   * Seconds in an ISO 8601 duration, with the same month and year
+   * approximations the hours and minutes conversions use.
+   */
+  static isoDurationToSeconds( duration: string | undefined ) {
+    const matches = duration?.match( Time.isoDurationRegex ) || null;
+
+    if ( matches ) {
+      let seconds = 0;
+
+      // Years
+      if ( matches[2] ) {
+        seconds += ( parseInt( matches[2], 10 ) * 31536000 );
+      }
+
+      // Months
+      if ( matches[3] ) {
+        seconds += ( parseInt( matches[3], 10 ) * 2628002.88 );
+      }
+
+      // Days/Weeks
+      if ( matches[4] ) {
+        switch ( matches[5] ) {
+          case 'W':
+            seconds += ( parseInt( matches[4], 10 ) * 604800 );
+            break;
+          case 'D':
+            seconds += ( parseInt( matches[4], 10 ) * 86400 );
+            break;
+          // no default
+        }
+      }
+
+      // Hours
+      if ( matches[6] ) {
+        seconds += ( parseInt( matches[6], 10 ) * 3600 );
+      }
+
+      // Minutes
+      if ( matches[7] ) {
+        seconds += ( parseInt( matches[7], 10 ) * 60 );
+      }
+
+      // Seconds
+      if ( matches[8] ) {
+        seconds += parseFloat( matches[8] );
+      }
+
+      return seconds;
+    }
+
+    throw new Error( `Invalid duration` );
+  }
+
   static isoDurationToMinutes( duration: string | undefined ) {
     const matches = duration?.match( Time.isoDurationRegex ) || null;
 

@@ -426,18 +426,19 @@ class HVML extends HVMLElement {
       "methodName": "appendChild",
     };
 
+    // The grammar's root content model: any mix of the three
     switch ( child.constructor ) {
       case Video:
       case Series:
+      case Group:
         super.appendChild( child );
         break;
 
       default:
         throw new Validation.EnumError( {
           ...errorData,
-          // "message": `${child.constructor.name} can not be a child of ${this.constructor.name}`,
           "fieldName": "child",
-          "expected": ["Video"],
+          "expected": ["Video", "Series", "Group"],
           "badValues": [child],
         } );
     }

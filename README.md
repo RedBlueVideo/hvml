@@ -125,7 +125,7 @@ Returns <b>Object</b>.
 
 ##### `.appendChild(child)` / `.removeChild(child)`
 
-DOM cues: add or remove a child element (`Video` or `Series` at the root). Children with an `id` register a named index on `.children`.
+DOM cues: add or remove a child element (`Video`, `Series`, or `Group` at the root, the grammar’s root content model). Children with an `id` register a named index on `.children`.
 
 ##### `.getElementByXmlId(xmlId)`
 
@@ -277,4 +277,49 @@ const video = new Video( {
   "id": "welcome-to-my-channel",
 } );
 console.log( video.isArchived() ); // true
+```
+
+### Version
+
+A Class representing the `version` element: the expression layer, which content this is, as distinct from which work (`Video`) and which artifact (`Presentation`, `file`).
+
+#### Constructor: `new Version([data])`
+
+- `data`: (optional) Object; `id` becomes the element’s `xml:id`.
+
+`type` (`theatrical`, `directors-cut`, `workprint`, `broadcast`, …), `datetime`, and `about` are plain fields.
+
+#### Instance Methods
+
+##### `.setTitle(title)` / `.getTitle()`
+
+A plain-string title: branding for this version (“Final Cut”). The work’s title lives on `Video`.
+
+##### `.setRuntime(runtime)` / `.getRuntime([format])`
+
+- `runtime`: <b>Number</b> of seconds, or a <b>String</b> holding either decimal seconds or an ISO 8601 duration (`PT1H38M`). Strings are kept in the form given, so a document round-trips through the MOM unchanged.
+- `format`: `seconds` (default), `minutes`, `hours`, or `iso8601`.
+
+##### `.setDescription(description, [type])` / `.getDescription([type], [parseMarkdown], [newlinesToBRs])`
+
+The same description API as `Video`: plain text (Markdown-parsed on the way out to XHTML), XHTML as a string or as JSON-LD-serialized child nodes, or JSON-ML.
+
+##### Example
+
+```ts
+import { HVML, Video, Version } from 'hvml';
+
+const version = new Version( { "id": "theatrical" } );
+version.type = 'theatrical';
+version.setTitle( 'Theatrical cut' );
+version.setRuntime( 5880 );
+
+const video = new Video( { "id": "drive" } );
+video.appendChild( version );
+
+const hvml = new HVML();
+hvml.appendChild( video );
+console.log( hvml.toJson() );
+// { "@context": …, "@type": "video", "xml:id": "drive",
+//   "version": { "xml:id": "theatrical", "type": "theatrical", "title": "Theatrical cut", "runtime": 5880 } }
 ```

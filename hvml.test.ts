@@ -454,7 +454,17 @@ describe( 'HVML', () => {
   } );
 
   describe( 'MOM Manipulation', () => {
-    const { HVML, Video } = require( './hvml' );
+    const { HVML, Video, Series, Group } = require( './hvml' );
+
+    it( 'accepts every root element the grammar does: video, series, and group', () => {
+      const hvml = new HVML();
+
+      hvml.appendChild( new Video( { "id": "a-video" } ) );
+      hvml.appendChild( new Series( { "id": "a-series" } ) );
+      hvml.appendChild( new Group( { "id": "a-group" } ) );
+
+      expect( hvml.children.map( ( child: { nodeName: string } ) => child.nodeName ) ).toEqual( ['video', 'series', 'group'] );
+    } );
 
     it( 'appends children', () => {
       const hvml = new HVML();
