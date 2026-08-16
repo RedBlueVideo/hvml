@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Serialization shapes the flagship twins do not exercise, gathered
+  so both serialization directions can be checked against one
+  another: an attribute-bearing text element (`title xml:lang`), the
+  version vocabulary's text children (`title`, `runtime`,
+  `description`), text-typed `content`, an XHTML payload with a single
+  element child, and the attribute-plus-text `entity`.
+-->
+<hvml
+  xmlns="https://hypervideo.tech/hvml#"
+  xmlns:xlink="http://www.w3.org/1999/xlink"
+  xml:lang="en"
+>
+  <video xml:id="drive">
+    <title xml:lang="fr">Drive</title>
+    <version xml:id="theatrical" type="theatrical">
+      <title>Theatrical cut</title>
+      <runtime>5880</runtime>
+      <description>Refn’s theatrical version.</description>
+    </version>
+    <showing scope="release" type="internet">
+      <venue type="site">
+        <entity site="https://www.youtube.com/">YouTube</entity>
+        <uri>https://www.youtube.com/watch?v=KBiOF3y1W0Y</uri>
+      </venue>
+    </showing>
+    <presentation>
+      <overlay on="duration" start="1284.5" end="1290" width="40%" top="70%" left="5%">
+        <content type="xhtml">
+          <div xmlns="http://www.w3.org/1999/xhtml"><p>Refn commissioned four scorpion jackets.</p></div>
+        </content>
+      </overlay>
+      <overlay on="duration" start="1300" end="1305" width="40%" top="70%" left="5%">
+        <content type="text">Plain overlay text</content>
+      </overlay>
+    </presentation>
+  </video>
+</hvml>

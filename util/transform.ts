@@ -47,26 +47,99 @@ class Transform {
   }
 
   /**
-   * Serializes JSON-LD-serialized HTML child nodes (an `html:div`’s
-   * `childNodes` list) back into an XML fragment string. Shared by
-   * the `description` and `content` payload setters.
+   * JSON-LD-serialized HTML (an `html:div`’s `childNodes` list) as
+   * JSON-ML nodes: a node without `@type` is a text run; `@type` names
+   * the element, every other string-valued key is an attribute, and
+   * `textContent` or a nested `childNodes` list carries the content.
    */
-  static jsonLdChildNodesToXmlString( childNodes: JSONLDSerializedHTMLElement[] ): string {
-    let xml = '';
+  static jsonLdChildNodesToJsonMl( childNodes: JSONLDSerializedHTMLElement[] ): JSONMLNode[] {
+    return childNodes.map( ( childNode ): JSONMLNode => {
+      const { '@type': tagName, textContent, childNodes: nestedChildNodes, ...rest } = childNode;
 
-    childNodes.forEach( ( childNode ) => {
-      if ( childNode['@type'] && childNode.textContent ) {
-        const attributes = { ...childNode };
-        delete attributes['@type'];
-        delete attributes.textContent;
-
-        xml += Transform.jsonMlToXmlString(
-          [childNode['@type'], attributes, childNode.textContent],
-        );
+      if ( typeof tagName !== 'string' ) {
+        return ( typeof textContent === 'string' ) ? textContent : '';
       }
-    } );
 
-    return xml;
+      const attributes: JSONMLAttributes = {};
+
+      Object.entries( rest ).forEach( ( [key, value] ) => {
+        if ( typeof value === 'string' ) {
+          attributes[key] = value;
+        }
+      } );
+
+      if ( Array.isArray( nestedChildNodes ) ) {
+        return [tagName, attributes, ...Transform.jsonLdChildNodesToJsonMl( nestedChildNodes as JSONLDSerializedHTMLElement[] )];
+      }
+
+      if ( typeof textContent === 'string' ) {
+        return [tagName, attributes, textContent];
+      }
+
+      return [tagName, attributes];
+    } );
+  }
+
+  /**
+   * The inverse: JSON-ML nodes as JSON-LD-serialized HTML. An element
+   * with a lone text run carries `textContent`; one with element
+   * children carries a nested `childNodes` list. Whitespace-only text
+   * between elements is authoring layout, not content, and is
+   * dropped, as the XML path drops it.
+   */
+  static jsonMlNodesToJsonLdChildNodes( nodes: JSONMLNode[] ): JSONLDSerializedHTMLElement[] {
+    return Transform.significantNodes( nodes ).map( ( node ): JSONLDSerializedHTMLElement => {
+      if ( typeof node === 'string' ) {
+        return { "textContent": node };
+      }
+
+      const [tagName, ...rest] = node;
+      const attributes = isPlainObject( rest[0] ) ? { ...( rest[0] as JSONMLAttributes ) } : {};
+      const contentNodes = ( isPlainObject( rest[0] ) ? rest.slice( 1 ) : rest ) as JSONMLNode[];
+
+      // A namespace declaration, not payload data
+      delete attributes.xmlns;
+
+      return {
+        "@type": tagName,
+        ...attributes,
+        ...Transform.jsonLdPayloadOf( contentNodes ),
+      };
+    } );
+  }
+
+  /**
+   * The JSON-LD content of an XHTML element, from its JSON-ML nodes:
+   * `{ textContent }` for a lone text run, `{ childNodes }` for
+   * anything containing elements, `{}` for nothing at all.
+   */
+  static jsonLdPayloadOf( nodes: JSONMLNode[] ): JSONLDSerializedHTMLElement {
+    const significant = Transform.significantNodes( nodes );
+
+    if ( !significant.length ) {
+      return {};
+    }
+
+    if ( ( significant.length === 1 ) && ( typeof significant[0] === 'string' ) ) {
+      return { "textContent": significant[0] };
+    }
+
+    return { "childNodes": Transform.jsonMlNodesToJsonLdChildNodes( significant ) };
+  }
+
+  static significantNodes( nodes: JSONMLNode[] ): JSONMLNode[] {
+    return nodes.filter( ( node ) => ( typeof node !== 'string' ) || ( node.trim() !== '' ) );
+  }
+
+  /**
+   * JSON-LD-serialized HTML as a namespaced XHTML string, wrapped in
+   * the `div` the payload elements carry in XML. Shared by the
+   * `description` and `content` payload setters.
+   */
+  static jsonLdChildNodesToXhtml( childNodes: JSONLDSerializedHTMLElement[] ): string {
+    return Transform.jsonMlToXmlString(
+      Transform.wrapJsonMl( Transform.jsonLdChildNodesToJsonMl( childNodes ) ),
+    );
   }
 
   static getJsonMlTextContent( jsonML: JSONML, preserveBRs = false, normalizeWhitespace = false ) {

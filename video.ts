@@ -418,7 +418,7 @@ class HVMLVideoElement extends HVMLElement {
 
           case 'object':
             if ( !Array.isArray( description ) && Array.isArray( description.childNodes ) ) {
-              this.description.xhtml = Transform.jsonLdChildNodesToXmlString( description.childNodes );
+              this.description.xhtml = Transform.jsonLdChildNodesToXhtml( description.childNodes );
             }
             break;
 

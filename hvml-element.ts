@@ -7,8 +7,11 @@ import {
 } from 'libxmljs';
 
 import Data, { LodashPath } from './util/data.js';
+import type { JSONMLNode } from './util/data.js';
 import { emitTypedScalar } from './util/datatypes.js';
-import { hasMethod, hasProperty } from './util/types.js';
+import { hasMethod, hasProperty, isPlainObject } from './util/types.js';
+import Transform from './util/transform.js';
+import { MOM_BOOKKEEPING_KEYS, payloadNodesOf, textContentOf } from './util/payload.js';
 import { ucFirst } from './util/strings.js';
 import {
   createHVMLCollection,
@@ -20,6 +23,7 @@ import {
 import { HVMLTypeError } from './util/validation.js';
 import { createHVMLElement } from './util/registry.js';
 import { getBaseFromContext, mintIri, relativeMintedIri } from './util/iri.js';
+import type { IHVMLDescription } from './video.js';
 
 export type HVMLChildCount = {
   count: number;
@@ -191,7 +195,16 @@ export class HVMLElement extends HVMLNode {
         }
 
         if ( grandchildren.length ) {
-          if ( grandchildren.length > 1 ) {
+          /**
+           * XHTML content is a `childNodes` list whenever it holds an
+           * element, however many nodes surround it; only a lone text
+           * run collapses to `textContent`. One consistent shape per
+           * content kind, so `<div><p/></div>` and the same markup
+           * with layout whitespace serialize alike.
+           */
+          const holdsElements = grandchildren.some( ( grandchild ) => grandchild.type() === 'element' );
+
+          if ( ( grandchildren.length > 1 ) || ( ( prefix === 'html' ) && holdsElements ) ) {
             if ( prefix === 'html' ) {
               let i = -1;
               path.push( 'childNodes' );
@@ -338,7 +351,7 @@ export class HVMLElement extends HVMLNode {
                 }
 
                 attrs.forEach( ( attr ) => {
-                  obj[attr.name()] = attr.value();
+                  obj[getQualifiedAttributeName( attr )] = attr.value();
                 } );
 
                 obj.textContent = text;
@@ -352,7 +365,7 @@ export class HVMLElement extends HVMLNode {
                   const value = [];
                   const keyValue: Record<string, string> = {};
                   attrs.forEach( ( attr ) => {
-                    keyValue[attr.name()] = attr.value();
+                    keyValue[getQualifiedAttributeName( attr )] = attr.value();
                   } );
                   value.push( keyValue );
                   value.push( emitTypedScalar( upone, text ) );
@@ -394,7 +407,13 @@ export class HVMLElement extends HVMLNode {
     }
 
     const { nodeName } = child;
-    // const attributes = { ...child };
+    /**
+     * The path grows by this node's name (and sibling index) for the
+     * duration of its own write and its descendants' writes, then
+     * shrinks back to where the caller left it, so no sibling can
+     * disturb the next one's path. Same discipline as `_jsonifyChild`.
+     */
+    const depth = path.length;
     let attributes: Partial<HVMLElement> & { '@id'?: string } = {};
     const mintedId = this._getSerializedId( child, root && ( ( atIndex === null ) || ( atIndex === 0 ) ) );
 
@@ -418,16 +437,11 @@ export class HVMLElement extends HVMLNode {
       ...attributes,
       ...child,
     };
-    delete attributes.id;
-    delete attributes.children;
-    delete attributes.language;
-    delete attributes.region;
-    delete attributes.instance;
-    // Runtime bookkeeping, not part of the HVML vocabulary
-    delete attributes.hvmlPath;
-    delete attributes.json;
-    delete attributes.prefixes;
-    delete attributes.xml;
+
+    // Runtime bookkeeping and element text, not attributes
+    MOM_BOOKKEEPING_KEYS.forEach( ( key ) => {
+      delete ( attributes as Record<string, unknown> )[key];
+    } );
 
     /**
      * The MOM stores every scalar in its XML lexical form (`toMom`
@@ -440,13 +454,52 @@ export class HVMLElement extends HVMLNode {
       }
     }
 
+    const descriptionRecord = ( attributes as Record<string, unknown> ).description;
+
+    if ( isDescriptionRecord( descriptionRecord ) ) {
+      ( attributes as Record<string, unknown> ).description = serializeDescription( descriptionRecord );
+    }
+
     /**
-     * The path grows by this node's name (and sibling index) for the
-     * duration of its own write and its descendants' writes, then
-     * shrinks back to where the caller left it, so no sibling can
-     * disturb the next one's path. Same discipline as `_jsonifyChild`.
+     * Two element kinds serialize as something other than an
+     * attribute record with nested children. An XHTML payload root
+     * (`html:div` under `description`, `content`, `name`) becomes the
+     * JSON-LD-serialized HTML shape, its subtree consumed whole. A
+     * text element becomes its text, paired with its attributes as
+     * an `[attributes, text]` tuple when it has any: the shape the XML
+     * path writes for `<entity site="…">YouTube</entity>` and
+     * `<content type="text">…</content>`.
      */
-    const depth = path.length;
+    const ownText = textContentOf( child );
+
+    if ( nodeName.startsWith( 'html:' ) && !root ) {
+      path.push( nodeName );
+
+      if ( atIndex !== null ) {
+        path.push( atIndex );
+      }
+
+      set( this.json, path, {
+        ...attributes,
+        ...Transform.jsonLdPayloadOf( payloadNodesOf( child ) ),
+      } );
+      path.length = depth;
+      return;
+    }
+
+    if ( ( typeof ownText === 'string' ) && !child.children.length && !root ) {
+      const text = emitTypedScalar( nodeName, ownText );
+
+      path.push( nodeName );
+
+      if ( atIndex !== null ) {
+        path.push( atIndex );
+      }
+
+      set( this.json, path, Object.keys( attributes ).length ? [attributes, text] : text );
+      path.length = depth;
+      return;
+    }
 
     if ( root ) {
       if ( atIndex !== null ) {
@@ -521,9 +574,7 @@ export class HVMLElement extends HVMLNode {
       } );
     }
 
-    while ( path.length > depth ) {
-      path.pop();
-    }
+    path.length = depth;
   }
 
   toJson() {
@@ -791,24 +842,39 @@ export class HVMLElement extends HVMLNode {
                * also matches the MOM’s tolerance for not-yet-conformant
                * trees; conformance belongs to the RNG validator.
                */
-              if ('type' in value && hasMethod(lastChild, 'setDescription')) {
-                switch ( value.type ) {
-                  case 'xhtml':
-                    if ('html:div' in value) {
-                      lastChild.setDescription( value['html:div'], 'xhtml' );
-                    }
-                    break;
+              if ( hasMethod( lastChild, 'setDescription' ) ) {
+                if ( 'type' in value ) {
+                  switch ( value.type ) {
+                    case 'xhtml':
+                      if ( 'html:div' in value ) {
+                        lastChild.setDescription( value['html:div'], 'xhtml' );
+                      }
+                      break;
 
-                  default:
-                    lastChild.setDescription( value );
-                    break;
+                    default:
+                      lastChild.setDescription( value );
+                      break;
+                  }
+                } else if ( ( '@value' in value ) && ( typeof value['@value'] === 'string' ) ) {
+                  // JSON-LD's explicit value object, equivalent to the bare string
+                  lastChild.setDescription( value['@value'] );
                 }
               }
 
               break;
 
             default:
-              if ( Array.isArray( value ) ) {
+              if ( isAttributesTextTuple( value ) ) {
+                /**
+                 * `[ { …attributes }, text ]` is the XML serializer's
+                 * shape for an element with attributes AND text
+                 * (`<entity site="…">YouTube</entity>`). NOTE: the same
+                 * JSON also reads as two repeated elements, the first
+                 * attribute-only and the second text-only; the tuple
+                 * reading matches the documents in the wild.
+                 */
+                this._momifyTuple( key, value[0], String( value[1] ), target );
+              } else if ( Array.isArray( value ) ) {
                 /**
                  * A JSON array under an element-name key holds repeated
                  * same-name elements (`presentation: [ {…}, {…} ]`, the
@@ -872,6 +938,30 @@ export class HVMLElement extends HVMLNode {
             methodName: '_momifyChild',
           });
       }
+    }
+  }
+
+  /**
+   * Builds the element an `[attributes, text]` tuple describes: the
+   * attribute record makes the element, the text becomes its
+   * `textContent`. A `description` tuple goes through the setter
+   * instead, since descriptions live as records on their element.
+   */
+  _momifyTuple( key: string, attributes: Record<string, unknown>, text: string, target = this.children ) {
+    const lastChild = target[target.length - 1];
+
+    if ( ( key === 'description' ) && hasMethod( lastChild, 'setDescription' ) ) {
+      lastChild.setDescription( text, ( attributes.type === 'xhtml' ) ? 'xhtml' : 'text' );
+      return;
+    }
+
+    this._momifyChild( key, attributes, target );
+
+    const created = lastChild.children[lastChild.children.length - 1];
+
+    /* istanbul ignore else: the attribute record always builds an element */
+    if ( created ) {
+      Object.assign( created, { "textContent": text } );
     }
   }
 
@@ -1052,6 +1142,47 @@ export class HVMLElement extends HVMLNode {
       }
     }
   }
+}
+
+/**
+ * The `[ { …attributes }, text ]` shape: a two-entry array whose first
+ * entry is an attribute record and whose second is a scalar.
+ */
+function isAttributesTextTuple( value: unknown ): value is [Record<string, unknown>, string | number | boolean] {
+  return Array.isArray( value )
+    && ( value.length === 2 )
+    && isPlainObject( value[0] )
+    && ['string', 'number', 'boolean'].includes( typeof value[1] );
+}
+
+function isDescriptionRecord( value: unknown ): value is Partial<IHVMLDescription> {
+  return ( typeof value === 'object' ) && ( value !== null ) && isPlainObject( value )
+    && ( hasProperty( value, 'text' ) || hasProperty( value, 'xhtml' ) );
+}
+
+/**
+ * A description record's serialized form: the plain text as a bare
+ * string, XHTML as the typed payload object the XML twin carries
+ * (`{ type: "xhtml", "html:div": { childNodes: […] } }`).
+ */
+function serializeDescription( record: Partial<IHVMLDescription> ): unknown {
+  if ( typeof record.xhtml === 'string' ) {
+    const document = Transform.xmlStringToJsonMl( record.xhtml );
+    const div = document[1];
+    const contentNodes = ( Array.isArray( div ) ? div.slice( 1 ) : [] )
+      .filter( ( node ) => ( typeof node === 'string' ) || Array.isArray( node ) ) as JSONMLNode[];
+
+    return {
+      "type": "xhtml",
+      "html:div": Transform.jsonLdPayloadOf( contentNodes ),
+    };
+  }
+
+  if ( typeof record.text === 'string' ) {
+    return record.text;
+  }
+
+  return {};
 }
 
 /**

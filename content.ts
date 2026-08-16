@@ -3,27 +3,9 @@ import Transform from './util/transform.js';
 import Validation from './util/validation.js';
 import { defineHVMLElement, createHVMLElement } from './util/registry.js';
 import { createHVMLCollection } from './types/elements.js';
+import { payloadNodesOf } from './util/payload.js';
 import type { HVMLXhtmlPayloadInput } from './types/elements.js';
 import type { JSONML, JSONMLAttributes, JSONMLNode } from './util/data.js';
-
-/**
- * Instance fields that are MOM bookkeeping rather than serialized
- * attributes; the same set `_setJsonChild` deletes before spreading.
- * `textContent` rides along because the payload walker emits it as a
- * JSON-ML text node, never as an attribute.
- */
-const MOM_BOOKKEEPING_KEYS = [
-  'children',
-  'hvmlPath',
-  'id',
-  'instance',
-  'json',
-  'language',
-  'prefixes',
-  'region',
-  'textContent',
-  'xml',
-];
 
 /**
  * Typed payload carrier, following the same pattern as
@@ -65,7 +47,7 @@ class Content extends HVMLElement {
         if ( typeof content === 'string' ) {
           xhtml = Transform.wrapXhtml( content.trim() );
         } else if ( Array.isArray( content.childNodes ) ) {
-          xhtml = Transform.wrapXhtml( Transform.jsonLdChildNodesToXmlString( content.childNodes ) );
+          xhtml = Transform.jsonLdChildNodesToXhtml( content.childNodes );
         } else {
           throw new Validation.TypeError( errorData );
         }
@@ -101,7 +83,7 @@ class Content extends HVMLElement {
     const div = this.children.filter( ( child ) => child.nodeName === 'html:div' )[0];
 
     if ( div ) {
-      const payloadJsonMl = Transform.wrapJsonMl( Content._payloadNodesOf( div ) );
+      const payloadJsonMl = Transform.wrapJsonMl( payloadNodesOf( div ) );
 
       if ( type === 'xhtml' ) {
         return Transform.jsonMlToXmlString( payloadJsonMl );
@@ -160,49 +142,10 @@ class Content extends HVMLElement {
 
     return element;
   }
-
-  /**
-   * The inverse walk: a payload element’s content as JSON-ML nodes.
-   */
-  static _payloadNodesOf( element: HVMLElement ): JSONMLNode[] {
-    const ownText = textContentOf( element );
-
-    if ( typeof ownText === 'string' ) {
-      return [ownText];
-    }
-
-    return element.children.map( ( child ): JSONMLNode => {
-      if ( child.nodeName === '#text' ) {
-        return textContentOf( child ) ?? '';
-      }
-
-      const attributes: JSONMLAttributes = {};
-
-      Object.entries( child ).forEach( ( [key, value] ) => {
-        if ( ( typeof value === 'string' ) && !MOM_BOOKKEEPING_KEYS.includes( key ) ) {
-          attributes[key] = value;
-        }
-      } );
-
-      const name = child.nodeName.replace( /^html:/, '' );
-
-      return [name, attributes, ...Content._payloadNodesOf( child )];
-    } );
-  }
 }
 
 function isPlainAttributes( node: JSONMLAttributes | JSONMLNode | undefined ): node is JSONMLAttributes {
   return ( typeof node === 'object' ) && !Array.isArray( node ) && ( node !== null );
-}
-
-/**
- * `textContent` expandos live on arbitrary reconstructed elements
- * (`#text` nodes, text-only leaves), which the base class doesn’t
- * declare.
- */
-function textContentOf( element: HVMLElement ): string | undefined {
-  const value = ( element as { textContent?: unknown } ).textContent;
-  return ( typeof value === 'string' ) ? value : undefined;
 }
 
 export default Content;

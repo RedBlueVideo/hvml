@@ -1,0 +1,63 @@
+{
+  "@context": "https://redblue.video/guide/hvml.context.jsonld",
+  "@type": "video",
+  "xml:id": "drive",
+  "title": [
+    { "xml:lang": "fr" },
+    "Drive"
+  ],
+  "version": {
+    "xml:id": "theatrical",
+    "type": "theatrical",
+    "title": "Theatrical cut",
+    "runtime": 5880,
+    "description": "Refn’s theatrical version."
+  },
+  "showing": {
+    "scope": "release",
+    "type": "internet",
+    "venue": {
+      "type": "site",
+      "entity": [
+        { "site": "https://www.youtube.com/" },
+        "YouTube"
+      ],
+      "uri": "https://www.youtube.com/watch?v=KBiOF3y1W0Y"
+    }
+  },
+  "presentation": {
+    "overlay": [
+      {
+        "on": "duration",
+        "start": 1284.5,
+        "end": 1290,
+        "width": "40%",
+        "top": "70%",
+        "left": "5%",
+        "content": {
+          "type": "xhtml",
+          "html:div": {
+            "childNodes": [
+              {
+                "@type": "p",
+                "textContent": "Refn commissioned four scorpion jackets."
+              }
+            ]
+          }
+        }
+      },
+      {
+        "on": "duration",
+        "start": 1300,
+        "end": 1305,
+        "width": "40%",
+        "top": "70%",
+        "left": "5%",
+        "content": [
+          { "type": "text" },
+          "Plain overlay text"
+        ]
+      }
+    ]
+  }
+}

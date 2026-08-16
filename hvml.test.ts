@@ -196,6 +196,16 @@ describe( 'HVML', () => {
         } );
     } );
 
+    skipIfXmllintUnavailable( 'validates the round-trip fixture: attribute-bearing text elements, version text children, and text-typed content', () => {
+      const roundTripHvml = new HVML( './examples/roundtrip.xml' );
+
+      return roundTripHvml.ready
+        .then( () => roundTripHvml.validate() )
+        .then( ( validationResult: unknown ) => {
+          expect( validationResult ).toStrictEqual( true );
+        } );
+    } );
+
     skipIfXmllintUnavailable( 'validates documents with `series` and `group` collection elements', () => {
       const collectionsHvml = new HVML( './examples/series-group.xml' );
 
@@ -515,7 +525,7 @@ describe( 'HVML', () => {
               "about": "https://id.nospoon.tv/2016/hughs-vlog/overnight-dance-party-at-the-mfa",
               "title": "Overnight Dance Party at the Museum of Fine Arts Boston",
               "description": {
-                "xhtml": "<p>Full Facebook Live stream: https://www.facebook.com/hugh.guiney/videos/10100195051457860/</p><p>#mfaNOW #mfaLateNites</p>",
+                "xhtml": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p>Full Facebook Live stream: https://www.facebook.com/hugh.guiney/videos/10100195051457860/</p><p>#mfaNOW #mfaLateNites</p></div>",
               },
               "children": [
                 {
