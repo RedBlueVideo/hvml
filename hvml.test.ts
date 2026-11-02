@@ -196,6 +196,16 @@ describe( 'HVML', () => {
         } );
     } );
 
+    skipIfXmllintUnavailable( 'validates a citing document that omits `title` when `about` names the work', () => {
+      const annotationTrackHvml = new HVML( './examples/annotation-track.xml' );
+
+      return annotationTrackHvml.ready
+        .then( () => annotationTrackHvml.validate() )
+        .then( ( validationResult: unknown ) => {
+          expect( validationResult ).toStrictEqual( true );
+        } );
+    } );
+
     skipIfXmllintUnavailable( 'validates the round-trip fixture: attribute-bearing text elements, version text children, and text-typed content', () => {
       const roundTripHvml = new HVML( './examples/roundtrip.xml' );
 
@@ -375,6 +385,7 @@ describe( 'HVML', () => {
             expect( badValidationResult ).toBeUndefined();
           } )
           .catch( ( error: unknown ) => {
+            // libxml2 reports the enclosing interleave and element after the attribute error once `title` sits under a `choice`
             expect( error ).toStrictEqual( [{
               "error": "Invalid attribute about for element title",
               "element": "title",
@@ -382,6 +393,20 @@ describe( 'HVML', () => {
               "got": "about",
               "line": "4",
               "message": `${badHvmlPath}:4: element title: Relax-NG validity error : Invalid attribute about for element title`,
+              "type": "validity error",
+            }, {
+              "error": "Invalid sequence in interleave",
+              "file": badHvmlPath,
+              "got": undefined,
+              "line": "3",
+              "message": `${badHvmlPath}:3: element video: Relax-NG validity error : Invalid sequence in interleave`,
+              "type": "validity error",
+            }, {
+              "error": "Element video failed to validate content",
+              "file": badHvmlPath,
+              "got": undefined,
+              "line": "3",
+              "message": `${badHvmlPath}:3: element video: Relax-NG validity error : Element video failed to validate content`,
               "type": "validity error",
             }] );
           } );
@@ -406,6 +431,43 @@ describe( 'HVML', () => {
               "got": "about",
               "line": "2",
               "message": `${badHvmlPath}:2: element hvml: Relax-NG validity error : Invalid attribute about for element hvml`,
+              "type": "validity error",
+            }] );
+          } );
+      } );
+
+      skipIfXmllintUnavailable( 'a video with neither `title` nor `about`', () => {
+        const badHvmlPath = './examples/bad/missing-title.hvml';
+        const badHvml = new HVML( badHvmlPath );
+
+        expect.assertions( 1 );
+
+        return badHvml.ready
+          .then( () => badHvml.validate() )
+          .then( ( badValidationResult: unknown ) => {
+            expect( badValidationResult ).toBeUndefined();
+          } )
+          .catch( ( error: unknown ) => {
+            expect( error ).toStrictEqual( [{
+              "error": "Expecting an element title, got nothing",
+              "file": badHvmlPath,
+              "got": undefined,
+              "line": "3",
+              "message": `${badHvmlPath}:3: element video: Relax-NG validity error : Expecting an element title, got nothing`,
+              "type": "validity error",
+            }, {
+              "error": "Invalid sequence in interleave",
+              "file": badHvmlPath,
+              "got": undefined,
+              "line": "3",
+              "message": `${badHvmlPath}:3: element video: Relax-NG validity error : Invalid sequence in interleave`,
+              "type": "validity error",
+            }, {
+              "error": "Element video failed to validate content",
+              "file": badHvmlPath,
+              "got": undefined,
+              "line": "3",
+              "message": `${badHvmlPath}:3: element video: Relax-NG validity error : Element video failed to validate content`,
               "type": "validity error",
             }] );
           } );

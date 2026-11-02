@@ -886,12 +886,16 @@
     </element><!--/version-->
   </define>
 
+  <!--
+    A `video` names its work one of two ways: with a `title`, or with
+    `about`, which cites a work another document already named. A
+    citing document (an annotation track published on its own) has no
+    reason to restate the title, so `title` is optional when `about`
+    is present and required otherwise.
+  -->
   <define name="video">
     <element name="video">
       <ref name="hvmlGlobalAttributes" />
-      <optional>
-        <ref name="aboutAttribute" />
-      </optional>
       <optional>
         <attribute name="type">
           <list>
@@ -908,8 +912,15 @@
         </attribute>
       </optional>
       <interleave>
-        <!-- `title` alone is required: a record must at least name its work -->
-        <ref name="title" />
+        <choice>
+          <group>
+            <ref name="aboutAttribute" />
+            <optional>
+              <ref name="title" />
+            </optional>
+          </group>
+          <ref name="title" />
+        </choice>
         <optional>
           <ref name="episode" />
         </optional>

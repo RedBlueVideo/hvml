@@ -1,12 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  The independently published annotation track from hvml-spec
-  docs/2026-08-03-identity-versions-presentations.md §4, verbatim: an
-  ordinary partial HVML document citing the work and the version it
-  annotates by IRI. NOTE: serialization-only for now, like
-  `series.xml`; the grammar requires `title` on `video`, which a
-  citing document has no reason to restate. That tension is an open
-  design question, not settled here.
+  An independently published annotation track: a partial HVML
+  document that cites the work and the version it annotates by IRI
+  instead of restating them. `title` is absent because `about` names
+  the work; the grammar permits that only on a citing `video`.
 -->
 <hvml xmlns="https://hypervideo.tech/hvml#" xmlns:xlink="http://www.w3.org/1999/xlink">
   <video about="https://id.nospoon.tv/2011/drive">
