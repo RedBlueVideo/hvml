@@ -1,10 +1,12 @@
 import set from 'lodash.set';
 // import Video from './video.js';
-import {
-  XMLAttribute,
-  XMLDocument as ILibxmljsXMLDocument,
-  XMLElement,
-} from 'libxmljs';
+import type {
+  Attribute as XMLAttribute,
+  Document as ILibxmljsXMLDocument,
+  Element as XMLElement,
+  Node as XMLNode,
+  Text as XMLText,
+} from 'libxmljs2';
 
 import Data, { LodashPath } from './util/data.js';
 import type { JSONMLNode } from './util/data.js';
@@ -137,7 +139,7 @@ export class HVMLElement extends HVMLNode {
 
   /* istanbul ignore next: internals of toJson(), which is already tested */
   _jsonifyChild(
-    child: XMLElement,
+    child: XMLNode,
     path: LodashPath = [],
     domNode = false,
     childIndex?: number,
@@ -146,8 +148,8 @@ export class HVMLElement extends HVMLNode {
       this.json = Data.getJsonBoilerplate();
     }
 
-    const type = child.type();
-    const attributes = child.attrs();
+    const type: string = child.type();
+    const attributes = isXMLElement( child ) ? child.attrs() : [];
     // let path;
     let name;
     let namespace;
@@ -160,6 +162,10 @@ export class HVMLElement extends HVMLNode {
         break;
 
       case 'element':
+        if ( !isXMLElement( child ) ) {
+          break;
+        }
+
         name = child.name();
         namespace = child.namespace();
         grandchildren = child.childNodes();
@@ -242,7 +248,7 @@ export class HVMLElement extends HVMLNode {
               const elementCounts: HVMLChildCounts = {};
 
               grandchildren.forEach( ( grandchild ) => {
-                if ( grandchild.type() === 'element' ) {
+                if ( isXMLElement( grandchild ) ) {
                   const key = grandchild.name();
 
                   if ( hasProperty( elementCounts, key ) ) {
@@ -268,7 +274,7 @@ export class HVMLElement extends HVMLNode {
                 const depth = path.length;
 
                 if (
-                  ( grandchild.type() === 'element' )
+                  isXMLElement( grandchild )
                   && ( elementCounts[grandchild.name()].count > 1 )
                 ) {
                   this._jsonifyChild( grandchild, path, false, ++elementCounts[grandchild.name()].i );
@@ -315,13 +321,13 @@ export class HVMLElement extends HVMLNode {
         break; // element
 
       case 'text':
-        text = child.text();
+        text = ( child as XMLText ).text();
         if ( text.trim() !== '' ) {
           const dupePath = Object.assign( [], path );
 
           if ( domNode ) {
             set( this.json, path, {
-              "textContent": child.text(),
+              "textContent": text,
             } );
           } else {
             const upone = path[path.length - 1];
@@ -621,9 +627,7 @@ export class HVMLElement extends HVMLNode {
        */
       const json = this.json;
 
-      const rootChildren = ( this.xml.root()?.childNodes() ?? [] ).filter(
-        ( node ) => ( node.type() === 'element' ),
-      );
+      const rootChildren = ( this.xml.root()?.childNodes() ?? [] ).filter( isXMLElement );
 
       rootChildren.forEach( ( node, index ) => {
         /**
@@ -652,7 +656,7 @@ export class HVMLElement extends HVMLNode {
           const childCounts: HVMLChildCounts = {};
 
           children.forEach( ( child ) => {
-            if ( child.type() === 'element' ) {
+            if ( isXMLElement( child ) ) {
               const key = child.name();
 
               if ( hasProperty( childCounts, key ) ) {
@@ -668,7 +672,7 @@ export class HVMLElement extends HVMLNode {
 
           children.forEach( ( child ) => {
             if (
-              ( child.type() === 'element' )
+              isXMLElement( child )
               && ( childCounts[child.name()].count > 1 )
             ) {
               // Each root-level child is handed a fresh path array;
@@ -1183,6 +1187,11 @@ function serializeDescription( record: Partial<IHVMLDescription> ): unknown {
   }
 
   return {};
+}
+
+/** The binding types `childNodes()` as `Node[]`; the element-only API (`name`, `attrs`, `childNodes`) needs this narrowing. */
+function isXMLElement( node: XMLNode ): node is XMLElement {
+  return node.type() === 'element';
 }
 
 /**

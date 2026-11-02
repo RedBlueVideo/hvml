@@ -19,13 +19,14 @@ import { defineHVMLElement } from './util/registry.js';
 import Data from './util/data.js';
 import { createHVMLCollection } from './types/elements.js';
 
-import type { XMLDocument as ILibxmljsXMLDocument } from 'libxmljs';
+import type { Document as ILibxmljsXMLDocument } from 'libxmljs2';
 
 type XMLParser = ( source: string ) => ILibxmljsXMLDocument;
 
 /**
- * libxmljs ≥1.0 renamed `parseXmlString` to `parseXml`. We accept
- * both, so the optional dependency works across the rename.
+ * libxmljs ≥1.0 renamed `parseXmlString` to `parseXml`, and libxmljs2
+ * keeps both names. We accept both, so either optional dependency
+ * serves.
  */
 interface LibxmljsModule {
   parseXml?: XMLParser;
@@ -33,23 +34,32 @@ interface LibxmljsModule {
 }
 
 /**
- * libxmljs is a native optional dependency, so we load it imperatively.
- * A missing or failed install then degrades to
- * `OptionalDependencyNotInstalled` at parse time, rather than breaking
- * module evaluation for the JSON-LD paths that never needed it.
- * `createRequire` preserves the try/catch semantic under ESM.
+ * The XML parser is a native optional dependency, so we load it
+ * imperatively: libxmljs2, the maintained fork with builds for current
+ * Node, then libxmljs 1.0.11 for Node 18 to 20. A missing or failed
+ * install degrades to `OptionalDependencyNotInstalled` at parse time,
+ * rather than breaking module evaluation for the JSON-LD paths that never
+ * needed it. `createRequire` preserves the try/catch semantic under ESM.
  */
 const nodeRequire = createRequire( import.meta.url );
 
+export const XML_PARSER_DEPENDENCIES = [ 'libxmljs2', 'libxmljs' ] as const;
+
 let parseXml: XMLParser | null = null;
 
-try {
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment -- require() is a trust boundary; the LibxmljsModule interface constrains its shape
-  const libxmljs: LibxmljsModule = nodeRequire( 'libxmljs' );
-  /* istanbul ignore next */
-  parseXml = libxmljs.parseXml ?? libxmljs.parseXmlString ?? null;
-} catch {
-  // Optional dependency not installed
+for ( const dependency of XML_PARSER_DEPENDENCIES ) {
+  try {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment -- require() is a trust boundary; the LibxmljsModule interface constrains its shape
+    const libxmljs: LibxmljsModule = nodeRequire( dependency );
+    /* istanbul ignore next */
+    parseXml = libxmljs.parseXml ?? libxmljs.parseXmlString ?? null;
+  } catch {
+    // Not installed, or built for another Node ABI; try the next one.
+  }
+
+  if ( parseXml ) {
+    break;
+  }
 }
 
 // const elements = {
@@ -166,7 +176,7 @@ class HVML extends HVMLElement {
             throw new Validation.OptionalDependencyNotInstalled( {
               "className": "HVML",
               "fieldName": "ready",
-              "dependency": "libxmljs",
+              "dependency": XML_PARSER_DEPENDENCIES.join( ' or ' ),
             } );
           }
 

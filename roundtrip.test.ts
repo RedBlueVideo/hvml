@@ -4,14 +4,15 @@ import skipIf from 'skip-if';
 import { HVML } from './hvml.js';
 
 const libxmljsUnavailable = ( () => {
-  let canParseXml = false;
+  // Either native binding serves; a build for another Node ABI resolves but does not load.
+  for ( const dependency of [ 'libxmljs2', 'libxmljs' ] ) {
+    try {
+      require( dependency );
+      return false;
+    } catch {}
+  }
 
-  try {
-    ( require.resolve( 'libxmljs' ) );
-    canParseXml = true;
-  } catch {}
-
-  return !canParseXml;
+  return true;
 } )();
 
 const skipIfLibxmljsUnavailable = skipIf( () => libxmljsUnavailable );

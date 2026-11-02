@@ -12,14 +12,15 @@ const JSON_LD = JSON.parse( readFileSync( './examples/hvml.jsonld', 'utf8' ) );
 // skipIf(condition, name, test)
 
 const libxmljsUnavailable = ( () => {
-  let canParseXml = false;
+  // Either native binding serves; a build for another Node ABI resolves but does not load.
+  for ( const dependency of [ 'libxmljs2', 'libxmljs' ] ) {
+    try {
+      require( dependency );
+      return false;
+    } catch {}
+  }
 
-  try {
-    ( require.resolve( 'libxmljs' ) );
-    canParseXml = true;
-  } catch {}
-
-  return !canParseXml;
+  return true;
 } )();
 const libxmljsAvailable = !libxmljsUnavailable;
 
@@ -65,7 +66,15 @@ describe( 'HVML', () => {
 
     skipIfLibxmljsUnavailable( 'from XML', async () => {
       const { HVML } = require( './hvml' );
-      const { XMLDocument } = require( 'libxmljs' );
+      const XMLDocument = ( () => {
+        for ( const dependency of [ 'libxmljs2', 'libxmljs' ] ) {
+          try {
+            const binding = require( dependency );
+            return binding.Document ?? binding.XMLDocument;
+          } catch {}
+        }
+        throw new Error( 'no XML binding loads' );
+      } )();
       const hvml = new HVML( './examples/hvml.xml' );
 
       expect.assertions( 1 );
@@ -73,8 +82,11 @@ describe( 'HVML', () => {
       await expect( hvml.ready ).resolves.toBeInstanceOf( XMLDocument );
     } );
 
-    test( 'from XML: throws an error when libxmljs is not installed', () => {
+    test( 'from XML: throws an error when no XML binding is installed', () => {
       if ( libxmljsAvailable ) {
+        jest.mock( 'libxmljs2', () => {
+          throw new Error( `Cannot find module 'libxmljs2'` );
+        } );
         jest.mock( 'libxmljs', () => {
           throw new Error( `Cannot find module 'libxmljs'` );
         } );
