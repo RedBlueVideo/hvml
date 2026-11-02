@@ -11,7 +11,6 @@ export const MOM_BOOKKEEPING_KEYS = [
   'children',
   'hvmlPath',
   'id',
-  'instance',
   'json',
   'language',
   'prefixes',

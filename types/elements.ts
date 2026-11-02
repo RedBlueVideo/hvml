@@ -192,8 +192,6 @@ export class HVMLNode {
 
   declare region?: string;
 
-  declare instance?: unknown;
-
   /**
    * DOM cue: `Node.nodeName`. Serialization keys on this, never on
    * `constructor.name` (which changes under minification and class
@@ -291,7 +289,6 @@ export type HVMLGlobalAttributeName =
  | 'about'
  | 'children'
  | 'id'
- | 'instance'
  | 'language'
  | 'region'
 ;
