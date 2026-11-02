@@ -132,9 +132,7 @@
 
   <!--
     `about` holds an absolute IRI naming the thing its element
-    describes (hvml-spec
-    docs/2026-08-03-identity-versions-presentations.md §2.2). A
-    `video` carrying a registry entry’s IRI
+    describes. A `video` carrying a registry entry’s IRI
     (about="https://id.nospoon.tv/2011/drive") merges, at the RDF
     layer, with every other document about the same IRI. An author
     publishing an annotation track names their own `presentation` the
@@ -766,8 +764,7 @@
   </define>
 
   <!--
-    PROVISIONAL: adopted for experimentation, not yet ratified
-    (hvml-spec docs/2026-08-03-identity-versions-presentations.md §3).
+    PROVISIONAL: adopted for experimentation, not yet ratified.
 
     Maps the presenting resource’s local timeline onto its version’s
     reference timeline: local = offset + reference × rate/scale, with

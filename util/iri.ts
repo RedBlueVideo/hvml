@@ -1,14 +1,13 @@
 /**
- * The mint rule (hvml-spec
- * docs/2026-08-03-identity-versions-presentations.md §2.2): an
- * `xml:id` resolved against the document base names the subject its
- * element describes. The primary child of `hvml` mints the base IRI
- * itself; every other `xml:id` mints a fragment, `base#id`.
+ * The mint rule: an `xml:id` resolved against the document base
+ * names the subject its element describes. The primary child of
+ * `hvml` mints the base IRI itself; every other `xml:id` mints a
+ * fragment, `base#id`.
  *
  * Plain string assembly rather than the URL parser: the WHATWG URL
  * API percent-encodes non-ASCII paths, and registry IRIs use native
- * precomposed Unicode (§2.8), which a mint must preserve character
- * for character. A fragment already on the base is replaced, as
+ * precomposed Unicode, which a mint must preserve character for
+ * character. A fragment already on the base is replaced, as
  * RFC 3986 §5.2 resolution would.
  */
 export function mintIri( base: string, xmlId: string, isPrimary = false ): string {
